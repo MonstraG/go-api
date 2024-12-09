@@ -1,0 +1,8 @@
+{
+  "host": "0.0.0.0:8080",
+  "databaseFolder": "data",
+  "auth": {
+    "username": "admin",
+    "password": "1234"
+  }
+}
