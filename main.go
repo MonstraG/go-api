@@ -2,8 +2,6 @@ package main
 
 import (
 	"go-server/pages"
-	"go-server/pages/index"
-	"go-server/pages/notFound"
 	"go-server/setup"
 	"log"
 )
@@ -18,12 +16,7 @@ func main() {
 
 	app.Use(setup.LoggingMiddleware)
 
-	// pages
-	app.HandleFunc("GET /", notFound.GetHandler)
-	app.HandleFunc("GET /{$}", index.GetHandler)
-
-	// resources
-	app.HandleFunc("GET /public/{path...}", pages.PublicHandler)
+	pages.MapRoutes(app)
 
 	log.Fatal(app.ListenAndServe())
 }

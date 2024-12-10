@@ -1,8 +1,38 @@
+:root {
+    --background: #121212;
+    --foreground: #fff;
+    --border: color-mix(in srgb, var(--foreground) 10%, var(--background));
+    --elevation-1: color-mix(in srgb, var(--foreground) 5%, var(--background));
+    --spacing: 16px;
+    --primary: #9A9A7A;
+    --input-background: #36343b;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 16px;
+}
+
+body {
+    background-color: #121212;
+    color: #fff;
+}
+
+.card {
+    border-radius: var(--spacing);
+    border: 1px solid var(--border);
+    padding: var(--spacing);
+    background: var(--elevation-1); /* elevation 1 on https://m2.material.io/design/color/dark-theme.html#properties */
+}
+
 nav {
     ul {
         display: flex;
         list-style: none;
-        gap: 16px;
+        gap: var(--spacing);
         padding-left: 0;
     }
 }

@@ -3,7 +3,6 @@ package setup
 import (
 	"database/sql"
 	"errors"
-	"go-server/helpers"
 	"go-server/models"
 	"go-server/pages/notFound"
 	"gorm.io/gorm"
@@ -14,15 +13,15 @@ import (
 )
 
 // HandlerFn is an alias for http.HandlerFunc argument, but with my helpers.MyWriter
-type HandlerFn func(w helpers.MyWriter, r *helpers.MyRequest)
+type HandlerFn func(w MyWriter, r *MyRequest)
 
 // Middleware is just a HandlerFn that returns a HandlerFn
 type Middleware func(HandlerFn) HandlerFn
 
-func MyWriterWrapperMiddleware(next HandlerFn) func(w http.ResponseWriter, r *http.Request) {
+func MyReqResWrapperMiddleware(next HandlerFn, app *App) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		myWriter := helpers.MyWriter{ResponseWriter: w}
-		myRequest := helpers.MyRequest{Request: *r}
+		myWriter := MyWriter{ResponseWriter: w}
+		myRequest := MyRequest{Request: *r, Db: app.db}
 		next(myWriter, &myRequest)
 	}
 }
@@ -30,7 +29,7 @@ func MyWriterWrapperMiddleware(next HandlerFn) func(w http.ResponseWriter, r *ht
 // LoggingMiddleware is a Middleware that logs a hit and time taken to answer
 func LoggingMiddleware(next HandlerFn) HandlerFn {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile | log.LUTC)
-	return func(w helpers.MyWriter, r *helpers.MyRequest) {
+	return func(w MyWriter, r *MyRequest) {
 		start := time.Now()
 		log.Printf("Started %s %s", r.Method, r.URL.Path)
 		next(w, r)
@@ -41,7 +40,7 @@ func LoggingMiddleware(next HandlerFn) HandlerFn {
 // HtmxPartialMiddleware guards against direct browser navigations to partials
 // It returns notFound if request wasn't made by htmx (Hx-Request header)
 func HtmxPartialMiddleware(next HandlerFn) HandlerFn {
-	return func(w helpers.MyWriter, r *helpers.MyRequest) {
+	return func(w MyWriter, r *MyRequest) {
 		isHtmxRequest := r.Header.Get("Hx-Request") == "true"
 		if !isHtmxRequest {
 			notFound.GetHandler(w, r)
@@ -55,10 +54,16 @@ func HtmxPartialMiddleware(next HandlerFn) HandlerFn {
 // CreateBasicAuthMiddleware returns middleware that requires basic auth
 func CreateBasicAuthMiddleware(app App) Middleware {
 	return func(next HandlerFn) HandlerFn {
-		return func(w helpers.MyWriter, r *helpers.MyRequest) {
+		return func(w MyWriter, r *MyRequest) {
+			if r.URL.Path == "/login" ||
+				strings.HasPrefix(r.URL.Path, "/public") {
+				next(w, r)
+				return
+			}
+
 			username, password, ok := r.BasicAuth()
 			if !ok {
-				unauthorizedResponse(w)
+				redirectToLogin(w)
 				return
 			}
 
@@ -67,19 +72,19 @@ func CreateBasicAuthMiddleware(app App) Middleware {
 			result := app.db.Where("lower(username) = @name", sql.Named("name", lowercaseUsername)).First(&user)
 			if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
 				log.Printf("Hit error when searching for user '%v':\n%v\n", lowercaseUsername, result.Error)
-				w.WriteHeader(500)
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 			if result.RowsAffected == 0 {
 				// didn't find them
-				unauthorizedResponse(w)
+				redirectToLogin(w)
 				return
 			}
 
 			ok = user.CheckPasswordHash(password)
 
 			if !ok {
-				unauthorizedResponse(w)
+				redirectToLogin(w)
 				return
 			}
 
@@ -90,7 +95,8 @@ func CreateBasicAuthMiddleware(app App) Middleware {
 	}
 }
 
-func unauthorizedResponse(w helpers.MyWriter) {
-	w.Header().Set("WWW-Authenticate", `Basic realm="server", charset="UTF-8"`)
-	w.WriteHeader(401)
+// todo: remember url?
+func redirectToLogin(w MyWriter) {
+	w.Header().Set("Location", `/login`)
+	w.WriteHeader(http.StatusTemporaryRedirect)
 }
