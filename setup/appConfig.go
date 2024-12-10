@@ -8,12 +8,12 @@ import (
 )
 
 type AppConfig struct {
-	Host           string `json:"host"`
-	DatabaseFolder string `json:"databaseFolder"`
-	Auth           Auth   `json:"auth"`
+	Host         string      `json:"host"`
+	DatabaseFile string      `json:"databaseFile"`
+	DefaultUser  DefaultUser `json:"defaultUser"`
 }
 
-type Auth struct {
+type DefaultUser struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }

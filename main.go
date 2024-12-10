@@ -13,7 +13,7 @@ func main() {
 
 	app := setup.NewApp(config)
 
-	var authMiddleware = setup.CreateBasicAuthMiddleware(config)
+	var authMiddleware = setup.CreateBasicAuthMiddleware(*app)
 	app.Use(authMiddleware)
 
 	app.Use(setup.LoggingMiddleware)

@@ -1,10 +1,15 @@
 package setup
 
 import (
+	"database/sql"
+	"errors"
 	"go-server/helpers"
+	"go-server/models"
 	"go-server/pages/notFound"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -48,13 +53,33 @@ func HtmxPartialMiddleware(next HandlerFn) HandlerFn {
 }
 
 // CreateBasicAuthMiddleware returns middleware that requires basic auth
-func CreateBasicAuthMiddleware(config AppConfig) Middleware {
+func CreateBasicAuthMiddleware(app App) Middleware {
 	return func(next HandlerFn) HandlerFn {
 		return func(w helpers.MyWriter, r *helpers.MyRequest) {
 			username, password, ok := r.BasicAuth()
-			if !ok || config.Auth.Username != username || config.Auth.Password != password {
-				w.Header().Set("WWW-Authenticate", `Basic realm="server", charset="UTF-8"`)
-				w.WriteHeader(401)
+			if !ok {
+				unauthorizedResponse(w)
+				return
+			}
+
+			lowercaseUsername := strings.ToLower(username)
+			user := models.User{}
+			result := app.db.Where("lower(username) = @name", sql.Named("name", lowercaseUsername)).First(&user)
+			if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+				log.Printf("Hit error when searching for user '%v':\n%v\n", lowercaseUsername, result.Error)
+				w.WriteHeader(500)
+				return
+			}
+			if result.RowsAffected == 0 {
+				// didn't find them
+				unauthorizedResponse(w)
+				return
+			}
+
+			ok = user.CheckPasswordHash(password)
+
+			if !ok {
+				unauthorizedResponse(w)
 				return
 			}
 
@@ -63,4 +88,9 @@ func CreateBasicAuthMiddleware(config AppConfig) Middleware {
 			next(w, r)
 		}
 	}
+}
+
+func unauthorizedResponse(w helpers.MyWriter) {
+	w.Header().Set("WWW-Authenticate", `Basic realm="server", charset="UTF-8"`)
+	w.WriteHeader(401)
 }

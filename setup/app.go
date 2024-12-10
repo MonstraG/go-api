@@ -3,9 +3,9 @@ package setup
 import (
 	"fmt"
 	"go-server/helpers"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
-	"os"
 )
 
 // App = http.ServeMux + Middleware slice
@@ -13,19 +13,18 @@ type App struct {
 	mux         *http.ServeMux
 	middlewares []Middleware
 	config      AppConfig
+	db          *gorm.DB
 }
 
 // NewApp is a constructor for App
 func NewApp(appConfig AppConfig) *App {
-	err := os.MkdirAll(appConfig.DatabaseFolder, os.ModePerm)
-	if err != nil {
-		log.Fatal("Failed to create database folder")
-	}
+	db := OpenDb(appConfig)
 
 	return &App{
 		mux:         http.NewServeMux(),
 		middlewares: []Middleware{},
 		config:      appConfig,
+		db:          db,
 	}
 }
 
