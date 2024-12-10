@@ -1,4 +1,4 @@
-# syntax=docker.io/docker/dockerfile:1.10-labs
+# syntax=docker.io/docker/dockerfile:1.12-labs
 # using `labs` in the line above changes "syntax" https://docs.docker.com/build/dockerfile/frontend/
 # this syntax allows "exclude" arg for COPY
 # dockerfile syntax verisons: https://hub.docker.com/r/docker/dockerfile
@@ -8,7 +8,8 @@
 # and names this instance 'build'
 # cryptic source image names like 'alpine' explained in https://stackoverflow.com/a/59731596/11593686
 # alpine versions: https://alpinelinux.org/downloads/
-FROM golang:1.23.2-alpine3.20 AS building-image
+# golang versions https://go.dev/dl/
+FROM golang:1.23.4-alpine3.21 AS building-image
 
 # mkdir+cd into new directory, we are going to put everything there
 WORKDIR /myapp
@@ -24,7 +25,7 @@ RUN CGO_ENABLED=0 go build -o go-server
 
 # switch to a new clean alpine without the golang stuff, much smaller
 # General article about so called multi-stage patterns: https://medium.com/swlh/reducing-container-image-size-esp-for-go-applications-db7658e9063a
-FROM alpine:3.20 AS running-image
+FROM alpine:3.21 AS running-image
 
 # copy everything from our folder (so, repo + built executable) from our building-image into the same folder but into the second image
 # also exclude all the source files, so the final build is even smaller (although it saves like 20kb)
