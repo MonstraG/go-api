@@ -29,7 +29,7 @@ var testSingleton = MyJwt{
 func TestCreateJwt(t *testing.T) {
 	jwt, err := testSingleton.CreateJwt(user, config)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Failed to create JWT: %v", err)
 		return
 	}
 

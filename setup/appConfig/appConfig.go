@@ -24,13 +24,13 @@ func ReadConfig() AppConfig {
 
 	configJson, err := os.ReadFile(configPath)
 	if err != nil {
-		log.Fatalf("Failed to read config file in %s", configPath)
+		log.Fatalf("Failed to read config file in '%s':\n%v\n", configPath, err)
 	}
 
 	var config AppConfig
 	err = json.Unmarshal(configJson, &config)
 	if err != nil {
-		log.Fatalf("Failed to read config file in %s", configPath)
+		log.Fatalf("Failed to unmarshall config file in '%s':\n%v\n", configPath, err)
 	}
 
 	return config

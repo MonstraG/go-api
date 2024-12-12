@@ -20,7 +20,7 @@ func OpenDb(appConfig appConfig.AppConfig) *gorm.DB {
 
 	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("failed to open database:\n%v", err)
+		log.Fatalf("failed to open database:\n%v\n", err)
 	}
 
 	seedDb(db, appConfig)
@@ -31,12 +31,12 @@ func OpenDb(appConfig appConfig.AppConfig) *gorm.DB {
 func seedDb(db *gorm.DB, appConfig appConfig.AppConfig) {
 	err := db.AutoMigrate(&models.User{})
 	if err != nil {
-		log.Fatalf("failed to migrate users:\n%v", err)
+		log.Fatalf("failed to migrate users:\n%v\n", err)
 	}
 
 	passwordHash, err := models.HashPassword(appConfig.DefaultUser.Password)
 	if err != nil {
-		log.Fatalf("Failed to hash deafault user password:\n%v", err)
+		log.Fatalf("Failed to hash default user password:\n%v\n", err)
 	}
 
 	db.FirstOrCreate(&models.User{

@@ -13,7 +13,7 @@ type MyWriter struct {
 func (w MyWriter) WriteSilent(content []byte) {
 	_, err := w.ResponseWriter.Write(content)
 	if err != nil {
-		log.Printf("Write failed: %v", err)
+		log.Printf("Write failed:\n%v\n", err)
 	}
 }
 

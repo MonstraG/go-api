@@ -22,14 +22,14 @@ func GetHandler(w reqRes.MyWriter, _ *reqRes.MyRequest) {
 
 	err := indexTemplate.Execute(w, indexPageData)
 	if err != nil {
-		log.Fatal("Failed to render login page:\n", err)
+		log.Printf("Failed to render login page:\n%v\n", err)
 	}
 }
 
 func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	err := r.ParseForm()
 	if err != nil {
-		log.Printf("Failed to parse form:\n%v", err)
+		log.Printf("Failed to parse form:\n%v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 

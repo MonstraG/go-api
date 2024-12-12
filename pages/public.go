@@ -18,7 +18,7 @@ func PublicHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	filename := filepath.Join("public", pathQueryParam)
 	fileInfo, err := os.Stat(filename)
 	if err != nil {
-		log.Printf("Failed to stat file %s: %v", filename, err)
+		log.Printf("Failed to stat file %s:\n%v\n", filename, err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -30,7 +30,7 @@ func PublicHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 
 	file, err := os.ReadFile(filename)
 	if err != nil {
-		log.Printf("Failed to read file %s: %v", filename, err)
+		log.Printf("Failed to read file %s:\n%v\n", filename, err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
