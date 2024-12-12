@@ -1,12 +1,9 @@
 package setup
 
 import (
-	"database/sql"
-	"errors"
-	"go-server/models"
 	"go-server/pages/notFound"
+	"go-server/setup/myJwt"
 	"go-server/setup/reqRes"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"strings"
@@ -22,7 +19,7 @@ type Middleware func(HandlerFn) HandlerFn
 func MyReqResWrapperMiddleware(next HandlerFn, app *App) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		myWriter := reqRes.MyWriter{ResponseWriter: w}
-		myRequest := reqRes.MyRequest{Request: *r, Db: app.db}
+		myRequest := reqRes.MyRequest{Request: *r, Db: app.db, AppConfig: app.config}
 		next(myWriter, &myRequest)
 	}
 }
@@ -62,41 +59,25 @@ func CreateBasicAuthMiddleware(app App) Middleware {
 				return
 			}
 
-			username, password, ok := r.BasicAuth()
-			if !ok {
+			cookie, err := r.CookieIfValid(myJwt.Cookie)
+			if err != nil {
 				redirectToLogin(w)
 				return
 			}
 
-			lowercaseUsername := strings.ToLower(username)
-			user := models.User{}
-			result := app.db.Where("lower(username) = @name", sql.Named("name", lowercaseUsername)).First(&user)
-			if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
-				log.Printf("Hit error when searching for user '%v':\n%v\n", lowercaseUsername, result.Error)
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-			if result.RowsAffected == 0 {
-				// didn't find them
+			_, err = myJwt.Singleton.ValidateJWT(cookie.Value, app.config)
+			if err != nil {
+				log.Printf("Error validating JWT:\n%v\n", err)
 				redirectToLogin(w)
 				return
 			}
-
-			ok = user.CheckPasswordHash(password)
-
-			if !ok {
-				redirectToLogin(w)
-				return
-			}
-
-			r.Username = username
 
 			next(w, r)
 		}
 	}
 }
 
-// todo: remember url?
+// todo: remember current url?
 func redirectToLogin(w reqRes.MyWriter) {
 	w.Header().Set("Location", `/login`)
 	w.WriteHeader(http.StatusTemporaryRedirect)

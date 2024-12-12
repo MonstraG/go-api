@@ -1,4 +1,4 @@
-package login
+package myJwt
 
 import (
 	"go-server/models"
@@ -13,8 +13,21 @@ const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MzQwMjExNzIsImlz
 var user = models.User{Username: "John"}
 var config = appConfig.AppConfig{JWTSecret: "secret"}
 
+// if changing this, make sure to remove the milliseconds as the issued at claim doesn't save that
+func preChosenTime() time.Time {
+	chosenTime, err := time.Parse(time.RFC3339, "2024-12-12T16:32:52Z")
+	if err != nil {
+		panic("Test has invalid date format\n" + err.Error())
+	}
+	return chosenTime
+}
+
+var testSingleton = MyJwt{
+	now: preChosenTime,
+}
+
 func TestCreateJwt(t *testing.T) {
-	jwt, err := createJwt(user, config, preChosenTime)
+	jwt, err := testSingleton.CreateJwt(user, config)
 	if err != nil {
 		t.Fatal(err)
 		return
@@ -26,19 +39,10 @@ func TestCreateJwt(t *testing.T) {
 	}
 }
 
-// if changing this, make sure to remove the milliseconds as the issued at claim doesn't save that
-func preChosenTime() time.Time {
-	chosenTime, err := time.Parse(time.RFC3339, "2024-12-12T16:32:52Z")
-	if err != nil {
-		panic("Test has invalid date format\n" + err.Error())
-	}
-	return chosenTime
-}
-
 func TestValidateJwt(t *testing.T) {
-	claims, ok := validateJWT(token, config)
-	if !ok {
-		t.Fatalf("Failed to validate JWT")
+	claims, err := testSingleton.ValidateJWT(token, config)
+	if err != nil {
+		t.Fatalf("Failed to validate JWT: %v", err)
 	}
 
 	gotIssuer, err := claims.GetIssuer()

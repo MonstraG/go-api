@@ -5,13 +5,13 @@ import (
 	"errors"
 	"go-server/models"
 	"go-server/pages"
+	"go-server/setup/myJwt"
 	"go-server/setup/reqRes"
 	"gorm.io/gorm"
 	"html/template"
 	"log"
 	"net/http"
 	"strings"
-	"time"
 )
 
 func GetHandler(w reqRes.MyWriter, _ *reqRes.MyRequest) {
@@ -65,7 +65,7 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 		return
 	}
 
-	jwtToken, err := createJwt(user, r.AppConfig, now)
+	jwtToken, err := myJwt.Singleton.CreateJwt(user, r.AppConfig)
 	if err != nil {
 		log.Printf("Error generating jwt token for user '%v':\n%v\n", lowercaseUsername, result.Error)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -76,15 +76,11 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 		Name:     "jwtToken",
 		Value:    jwtToken,
 		Path:     "/",
-		MaxAge:   3600,
+		MaxAge:   myJwt.MaxAge,
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(w, &cookie)
 	http.Redirect(w, &r.Request, "/", http.StatusSeeOther)
-}
-
-func now() time.Time {
-	return time.Now()
 }
