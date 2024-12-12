@@ -32,6 +32,7 @@ main {
         font-size: 1rem;
         background-color: var(--input-background);
         transition: background-color 0.125s ease-in;
+        width: 300px;
 
         border: none;
         color: #fff;
