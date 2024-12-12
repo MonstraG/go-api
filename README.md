@@ -1,8 +1,3 @@
-# TODO:
-
-4. deploy on server
-5. see if it works :)
-
 ### Library docs
 
 - https://gorm.io/docs/
