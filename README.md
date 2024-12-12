@@ -1,6 +1,5 @@
 # TODO:
 
-3. generate tokens and require those in query to talk
 4. deploy on server
 5. see if it works :)
 
@@ -19,3 +18,28 @@ Generating secret for jwt tokens: `openssl rand -hex 32`
 
 - Don't forget to start docker: `sudo systemctl start docker`
 - run `build-and-log-size` in makefile
+
+### Other notes
+
+Default address is 0.0.0.0 not
+localhost [because docker](https://serverfault.com/questions/1084915/still-confused-why-docker-works-when-you-make-a-process-listen-to-0-0-0-0-but-no).
+
+When I, inevitably, would want to stop docker *container* and run the app straight:
+
+```shell
+docker container stop go-api
+```
+
+Will stop the server
+
+```shell
+docker system prune -a --volumes
+```
+
+Will delete all build artefacts from disk.
+
+And, just in case, list containers:
+
+```shell
+docker container list
+```

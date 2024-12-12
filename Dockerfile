@@ -15,7 +15,7 @@ FROM golang:1.23.4-alpine3.21 AS building-image
 WORKDIR /myapp
 
 # copy entire project there (except for what's listed in .dockerignore)
-COPY . .
+COPY --exclude=*.sqlite . .
 
 # install all dependencies (of which there are zero, but just as an example, I'll do that anyway)
 RUN go mod download
@@ -27,6 +27,9 @@ RUN CGO_ENABLED=0 go build -o go-server
 # General article about so called multi-stage patterns: https://medium.com/swlh/reducing-container-image-size-esp-for-go-applications-db7658e9063a
 FROM alpine:3.21 AS running-image
 
+# ensure sqlite is available on running-image
+RUN apk add --no-cache sqlite
+
 # copy everything from our folder (so, repo + built executable) from our building-image into the same folder but into the second image
 # also exclude all the source files, so the final build is even smaller (although it saves like 20kb)
 COPY --exclude=**/*.go --exclude=go.mod --from=building-image /myapp /myapp
@@ -37,6 +40,9 @@ EXPOSE 8080
 # cd to the folder again
 # if this is not done, relative paths inside of the app code will start from root, which is not what we want
 WORKDIR /myapp
+
+ # Declare a volume for persistent data
+VOLUME ["/myapp/data"]
 
 # tell docker what to run
 ENTRYPOINT ["/myapp/go-server"]
