@@ -3,13 +3,14 @@ package setup
 import (
 	"github.com/glebarez/sqlite"
 	"go-server/models"
+	"go-server/setup/appConfig"
 	"gorm.io/gorm"
 	"log"
 )
 
 const foreignKeySwitch = "?_pragma=foreign_keys(1)"
 
-func OpenDb(appConfig AppConfig) *gorm.DB {
+func OpenDb(appConfig appConfig.AppConfig) *gorm.DB {
 	if len(appConfig.DatabaseFile) == 0 {
 		log.Fatalf("Database file not specified")
 	}
@@ -27,7 +28,7 @@ func OpenDb(appConfig AppConfig) *gorm.DB {
 	return db
 }
 
-func seedDb(db *gorm.DB, appConfig AppConfig) {
+func seedDb(db *gorm.DB, appConfig appConfig.AppConfig) {
 	err := db.AutoMigrate(&models.User{})
 	if err != nil {
 		log.Fatalf("failed to migrate users:\n%v", err)

@@ -1,4 +1,4 @@
-package setup
+package appConfig
 
 import (
 	"encoding/json"

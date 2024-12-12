@@ -2,7 +2,7 @@ package notFound
 
 import (
 	"go-server/pages"
-	"go-server/setup"
+	"go-server/setup/reqRes"
 	"html/template"
 	"log"
 )
@@ -12,7 +12,7 @@ var notFoundPageData = pages.PageData{
 	PageTitle: "404: page not found",
 }
 
-func GetHandler(w setup.MyWriter, _ *setup.MyRequest) {
+func GetHandler(w reqRes.MyWriter, _ *reqRes.MyRequest) {
 	err := notFoundTemplate.Execute(w, notFoundPageData)
 	if err != nil {
 		log.Fatal("Failed to render 404 page:\n", err)

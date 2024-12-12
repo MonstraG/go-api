@@ -5,6 +5,7 @@ import (
 	"errors"
 	"go-server/models"
 	"go-server/pages/notFound"
+	"go-server/setup/reqRes"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
@@ -13,15 +14,15 @@ import (
 )
 
 // HandlerFn is an alias for http.HandlerFunc argument, but with my helpers.MyWriter
-type HandlerFn func(w MyWriter, r *MyRequest)
+type HandlerFn func(w reqRes.MyWriter, r *reqRes.MyRequest)
 
 // Middleware is just a HandlerFn that returns a HandlerFn
 type Middleware func(HandlerFn) HandlerFn
 
 func MyReqResWrapperMiddleware(next HandlerFn, app *App) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		myWriter := MyWriter{ResponseWriter: w}
-		myRequest := MyRequest{Request: *r, Db: app.db}
+		myWriter := reqRes.MyWriter{ResponseWriter: w}
+		myRequest := reqRes.MyRequest{Request: *r, Db: app.db}
 		next(myWriter, &myRequest)
 	}
 }
@@ -29,7 +30,7 @@ func MyReqResWrapperMiddleware(next HandlerFn, app *App) func(w http.ResponseWri
 // LoggingMiddleware is a Middleware that logs a hit and time taken to answer
 func LoggingMiddleware(next HandlerFn) HandlerFn {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile | log.LUTC)
-	return func(w MyWriter, r *MyRequest) {
+	return func(w reqRes.MyWriter, r *reqRes.MyRequest) {
 		start := time.Now()
 		log.Printf("Started %s %s", r.Method, r.URL.Path)
 		next(w, r)
@@ -40,7 +41,7 @@ func LoggingMiddleware(next HandlerFn) HandlerFn {
 // HtmxPartialMiddleware guards against direct browser navigations to partials
 // It returns notFound if request wasn't made by htmx (Hx-Request header)
 func HtmxPartialMiddleware(next HandlerFn) HandlerFn {
-	return func(w MyWriter, r *MyRequest) {
+	return func(w reqRes.MyWriter, r *reqRes.MyRequest) {
 		isHtmxRequest := r.Header.Get("Hx-Request") == "true"
 		if !isHtmxRequest {
 			notFound.GetHandler(w, r)
@@ -54,7 +55,7 @@ func HtmxPartialMiddleware(next HandlerFn) HandlerFn {
 // CreateBasicAuthMiddleware returns middleware that requires basic auth
 func CreateBasicAuthMiddleware(app App) Middleware {
 	return func(next HandlerFn) HandlerFn {
-		return func(w MyWriter, r *MyRequest) {
+		return func(w reqRes.MyWriter, r *reqRes.MyRequest) {
 			if r.URL.Path == "/login" ||
 				strings.HasPrefix(r.URL.Path, "/public") {
 				next(w, r)
@@ -96,7 +97,7 @@ func CreateBasicAuthMiddleware(app App) Middleware {
 }
 
 // todo: remember url?
-func redirectToLogin(w MyWriter) {
+func redirectToLogin(w reqRes.MyWriter) {
 	w.Header().Set("Location", `/login`)
 	w.WriteHeader(http.StatusTemporaryRedirect)
 }

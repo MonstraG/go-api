@@ -9,6 +9,12 @@
 - https://gorm.io/docs/
 - https://golang-jwt.github.io/jwt/usage/create/
 
+### Concept docs
+
+- https://jwt.io/introduction
+
+Generating secret for jwt tokens: `openssl rand -hex 32`
+
 ### Building
 
 - Don't forget to start docker: `sudo systemctl start docker`

@@ -5,15 +5,16 @@ import (
 	"errors"
 	"go-server/models"
 	"go-server/pages"
-	"go-server/setup"
+	"go-server/setup/reqRes"
 	"gorm.io/gorm"
 	"html/template"
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
-func GetHandler(w setup.MyWriter, _ *setup.MyRequest) {
+func GetHandler(w reqRes.MyWriter, _ *reqRes.MyRequest) {
 	var indexTemplate = template.Must(template.ParseFiles("pages/login/login.gohtml"))
 	var indexPageData = pages.PageData{
 		PageTitle: "Homepage",
@@ -25,7 +26,7 @@ func GetHandler(w setup.MyWriter, _ *setup.MyRequest) {
 	}
 }
 
-func PostHandler(w setup.MyWriter, r *setup.MyRequest) {
+func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	err := r.ParseForm()
 	if err != nil {
 		log.Printf("Failed to parse form:\n%v", err)
@@ -58,5 +59,23 @@ func PostHandler(w setup.MyWriter, r *setup.MyRequest) {
 	}
 
 	ok := user.CheckPasswordHash(password)
+	if !ok {
+		// wrong password
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
 
+	jwtToken, err := createJwt(user, r.AppConfig, now)
+	if err != nil {
+		log.Printf("Error generating jwt token for user '%v':\n%v\n", lowercaseUsername, result.Error)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	_ = jwtToken
+	w.WriteHeader(http.StatusOK)
+}
+
+func now() time.Time {
+	return time.Now()
 }

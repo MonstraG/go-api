@@ -5,15 +5,15 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"go-server/setup"
+	"go-server/setup/reqRes"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 )
 
-func PublicHandler(w setup.MyWriter, r *setup.MyRequest) {
-	lw := setup.MyWriter{ResponseWriter: w}
+func PublicHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+	lw := reqRes.MyWriter{ResponseWriter: w}
 	pathQueryParam := r.PathValue("path")
 	filename := filepath.Join("public", pathQueryParam)
 	fileInfo, err := os.Stat(filename)
