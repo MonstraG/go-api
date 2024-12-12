@@ -11,7 +11,7 @@ import (
 
 const issuer = "go-api"
 const Cookie = "jwtToken"
-const MaxAge = 3600
+const MaxAge = 3600 * 24
 
 type MyJwt struct {
 	now func() time.Time
