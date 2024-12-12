@@ -45,4 +45,4 @@ WORKDIR /myapp
 VOLUME ["/myapp/data"]
 
 # tell docker what to run
-ENTRYPOINT ["/myapp/go-server", "--config", "data/config.json"]
+ENTRYPOINT ["/myapp/go-server",  "--config", "/myapp/data/config.json"]
