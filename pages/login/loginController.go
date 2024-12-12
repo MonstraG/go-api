@@ -2,7 +2,6 @@ package login
 
 import (
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"go-server/models"
 	"go-server/pages"
@@ -73,20 +72,17 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-
-	type jwtDTO struct {
-		jwt string
+	cookie := http.Cookie{
+		Name:     "jwtToken",
+		Value:    jwtToken,
+		Path:     "/",
+		MaxAge:   3600,
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteLaxMode,
 	}
-
-	payload := jwtDTO{jwt: jwtToken}
-
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(payload)
-	if err != nil {
-		log.Printf("Error writign response:\n%v", result.Error)
-		w.WriteHeader(http.StatusInternalServerError)
-	}
+	http.SetCookie(w, &cookie)
+	http.Redirect(w, &r.Request, "/", http.StatusSeeOther)
 }
 
 func now() time.Time {
