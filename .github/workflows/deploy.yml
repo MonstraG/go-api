@@ -1,0 +1,57 @@
+name: Auto Deploy
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t go-api .
+
+      - name: Save Docker image to tar file
+        run: |
+          docker save go-api | gzip > go-api.tar.gz
+
+      - name: Upload image to VPS via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          source: "go-api.tar.gz"
+          target: "/home/${{ secrets.VPS_USERNAME }}/docker-images"
+
+      - name: SSH into VPS and deploy
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            # Navigate to the target directory where the image was uploaded
+            cd /home/${{ secrets.VPS_USERNAME }}/docker-images
+
+            # Load the Docker image from the tar file
+            docker load < go-api.tar.gz
+
+            # Stop and remove the old container if running
+            docker stop go-api-container || true
+            docker rm go-api-container || true
+
+            # Run the new container with the loaded image
+            docker run -d --name go-api-container -p 8080:8080 -v /home/${{ secrets.VPS_USERNAME }}/data:/myapp/data go-api
