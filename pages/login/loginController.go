@@ -17,7 +17,7 @@ import (
 func GetHandler(w reqRes.MyWriter, _ *reqRes.MyRequest) {
 	var indexTemplate = template.Must(template.ParseFiles("pages/login/login.gohtml"))
 	var indexPageData = pages.PageData{
-		PageTitle: "Homepage",
+		PageTitle: "Login",
 	}
 
 	err := indexTemplate.Execute(w, indexPageData)
