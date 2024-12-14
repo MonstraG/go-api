@@ -32,3 +32,7 @@ func PongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	websockets.HubSingleton.Broadcast("pong")
 	w.WriteHeader(http.StatusOK)
 }
+
+func GetSongsHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+
+}

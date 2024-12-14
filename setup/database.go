@@ -38,6 +38,10 @@ func seedDb(db *gorm.DB, appConfig appConfig.AppConfig) {
 	if err != nil {
 		log.Fatalf("failed to migrate songs:\n%v\n", err)
 	}
+	err = db.AutoMigrate(&models.SongQueueItem{})
+	if err != nil {
+		log.Fatalf("failed to migrate songQueues:\n%v\n", err)
+	}
 
 	passwordHash, err := models.HashPassword(appConfig.DefaultUser.Password)
 	if err != nil {
