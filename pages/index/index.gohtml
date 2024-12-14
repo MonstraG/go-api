@@ -1,4 +1,50 @@
+{{define "head"}}
+    <script>
+		document.addEventListener("DOMContentLoaded", () => {
+			console.debug("ready");
+
+			/**
+			 * @type {HTMLFormElement}
+			 */
+			const form = document.getElementById("music");
+			form.addEventListener("submit", (event) => {
+				event.preventDefault();
+
+				const formData = new FormData(form);
+				console.debug("Sending form", { formData: Object.fromEntries(formData.entries()) });
+
+				const button = event.submitter;
+				button.disabled = true;
+
+				fetch("/music", {
+					method: "POST",
+					body: formData,
+					credentials: "include"
+				}).then((response) => {
+					if (!response.ok) {
+						return;
+					}
+
+					form.reset();
+				}).catch((error) => {
+					console.error("Failed to send music", error);
+				}).finally(() => {
+					button.disabled = false;
+				});
+
+			});
+		});
+    </script>
+{{end}}
+
 {{define "content"}}
     <h1>Homepage</h1>
-    <p>This is a home page and doesn't have any <code>htmx</code> content.</p>
+    <form id="music">
+        <div class="form-control">
+            <label for="songUrl">Song</label>
+            <input type="text" id="songUrl" name="songUrl" required>
+        </div>
+
+        <button type="submit">Add</button>
+    </form>
 {{end}}

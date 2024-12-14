@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// HandlerFn is an alias for http.HandlerFunc argument, but with my helpers.MyWriter
+// HandlerFn is an alias for http.HandlerFunc argument, but with my ytDlp.MyWriter
 type HandlerFn func(w reqRes.MyWriter, r *reqRes.MyRequest)
 
 // Middleware is just a HandlerFn that returns a HandlerFn
@@ -77,7 +77,7 @@ func CreateBasicAuthMiddleware(app App) Middleware {
 	}
 }
 
-// todo: remember current url?
+// todo: remember current ytDlp?
 func redirectToLogin(w reqRes.MyWriter) {
 	w.Header().Set("Location", `/login`)
 	w.WriteHeader(http.StatusTemporaryRedirect)
