@@ -1,8 +1,6 @@
 {{define "head"}}
     <script>
-		document.addEventListener("DOMContentLoaded", () => {
-			console.debug("ready");
-
+		function registerAddSongSubmitter() {
 			/**
 			 * @type {HTMLFormElement}
 			 */
@@ -32,6 +30,23 @@
 					button.disabled = false;
 				});
 			});
+		}
+
+		function initWebsockets() {
+			const webSocket = new WebSocket(`ws://${document.location.host}/ws`);
+			webSocket.addEventListener("error", (error) => {
+				console.error("websocket error:", error);
+			});
+			webSocket.addEventListener("message", (event) => {
+				console.debug("Received message:", event.data);
+			});
+			console.debug("websockets started");
+		}
+
+		document.addEventListener("DOMContentLoaded", () => {
+			console.debug("ready");
+			registerAddSongSubmitter();
+			initWebsockets();
 		});
     </script>
 {{end}}

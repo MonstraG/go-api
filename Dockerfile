@@ -28,8 +28,7 @@ RUN CGO_ENABLED=0 go build -o go-server
 FROM alpine:3.21 AS running-image
 
 # ensure sqlite is available on running-image
-RUN apk add --no-cache  \
-    sqlite
+RUN apk add --no-cache sqlite
 
 # Add the pre-built yt-dlp binary
 ADD https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux /usr/local/bin/yt-dlp

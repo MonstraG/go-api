@@ -34,6 +34,11 @@ func seedDb(db *gorm.DB, appConfig appConfig.AppConfig) {
 		log.Fatalf("failed to migrate users:\n%v\n", err)
 	}
 
+	err = db.AutoMigrate(&models.Song{})
+	if err != nil {
+		log.Fatalf("failed to migrate songs:\n%v\n", err)
+	}
+
 	passwordHash, err := models.HashPassword(appConfig.DefaultUser.Password)
 	if err != nil {
 		log.Fatalf("Failed to hash default user password:\n%v\n", err)

@@ -1,7 +1,10 @@
 package reqRes
 
 import (
+	"bufio"
+	"errors"
 	"log"
+	"net"
 	"net/http"
 )
 
@@ -20,4 +23,12 @@ func (w MyWriter) WriteSilent(content []byte) {
 func (w MyWriter) WriteResponse(status int, content []byte) {
 	w.WriteHeader(status)
 	w.WriteSilent(content)
+}
+
+func (w MyWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	h, ok := w.ResponseWriter.(http.Hijacker)
+	if !ok {
+		return nil, nil, errors.New("hijack not supported")
+	}
+	return h.Hijack()
 }

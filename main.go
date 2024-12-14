@@ -5,6 +5,7 @@ import (
 	"go-server/pages/index"
 	"go-server/pages/login"
 	"go-server/pages/music"
+	"go-server/pages/music/websockets"
 	"go-server/pages/notFound"
 	"go-server/setup"
 	"go-server/setup/appConfig"
@@ -32,6 +33,8 @@ func mapRoutes(app *setup.App) {
 	app.HandleFunc("POST /music", music.PostHandler)
 	app.HandleFunc("GET /login", login.GetHandler)
 	app.HandleFunc("POST /login", login.PostHandler)
+
+	app.HandleFunc("GET /ws", websockets.HubSingleton.ServeWs)
 
 	// resources
 	app.HandleFunc("GET /public/{path...}", pages.PublicHandler)

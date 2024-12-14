@@ -2,3 +2,5 @@ data.sqlite
 config.json
 # air dir
 /tmp
+# data folder
+/data

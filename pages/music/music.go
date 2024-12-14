@@ -1,7 +1,6 @@
 package music
 
 import (
-	"fmt"
 	"go-server/pages/music/ytDlp"
 	"go-server/setup/reqRes"
 	"log"
@@ -16,10 +15,6 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 		return
 	}
 
-	for key, value := range r.Form {
-		fmt.Printf("%s: %s\n", key, value)
-	}
-
 	songUrl := r.Form.Get("songUrl")
 	if songUrl == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -29,5 +24,5 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 
 	sanitizedUrl := ytDlp.SanitizeUrl(songUrl)
 
-	ytDlp.Download(sanitizedUrl)
+	ytDlp.Download(sanitizedUrl, r.AppConfig, r.Db)
 }

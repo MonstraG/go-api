@@ -12,7 +12,7 @@ type AppConfig struct {
 	DatabaseFile string      `json:"databaseFile"`
 	DefaultUser  DefaultUser `json:"defaultUser"`
 	JWTSecret    string      `json:"jwtSecret"`
-	SongsFolder  string      `json:"songFolder"`
+	SongsFolder  string      `json:"songsFolder"`
 }
 
 type DefaultUser struct {
