@@ -54,7 +54,7 @@ type Client struct {
 // reads from this goroutine.
 func (c *Client) readPump() {
 	defer func() {
-		c.hub.unregister <- c
+		c.hub.UnRegisterClient(c)
 		err := c.conn.Close()
 		if err != nil {
 			log.Printf("Error closing websocket connection: \n%v\n", err)
