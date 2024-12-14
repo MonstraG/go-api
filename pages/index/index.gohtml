@@ -37,16 +37,35 @@
 			webSocket.addEventListener("error", (error) => {
 				console.error("websocket error:", error);
 			});
+			webSocket.addEventListener("open", () => {
+				console.debug("websockets opened");
+			});
+			webSocket.addEventListener("close", () => {
+				console.debug("websockets closed");
+			});
 			webSocket.addEventListener("message", (event) => {
 				console.debug("Received message:", event.data);
 			});
-			console.debug("websockets started");
+		}
+
+		function initPingButton() {
+			/**
+			 * @type {HTMLButtonElement}
+			 */
+			const button = document.getElementById("ping");
+			button.addEventListener("click", () => {
+				fetch("/ping", {
+					method: "POST",
+					credentials: "include"
+				});
+			});
 		}
 
 		document.addEventListener("DOMContentLoaded", () => {
 			console.debug("ready");
 			registerAddSongSubmitter();
 			initWebsockets();
+			initPingButton();
 		});
     </script>
 {{end}}
@@ -60,4 +79,7 @@
 
         <button type="submit">Add</button>
     </form>
+    <button type="button" id="ping">
+        ping?
+    </button>
 {{end}}

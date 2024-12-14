@@ -69,6 +69,6 @@ func Download(url string, config appConfig.AppConfig, db *gorm.DB) {
 		}
 
 		log.Printf("Finished downloading song \n")
-		websockets.HubSingleton.Broadcast([]byte("song"))
+		websockets.HubSingleton.Broadcast("song")
 	}()
 }

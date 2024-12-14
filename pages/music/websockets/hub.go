@@ -58,8 +58,8 @@ func (hub *Hub) run() {
 	}
 }
 
-func (hub *Hub) Broadcast(message []byte) {
-	hub.broadcast <- message
+func (hub *Hub) Broadcast(message string) {
+	hub.broadcast <- []byte(message)
 }
 
 // ServeWs handles websocket requests from the peer.
