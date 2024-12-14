@@ -62,7 +62,6 @@ func CreateBasicAuthMiddleware(app App) Middleware {
 	}
 }
 
-// todo: remember current ytDlp?
 func redirectToLogin(w reqRes.MyWriter) {
 	w.Header().Set("Location", `/login`)
 	w.WriteHeader(http.StatusTemporaryRedirect)
