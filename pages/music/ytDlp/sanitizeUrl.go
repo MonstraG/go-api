@@ -31,10 +31,7 @@ func getSongId(url string) (string, error) {
 	return url[index+2:], nil
 }
 
-const ytDlpBinary = "yt-dlp"
-const fileNamePattern = "%(id)s-%(duration)s.%(ext)s"
-
-func GetDuration(id string, config appConfig.AppConfig) int {
+func getDuration(id string, config appConfig.AppConfig) int {
 	files, err := os.ReadDir(config.SongsFolder)
 	for _, file := range files {
 		fileNameWithExtension := file.Name()
@@ -56,6 +53,9 @@ func GetDuration(id string, config appConfig.AppConfig) int {
 	return 0
 }
 
+const ytDlpBinary = "yt-dlp"
+const fileNamePattern = "%(id)s-%(duration)s.%(ext)s"
+
 func Download(url string, config appConfig.AppConfig, db *gorm.DB) {
 	log.Println("Starting song download")
 	id, err := getSongId(url)
@@ -68,7 +68,7 @@ func Download(url string, config appConfig.AppConfig, db *gorm.DB) {
 	outputFile := filepath.Join(config.SongsFolder, fileNamePattern)
 	log.Printf("Destination: %s\n", outputFile)
 
-	command := exec.Command(ytDlpBinary, []string{url, "-x", "-o", outputFile}...)
+	command := exec.Command(ytDlpBinary, []string{url, "-x", "--embed-metadata", "--embed-thumbnail", "-o", outputFile}...)
 	command.Stdout = os.Stdout
 	err = command.Start()
 	if err != nil {
@@ -82,7 +82,7 @@ func Download(url string, config appConfig.AppConfig, db *gorm.DB) {
 			return
 		}
 
-		duration := GetDuration(id, config)
+		duration := getDuration(id, config)
 		if duration == 0 {
 			return
 		}
