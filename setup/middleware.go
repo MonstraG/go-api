@@ -1,7 +1,6 @@
 package setup
 
 import (
-	"go-server/pages/notFound"
 	"go-server/setup/myJwt"
 	"go-server/setup/reqRes"
 	"log"
@@ -32,20 +31,6 @@ func LoggingMiddleware(next HandlerFn) HandlerFn {
 		log.Printf("Started %s %s", r.Method, r.URL.Path)
 		next(w, r)
 		log.Printf("Completed %s %s in %v", r.Method, r.URL.Path, time.Since(start))
-	}
-}
-
-// HtmxPartialMiddleware guards against direct browser navigations to partials
-// It returns notFound if request wasn't made by htmx (Hx-Request header)
-func HtmxPartialMiddleware(next HandlerFn) HandlerFn {
-	return func(w reqRes.MyWriter, r *reqRes.MyRequest) {
-		isHtmxRequest := r.Header.Get("Hx-Request") == "true"
-		if !isHtmxRequest {
-			notFound.GetHandler(w, r)
-			return
-		}
-
-		next(w, r)
 	}
 }
 
