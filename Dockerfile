@@ -29,13 +29,10 @@ FROM alpine:3.21 AS running-image
 
 # ensure sqlite is available on running-image
 RUN apk add --no-cache  \
-    sqlite \
-    python3 \
-    py3-pip \
-    ffmpeg
+    sqlite
 
-# Install yt-dlp
-RUN pip3 install yt-dlp
+# Add the pre-built yt-dlp binary
+ADD https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux /usr/local/bin/yt-dlp
 
 # copy everything from our folder (so, repo + built executable) from our building-image into the same folder but into the second image
 # also exclude all the source files, so the final build is even smaller (although it saves like 20kb)
