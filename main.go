@@ -30,7 +30,8 @@ func main() {
 func mapRoutes(app *setup.App) {
 	app.HandleFunc("GET /", notFound.GetHandler)
 	app.HandleFunc("GET /{$}", index.GetHandler)
-	app.HandleFunc("POST /music", music.PostHandler)
+	app.HandleFunc("POST /songQueue", music.PostHandler)
+	app.HandleFunc("GET /songQueue", music.GetSongQueueHandler)
 	app.HandleFunc("POST /ping", music.PongHandler)
 	app.HandleFunc("GET /login", login.GetHandler)
 	app.HandleFunc("POST /login", login.PostHandler)

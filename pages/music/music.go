@@ -1,12 +1,15 @@
 package music
 
 import (
+	"encoding/json"
+	"fmt"
 	"go-server/models"
 	"go-server/pages/music/websockets"
 	"go-server/pages/music/ytDlp"
 	"go-server/setup/reqRes"
 	"log"
 	"net/http"
+	"time"
 )
 
 func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
@@ -34,21 +37,40 @@ func PongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func GetSongsHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
-	var users []models.SongQueueItem
-	result := r.Db.Joins("Song").Find(users)
+const startDelay = 10 * time.Second
+
+func GetSongQueueHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+	var songQueueItems []models.SongQueueItem
+	result := r.Db.Joins("Song").Find(songQueueItems)
 	if result.Error != nil {
 		log.Printf("Failed to get song queue: \n%v\n", result.Error)
 	}
 
 	type SongQueueItemDTO struct {
-		SongId   int `json:"songId"`
-		Duration int `json:"duration"`
+		QueueItemId uint      `json:"queueItemId"`
+		SongId      uint      `json:"songId"`
+		StartsAt    time.Time `json:"startsAt"`
 	}
 
+	songCount := len(songQueueItems)
+	songQueueItemDTOs := make([]SongQueueItemDTO, songCount)
+	for index, songQueueItem := range songQueueItems {
+		songQueueItemDTOs[index] = SongQueueItemDTO{
+			QueueItemId: songQueueItem.ID,
+			SongId:      songQueueItem.SongId,
+			StartsAt:    songQueueItem.CreatedAt.Add(startDelay),
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(&songQueueItemDTOs)
+	if err != nil {
+		// todo: use this pattern everywhere
+		message := fmt.Sprintf("Failed to encode song queue:\n%v\n", err)
+		http.Error(w, message, http.StatusInternalServerError)
+	}
 }
 
 func GetSongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	//var song []models.Song
-
 }

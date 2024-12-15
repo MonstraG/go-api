@@ -14,7 +14,7 @@
 				const button = event.submitter;
 				button.disabled = true;
 
-				fetch("/music", {
+				fetch("/songQueue", {
 					method: "POST",
 					body: formData,
 					credentials: "include"
