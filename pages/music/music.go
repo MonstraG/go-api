@@ -32,7 +32,7 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	ytDlp.Download(sanitizedUrl, r.AppConfig, r.Db)
 }
 
-func PongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func PongHandler(w reqRes.MyWriter, _ *reqRes.MyRequest) {
 	websockets.HubSingleton.Broadcast("pong")
 	w.WriteHeader(http.StatusOK)
 }
