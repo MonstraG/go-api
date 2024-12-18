@@ -1,7 +1,6 @@
 package setup
 
 import (
-	"go-server/pages/notFound"
 	"go-server/setup/myJwt"
 	"go-server/setup/reqRes"
 	"log"
@@ -35,22 +34,7 @@ func LoggingMiddleware(next HandlerFn) HandlerFn {
 	}
 }
 
-// HtmxPartialMiddleware guards against direct browser navigations to partials
-// It returns notFound if request wasn't made by htmx (Hx-Request header)
-func HtmxPartialMiddleware(next HandlerFn) HandlerFn {
-	return func(w reqRes.MyWriter, r *reqRes.MyRequest) {
-		isHtmxRequest := r.Header.Get("Hx-Request") == "true"
-		if !isHtmxRequest {
-			notFound.GetHandler(w, r)
-			return
-		}
-
-		next(w, r)
-	}
-}
-
-// CreateBasicAuthMiddleware returns middleware that requires basic auth
-func CreateBasicAuthMiddleware(app App) Middleware {
+func CreateJwtAuthMiddleware(app App) Middleware {
 	return func(next HandlerFn) HandlerFn {
 		return func(w reqRes.MyWriter, r *reqRes.MyRequest) {
 			if r.URL.Path == "/login" ||

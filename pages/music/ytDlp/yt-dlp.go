@@ -31,14 +31,12 @@ func getSongId(url string) (string, error) {
 	return url[index+2:], nil
 }
 
-func findSongFilename(id string, config appConfig.AppConfig) string {
+func findSongFilenameWithExtension(id string, config appConfig.AppConfig) string {
 	files, err := os.ReadDir(config.SongsFolder)
 	for _, file := range files {
 		fileNameWithExtension := file.Name()
 		if strings.HasPrefix(fileNameWithExtension, id) {
-			extension := filepath.Ext(fileNameWithExtension)
-			fileName := strings.TrimSuffix(fileNameWithExtension, extension)
-			return fileName
+			return fileNameWithExtension
 		}
 	}
 	if err != nil {
@@ -50,10 +48,13 @@ func findSongFilename(id string, config appConfig.AppConfig) string {
 }
 
 func getSongModel(id string, config appConfig.AppConfig) *models.Song {
-	filename := findSongFilename(id, config)
-	if filename == "" {
+	fileNameWithExtension := findSongFilenameWithExtension(id, config)
+	if fileNameWithExtension == "" {
 		return nil
 	}
+
+	extension := filepath.Ext(fileNameWithExtension)
+	filename := strings.TrimSuffix(fileNameWithExtension, extension)
 
 	filenameParts := strings.Split(filename, "|")
 	if len(filenameParts) != 3 {
@@ -73,6 +74,7 @@ func getSongModel(id string, config appConfig.AppConfig) *models.Song {
 		YoutubeId: id,
 		Duration:  duration,
 		Title:     title,
+		File:      fileNameWithExtension,
 	}
 }
 

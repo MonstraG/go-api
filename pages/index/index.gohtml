@@ -70,6 +70,10 @@
 			</form>
 		</section>
 		<section>
+			<h2>Current song</h2>
+			<div hx-get="/song/current" hx-trigger="ev"/>
+		</section>
+		<section>
 			<h2>Song queue</h2>
 			<div hx-get="/songQueue" hx-trigger="every 2s"></div>
 		</section>
