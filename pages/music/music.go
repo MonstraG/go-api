@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"go-server/models"
-	"go-server/pages/music/websockets"
 	"go-server/pages/music/ytDlp"
 	"go-server/setup/reqRes"
 	"log"
@@ -30,11 +29,6 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	sanitizedUrl := ytDlp.SanitizeUrl(songUrl)
 
 	ytDlp.Download(sanitizedUrl, r.AppConfig, r.Db)
-}
-
-func PongHandler(w reqRes.MyWriter, _ *reqRes.MyRequest) {
-	websockets.HubSingleton.Broadcast("pong")
-	w.WriteHeader(http.StatusOK)
 }
 
 const startDelay = 10 * time.Second

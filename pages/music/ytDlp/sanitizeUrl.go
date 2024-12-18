@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"go-server/models"
-	"go-server/pages/music/websockets"
 	"go-server/setup/appConfig"
 	"gorm.io/gorm"
 	"log"
@@ -110,6 +109,5 @@ func Download(url string, config appConfig.AppConfig, db *gorm.DB) {
 		}
 
 		log.Printf("Finished downloading song \n")
-		websockets.HubSingleton.Broadcast("song")
 	}()
 }

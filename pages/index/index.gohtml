@@ -33,40 +33,9 @@
 			});
 		}
 
-		function initWebsockets() {
-			const webSocket = new WebSocket(`ws://${document.location.host}/ws`);
-			webSocket.addEventListener("error", (error) => {
-				console.error("websocket error:", error);
-			});
-			webSocket.addEventListener("open", () => {
-				console.debug("websockets opened");
-			});
-			webSocket.addEventListener("close", () => {
-				console.debug("websockets closed");
-			});
-			webSocket.addEventListener("message", (event) => {
-				console.debug("Received message:", event.data);
-			});
-		}
-
-		function initPingButton() {
-			/**
-			 * @type {HTMLButtonElement}
-			 */
-			const button = document.getElementById("ping");
-			button.addEventListener("click", () => {
-				fetch("/ping", {
-					method: "POST",
-					credentials: "include"
-				});
-			});
-		}
-
 		document.addEventListener("DOMContentLoaded", () => {
 			console.debug("ready");
 			registerAddSongSubmitter();
-			initWebsockets();
-			initPingButton();
 		});
 	</script>
 {{end}}
