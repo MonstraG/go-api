@@ -2,6 +2,7 @@ package models
 
 import (
 	"gorm.io/gorm"
+	"time"
 )
 
 type Song struct {
@@ -12,6 +13,8 @@ type Song struct {
 
 type SongQueueItem struct {
 	gorm.Model
-	SongId uint
-	Song   Song
+	SongId   uint
+	Song     Song
+	StartsAt time.Time
+	EndsAt   time.Time
 }

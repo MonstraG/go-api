@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func SanitizeUrl(url string) string {
@@ -55,6 +56,8 @@ func getDuration(id string, config appConfig.AppConfig) int {
 const ytDlpBinary = "yt-dlp"
 const fileNamePattern = "%(id)s-%(duration)s.%(ext)s"
 
+const startDelay = 10 * time.Second
+
 func Download(url string, config appConfig.AppConfig, db *gorm.DB) {
 	log.Println("Starting song download")
 	id, err := getSongId(url)
@@ -86,7 +89,10 @@ func Download(url string, config appConfig.AppConfig, db *gorm.DB) {
 			return
 		}
 
-		song := &models.Song{YoutubeId: id, Duration: duration}
+		song := &models.Song{
+			YoutubeId: id,
+			Duration:  duration,
+		}
 		result := db.FirstOrCreate(song)
 		if result.Error != nil {
 			log.Printf("Failed to save song:\n%v\n", result.Error)
@@ -95,8 +101,11 @@ func Download(url string, config appConfig.AppConfig, db *gorm.DB) {
 			log.Printf("Failed to save song: 0 rows affected\n")
 		}
 
+		startsAt := time.Now().Add(startDelay)
 		songQueueItem := &models.SongQueueItem{
-			SongId: song.ID,
+			SongId:   song.ID,
+			StartsAt: startsAt,
+			EndsAt:   startsAt.Add(time.Duration(duration) * time.Second),
 		}
 		result = db.Create(songQueueItem)
 		if result.Error != nil {

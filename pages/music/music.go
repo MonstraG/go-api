@@ -31,14 +31,14 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	ytDlp.Download(sanitizedUrl, r.AppConfig, r.Db)
 }
 
-const startDelay = 10 * time.Second
-
 var songQueueTemplate = template.Must(template.ParseFiles("pages/music/songQueue.gohtml"))
 var songQueueEmptyTemplate = template.Must(template.ParseFiles("pages/music/songQueueEmpty.gohtml"))
 
 func GetSongQueueHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+	now := time.Now()
+
 	var songQueueItems []models.SongQueueItem
-	result := r.Db.Joins("Song").Find(&songQueueItems)
+	result := r.Db.Joins("Song").Where("ends_at > ?", now).Find(&songQueueItems)
 	if result.Error != nil {
 		log.Printf("Failed to get song queue: \n%v\n", result.Error)
 	}
@@ -55,16 +55,26 @@ func GetSongQueueHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 
 	type SongQueueItemDTO struct {
 		Song     string
-		StartsAt time.Time `json:"startsAt"`
+		Duration time.Duration
+		StartsIn time.Duration
+		EndsIn   time.Duration
 	}
 
 	songCount := len(songQueueItems)
 	songs := make([]SongQueueItemDTO, songCount)
 	for index, songQueueItem := range songQueueItems {
-		songs[index] = SongQueueItemDTO{
+		songItem := SongQueueItemDTO{
 			Song:     songQueueItem.Song.YoutubeId,
-			StartsAt: songQueueItem.CreatedAt.Add(startDelay),
+			Duration: (time.Duration(songQueueItem.Song.Duration) * time.Second).Truncate(time.Second),
 		}
+
+		songItem.StartsIn = songQueueItem.StartsAt.Sub(now).Truncate(time.Second)
+		if songItem.StartsIn < 0 {
+			songItem.StartsIn = 0
+		}
+		songItem.EndsIn = songQueueItem.EndsAt.Sub(now).Truncate(time.Second)
+
+		songs[index] = songItem
 	}
 
 	type List struct {

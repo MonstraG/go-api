@@ -1,7 +1,36 @@
-<ol>
+<table>
+	<thead>
+	<tr>
+		<th>
+			Song
+		</th>
+		<th>
+			Duration
+		</th>
+		<th>
+			Starts in
+		</th>
+		<th>
+			Ends in
+		</th>
+	</tr>
+	</thead>
+	<tbody>
     {{range .Songs}}
-		<li>
-			<span>{{.Song}} {{.StartsAt}}</span>
-		</li>
+		<tr>
+			<td>
+                {{.Song}}
+			</td>
+			<td>
+                {{.Duration}}
+			</td>
+			<td>
+                {{.StartsIn}}
+			</td>
+			<td>
+                {{.EndsIn}}
+			</td>
+		</tr>
     {{end}}
-</ol>
+	</tbody>
+</table>
