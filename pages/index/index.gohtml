@@ -28,8 +28,6 @@
 				event.preventDefault();
 
 				const formData = new FormData(form);
-				console.debug("Sending form", { formData: Object.fromEntries(formData.entries()) });
-
 				const button = event.submitter;
 				button.disabled = true;
 
@@ -55,6 +53,19 @@
 		document.addEventListener("DOMContentLoaded", () => {
 			console.debug("ready");
 			registerAddSongSubmitter();
+
+			htmx.on("htmx:afterRequest", (/** @type {Event} */ event) => {
+				if (event.detail.elt.id === "songQueue") {
+					/** @type {HTMLTableRowElement | null} */
+					const firstRow = event.detail.elt.querySelector("tbody tr");
+					if (firstRow == null) {
+						return;
+					}
+
+					const dataset = firstRow.dataset;
+					const currentSongId = dataset["id"];
+				}
+			});
 		});
 	</script>
 {{end}}
@@ -75,11 +86,11 @@
 		</section>
 		<section>
 			<h2>Player</h2>
-			<div hx-get="/song/current" hx-trigger="ev" id="player"></div>
+			<div hx-get="/player" hx-trigger="ev" id="player"></div>
 		</section>
 		<section>
 			<h2>Song queue</h2>
-			<div hx-get="/songQueue" hx-trigger="every 2s"></div>
+			<div hx-get="/songQueue" hx-trigger="every 2s" id="songQueue"></div>
 		</section>
 	</article>
 {{end}}
