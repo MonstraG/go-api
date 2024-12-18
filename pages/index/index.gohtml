@@ -61,51 +61,11 @@
 			});
 		}
 
-		function initGetSongQueueButton() {
-			/**
-			 * @type {HTMLButtonElement}
-			 */
-			const button = document.getElementById("getSongQueue");
-			button.addEventListener("click", () => {
-				fetch("/getSongQueue", {
-					credentials: "include"
-				}).then(async (response) => {
-					if (!response.ok) {
-						console.error("Failed to get song queue");
-						const body = await response.text();
-						console.error("Response body:", body);
-						return;
-					}
-
-					/**
-					 * @typedef {Object} SongQueueItemDTO
-					 * @property {number} queueSongId
-					 * @property {number} songId
-					 * @property {string} startsAt
-					 */
-
-					/**
-					 * @type {SongQueueItemDTO[]}
-					 */
-					const songQueueItems = await response.json();
-					console.log(songQueueItems);
-				}).catch((error) => {
-					console.error("Song queue fetch failed");
-					console.error(error);
-				});
-
-			});
-		}
-
-		function initQueueDisplay() {
-		}
-
 		document.addEventListener("DOMContentLoaded", () => {
 			console.debug("ready");
 			registerAddSongSubmitter();
 			initWebsockets();
 			initPingButton();
-			initGetSongQueueButton();
 		});
     </script>
 {{end}}
@@ -121,9 +81,6 @@
     </form>
     <button type="button" id="ping">
         ping?
-    </button>
-    <button type="button" id="getSongQueue">
-        get song queue
     </button>
     <div id="songQueue">
 
