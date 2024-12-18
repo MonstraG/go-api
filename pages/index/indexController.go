@@ -7,7 +7,11 @@ import (
 	"log"
 )
 
-var indexTemplate = template.Must(template.ParseFiles("pages/base.gohtml", "pages/index/index.gohtml"))
+var indexTemplate = template.Must(template.ParseFiles(
+	"pages/base.gohtml",
+	"pages/nav.gohtml",
+	"pages/index/index.gohtml",
+))
 var indexPageData = pages.PageData{
 	PageTitle: "Homepage",
 }

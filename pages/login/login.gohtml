@@ -1,36 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{.PageTitle}}</title>
-    <link rel="icon" href="/public/favicon.ico" sizes="48x48">
-    <link rel="icon" href="/public/favicon.svg" sizes="any" type="image/svg+xml">
-    <script src="/public/htmx.min.js" defer></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-          rel="stylesheet">
-    <link rel="stylesheet" href="/public/styles.css">
-    <link rel="stylesheet" href="/public/reset.css">
-    <link rel="stylesheet" href="/public/login.css">
-</head>
-<body>
-<main>
-    <form class="login-form card" action="/login" method="post">
-        <h1>Login</h1>
+{{define "head"}}
+	<style>
+		main {
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
 
-        <div class="form-control">
-            <label for="username">Username</label>
-            <input type="text" id="username" name="username" required>
-        </div>
+		.login-form {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			padding: 64px;
+			gap: 32px;
 
-        <div class="form-control">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
-        </div>
+			button {
+				margin-top: 16px;
+			}
+		}
 
-        <button type="submit">Login</button>
-    </form>
-</main>
-</body>
-</html>
+		.form-control {
+			display: flex;
+			flex-direction: column;
+
+			label {
+				font-size: 0.875rem;
+				margin-bottom: 0.125rem;
+			}
+
+			input {
+				padding: 0.75rem;
+				border-radius: 4px;
+				font-size: 1rem;
+				background-color: var(--input-background);
+				transition: background-color 0.125s ease-in;
+				width: 300px;
+
+				border: none;
+				color: #fff;
+
+				&:hover {
+					background-color: color-mix(in srgb, var(--primary) 8%, var(--input-background));
+				}
+			}
+		}
+
+		button {
+			background-color: var(--primary);
+			padding: 0.75rem 1rem;
+			border-radius: 99px;
+			border: none;
+			font-size: 1rem;
+			cursor: pointer;
+
+			transition: background-color 0.125s ease-in;
+
+			&:hover {
+				background-color: color-mix(in srgb, var(--foreground) 10%, var(--primary));
+			}
+		}
+	</style>
+{{end}}
+{{define "content"}}
+	<form class="login-form card" action="/login" method="post">
+		<h1>Login</h1>
+
+		<div class="form-control">
+			<label for="username">Username</label>
+			<input type="text" id="username" name="username" required>
+		</div>
+
+		<div class="form-control">
+			<label for="password">Password</label>
+			<input type="password" id="password" name="password" required>
+		</div>
+
+		<button type="submit">Login</button>
+	</form>
+{{end}}

@@ -14,12 +14,12 @@ import (
 	"strings"
 )
 
-func GetHandler(w reqRes.MyWriter, _ *reqRes.MyRequest) {
-	var indexTemplate = template.Must(template.ParseFiles("pages/login/login.gohtml"))
-	var indexPageData = pages.PageData{
-		PageTitle: "Login",
-	}
+var indexTemplate = template.Must(template.ParseFiles("pages/base.gohtml", "pages/login/login.gohtml"))
+var indexPageData = pages.PageData{
+	PageTitle: "Login",
+}
 
+func GetHandler(w reqRes.MyWriter, _ *reqRes.MyRequest) {
 	err := indexTemplate.Execute(w, indexPageData)
 	if err != nil {
 		log.Printf("Failed to render login page:\n%v\n", err)
