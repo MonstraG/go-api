@@ -1,11 +1,11 @@
 package music
 
 import (
-	"encoding/json"
 	"fmt"
 	"go-server/models"
 	"go-server/pages/music/ytDlp"
 	"go-server/setup/reqRes"
+	"html/template"
 	"log"
 	"net/http"
 	"time"
@@ -33,38 +33,50 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 
 const startDelay = 10 * time.Second
 
+var songQueueTemplate = template.Must(template.ParseFiles("pages/music/songQueue.gohtml"))
+var songQueueEmptyTemplate = template.Must(template.ParseFiles("pages/music/songQueueEmpty.gohtml"))
+
 func GetSongQueueHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	var songQueueItems []models.SongQueueItem
-	result := r.Db.Joins("Song").Find(songQueueItems)
+	result := r.Db.Joins("Song").Find(&songQueueItems)
 	if result.Error != nil {
 		log.Printf("Failed to get song queue: \n%v\n", result.Error)
 	}
 
+	if result.RowsAffected == 0 {
+		err := songQueueEmptyTemplate.Execute(w, songQueueItems)
+		if err != nil {
+			// todo: use this pattern everywhere
+			message := fmt.Sprintf("Failed to execute song queue template:\n%v\n", err)
+			http.Error(w, message, http.StatusInternalServerError)
+		}
+		return
+	}
+
 	type SongQueueItemDTO struct {
-		QueueItemId uint      `json:"queueItemId"`
-		SongId      uint      `json:"songId"`
-		StartsAt    time.Time `json:"startsAt"`
+		Song     string
+		StartsAt time.Time `json:"startsAt"`
 	}
 
 	songCount := len(songQueueItems)
-	songQueueItemDTOs := make([]SongQueueItemDTO, songCount)
+	songs := make([]SongQueueItemDTO, songCount)
 	for index, songQueueItem := range songQueueItems {
-		songQueueItemDTOs[index] = SongQueueItemDTO{
-			QueueItemId: songQueueItem.ID,
-			SongId:      songQueueItem.SongId,
-			StartsAt:    songQueueItem.CreatedAt.Add(startDelay),
+		songs[index] = SongQueueItemDTO{
+			Song:     songQueueItem.Song.YoutubeId,
+			StartsAt: songQueueItem.CreatedAt.Add(startDelay),
 		}
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(&songQueueItemDTOs)
+	type List struct {
+		Songs []SongQueueItemDTO
+	}
+
+	log.Printf("SongQueue: \n%v\n", songs)
+
+	err := songQueueTemplate.Execute(w, List{songs})
 	if err != nil {
 		// todo: use this pattern everywhere
-		message := fmt.Sprintf("Failed to encode song queue:\n%v\n", err)
+		message := fmt.Sprintf("Failed to execute song queue template:\n%v\n", err)
 		http.Error(w, message, http.StatusInternalServerError)
 	}
-}
-
-func GetSongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
-	//var song []models.Song
 }

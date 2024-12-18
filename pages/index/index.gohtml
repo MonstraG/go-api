@@ -1,4 +1,19 @@
 {{define "head"}}
+	<style>
+		h1 {
+			margin-bottom: 32px;
+		}
+
+		article {
+			display: flex;
+			flex-direction: column;
+			gap: 32px;
+		}
+
+		section h2 {
+			margin-bottom: 16px;
+		}
+	</style>
 	<script>
 		function registerAddSongSubmitter() {
 			/**
@@ -42,18 +57,21 @@
 
 {{define "content"}}
 	<h1>Homepage</h1>
-	<form id="music">
-		<div class="form-control">
-			<label for="songUrl">Song</label>
-			<input type="text" id="songUrl" name="songUrl" required>
-		</div>
+	<article>
+		<section>
+			<h2>Add song</h2>
+			<form id="music">
+				<div class="form-control">
+					<label for="songUrl">Song</label>
+					<input type="text" id="songUrl" name="songUrl" required>
+				</div>
 
-		<button type="submit">Add</button>
-	</form>
-	<button type="button" id="ping">
-		ping?
-	</button>
-	<div id="songQueue">
-
-	</div>
+				<button type="submit">Add</button>
+			</form>
+		</section>
+		<section>
+			<h2>Song queue</h2>
+			<div hx-get="/songQueue" hx-trigger="every 2s"></div>
+		</section>
+	</article>
 {{end}}
