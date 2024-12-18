@@ -1,5 +1,5 @@
 {{define "head"}}
-    <script>
+	<script>
 		function registerAddSongSubmitter() {
 			/**
 			 * @type {HTMLFormElement}
@@ -68,23 +68,23 @@
 			initWebsockets();
 			initPingButton();
 		});
-    </script>
+	</script>
 {{end}}
 
 {{define "content"}}
-    <h1>Homepage</h1>
-    <form id="music">
-        <div class="form-control">
-            <label for="songUrl">Song</label>
-            <input type="text" id="songUrl" name="songUrl" required>
-        </div>
+	<h1>Homepage</h1>
+	<form id="music">
+		<div class="form-control">
+			<label for="songUrl">Song</label>
+			<input type="text" id="songUrl" name="songUrl" required>
+		</div>
 
-        <button type="submit">Add</button>
-    </form>
-    <button type="button" id="ping">
-        ping?
-    </button>
-    <div id="songQueue">
+		<button type="submit">Add</button>
+	</form>
+	<button type="button" id="ping">
+		ping?
+	</button>
+	<div id="songQueue">
 
-    </div>
+	</div>
 {{end}}
