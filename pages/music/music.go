@@ -76,7 +76,7 @@ func GetSongQueueHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	songs := make([]SongQueueItemDTO, songCount)
 	for index, songQueueItem := range songQueueItems {
 		songItem := SongQueueItemDTO{
-			ID:       songQueueItem.Song.ID,
+			ID:       songQueueItem.SongId,
 			Song:     songQueueItem.Song.Title,
 			Duration: (time.Duration(songQueueItem.Song.Duration) * time.Second).Truncate(time.Second),
 		}
@@ -100,22 +100,6 @@ func GetSongQueueHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 		message := fmt.Sprintf("Failed to execute song queue template:\n%v\n", err)
 		http.Error(w, message, http.StatusInternalServerError)
 	}
-}
-
-func GetSongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
-	idString := r.PathValue("id")
-
-	var song models.Song
-	result := r.Db.First(&song, idString)
-	if result.Error != nil {
-		message := fmt.Sprintf("Failed to get song:\n%v\n", result.Error)
-		http.Error(w, message, http.StatusBadRequest)
-		return
-	}
-
-	filename := filepath.Join(r.AppConfig.SongsFolder, song.File)
-
-	pages.ServeFile(w, r, filename)
 }
 
 var songPlayerTemplate = template.Must(template.ParseFiles("pages/music/songPlayer.gohtml"))
@@ -145,4 +129,20 @@ func GetSongPlayerHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 		message := fmt.Sprintf("Failed to execute song queue template:\n%v\n", err)
 		http.Error(w, message, http.StatusInternalServerError)
 	}
+}
+
+func GetSongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+	idString := r.PathValue("id")
+
+	var song models.Song
+	result := r.Db.First(&song, idString)
+	if result.Error != nil {
+		message := fmt.Sprintf("Failed to get song:\n%v\n", result.Error)
+		http.Error(w, message, http.StatusBadRequest)
+		return
+	}
+
+	filename := filepath.Join(r.AppConfig.SongsFolder, song.File)
+
+	pages.ServeFile(w, r, filename)
 }

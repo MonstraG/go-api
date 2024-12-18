@@ -13,6 +13,10 @@
 		section h2 {
 			margin-bottom: 16px;
 		}
+
+		#player {
+			min-height: 64px;
+		}
 	</style>
 	<script>
 		function registerAddSongSubmitter() {
@@ -70,8 +74,8 @@
 			</form>
 		</section>
 		<section>
-			<h2>Current song</h2>
-			<div hx-get="/song/current" hx-trigger="ev"/>
+			<h2>Player</h2>
+			<div hx-get="/song/current" hx-trigger="ev" id="player"></div>
 		</section>
 		<section>
 			<h2>Song queue</h2>
