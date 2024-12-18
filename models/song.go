@@ -9,6 +9,7 @@ type Song struct {
 	gorm.Model
 	YoutubeId string `gorm:"unique"`
 	Duration  int
+	Title     string
 }
 
 type SongQueueItem struct {

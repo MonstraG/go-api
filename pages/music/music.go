@@ -64,7 +64,7 @@ func GetSongQueueHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	songs := make([]SongQueueItemDTO, songCount)
 	for index, songQueueItem := range songQueueItems {
 		songItem := SongQueueItemDTO{
-			Song:     songQueueItem.Song.YoutubeId,
+			Song:     songQueueItem.Song.Title,
 			Duration: (time.Duration(songQueueItem.Song.Duration) * time.Second).Truncate(time.Second),
 		}
 
@@ -80,8 +80,6 @@ func GetSongQueueHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	type List struct {
 		Songs []SongQueueItemDTO
 	}
-
-	log.Printf("SongQueue: \n%v\n", songs)
 
 	err := songQueueTemplate.Execute(w, List{songs})
 	if err != nil {

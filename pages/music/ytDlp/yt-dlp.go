@@ -31,30 +31,53 @@ func getSongId(url string) (string, error) {
 	return url[index+2:], nil
 }
 
-func getDuration(id string, config appConfig.AppConfig) int {
+func findSongFilename(id string, config appConfig.AppConfig) string {
 	files, err := os.ReadDir(config.SongsFolder)
 	for _, file := range files {
 		fileNameWithExtension := file.Name()
 		if strings.HasPrefix(fileNameWithExtension, id) {
 			extension := filepath.Ext(fileNameWithExtension)
 			fileName := strings.TrimSuffix(fileNameWithExtension, extension)
-			durationStr := fileName[len(id)+1:] // also skip separatory `-`
-			duration, err := strconv.Atoi(durationStr)
-			if err != nil {
-				log.Printf("failed to read song duration: %s, error: \n%v\n", fileNameWithExtension, err)
-				return 0
-			}
-			return duration
+			return fileName
 		}
 	}
 	if err != nil {
 		log.Printf("failed to read songs folder: %s, error: \n%v\n", config.SongsFolder, err)
+	} else {
+		log.Printf("failed to find song: %s in songs folder %s\n", id, config.SongsFolder)
 	}
-	return 0
+	return ""
+}
+
+func getSongModel(id string, config appConfig.AppConfig) *models.Song {
+	filename := findSongFilename(id, config)
+	if filename == "" {
+		return nil
+	}
+
+	filenameParts := strings.Split(filename, "|")
+	if len(filenameParts) != 3 {
+		log.Printf("failed to split song name into parts: %s, got parts length = %v\n", filename, len(filenameParts))
+		return nil
+	}
+
+	// 0 is id and we already know it
+	title := filenameParts[1]
+	duration, err := strconv.Atoi(filenameParts[2])
+	if err != nil {
+		log.Printf("failed to read song duration: %s, error: \n%v\n", filename, err)
+		return nil
+	}
+
+	return &models.Song{
+		YoutubeId: id,
+		Duration:  duration,
+		Title:     title,
+	}
 }
 
 const ytDlpBinary = "yt-dlp"
-const fileNamePattern = "%(id)s-%(duration)s.%(ext)s"
+const fileNamePattern = "%(id)s|%(title)s|%(duration)s.%(ext)s"
 
 const startDelay = 10 * time.Second
 
@@ -84,15 +107,16 @@ func Download(url string, config appConfig.AppConfig, db *gorm.DB) {
 			return
 		}
 
-		duration := getDuration(id, config)
-		if duration == 0 {
+		log.Printf("Command finished successfully")
+
+		song := getSongModel(id, config)
+		if song == nil {
+			log.Printf("Failed to get song model")
 			return
+		} else {
+			log.Printf("Loaded song: %v\n", song)
 		}
 
-		song := &models.Song{
-			YoutubeId: id,
-			Duration:  duration,
-		}
 		result := db.FirstOrCreate(song)
 		if result.Error != nil {
 			log.Printf("Failed to save song:\n%v\n", result.Error)
@@ -105,7 +129,7 @@ func Download(url string, config appConfig.AppConfig, db *gorm.DB) {
 		songQueueItem := &models.SongQueueItem{
 			SongId:   song.ID,
 			StartsAt: startsAt,
-			EndsAt:   startsAt.Add(time.Duration(duration) * time.Second),
+			EndsAt:   startsAt.Add(time.Duration(song.Duration) * time.Second),
 		}
 		result = db.Create(songQueueItem)
 		if result.Error != nil {
