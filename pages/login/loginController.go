@@ -54,6 +54,7 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	}
 	if result.RowsAffected == 0 {
 		// didn't find them
+		// todo: redirect back!
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}

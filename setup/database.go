@@ -43,13 +43,24 @@ func seedDb(db *gorm.DB, appConfig appConfig.AppConfig) {
 		log.Fatalf("failed to migrate songQueues:\n%v\n", err)
 	}
 
-	passwordHash, err := models.HashPassword(appConfig.DefaultUser.Password)
+	seedUser(db, appConfig.DefaultUser)
+	seedUser(db, appConfig.GuestUser)
+}
+
+func seedUser(db *gorm.DB, user appConfig.DefaultUser) {
+	passwordHash, err := models.HashPassword(user.Password)
 	if err != nil {
-		log.Fatalf("Failed to hash default user password:\n%v\n", err)
+		log.Fatalf("Failed to hash default user %s password:\n%v\n", user.Username, err)
 	}
 
-	db.FirstOrCreate(&models.User{
-		Username:     appConfig.DefaultUser.Username,
+	userModel := models.User{
+		Username:     user.Username,
 		PasswordHash: passwordHash,
-	})
+	}
+
+	result := db.Where(models.User{Username: user.Username}).FirstOrCreate(&userModel)
+
+	if result.Error != nil {
+		log.Fatalf("Failed to insert default user %s:\n%v\n", user.Username, err)
+	}
 }

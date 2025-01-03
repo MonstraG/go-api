@@ -11,6 +11,7 @@ type AppConfig struct {
 	Host         string      `json:"host"`
 	DatabaseFile string      `json:"databaseFile"`
 	DefaultUser  DefaultUser `json:"defaultUser"`
+	GuestUser    DefaultUser `json:"guestUser"`
 	JWTSecret    string      `json:"jwtSecret"`
 	SongsFolder  string      `json:"songsFolder"`
 }
