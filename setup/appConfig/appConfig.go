@@ -12,6 +12,7 @@ type AppConfig struct {
 	DatabaseFile string      `json:"databaseFile"`
 	DefaultUser  DefaultUser `json:"defaultUser"`
 	GuestUser    DefaultUser `json:"guestUser"`
+	VpsLoginLink string      `json:"vpsLoginLink"`
 	JWTSecret    string      `json:"jwtSecret"`
 	SongsFolder  string      `json:"songsFolder"`
 }

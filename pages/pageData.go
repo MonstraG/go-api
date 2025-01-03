@@ -1,5 +1,6 @@
 package pages
 
 type PageData struct {
-	PageTitle string
+	PageTitle    string
+	VpsLoginLink string
 }

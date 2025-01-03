@@ -12,11 +12,13 @@ var indexTemplate = template.Must(template.ParseFiles(
 	"pages/nav.gohtml",
 	"pages/index/index.gohtml",
 ))
-var indexPageData = pages.PageData{
-	PageTitle: "Homepage",
-}
 
-func GetHandler(w reqRes.MyWriter, _ *reqRes.MyRequest) {
+func GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+	var indexPageData = pages.PageData{
+		PageTitle:    "Homepage",
+		VpsLoginLink: r.AppConfig.VpsLoginLink,
+	}
+
 	err := indexTemplate.Execute(w, indexPageData)
 	if err != nil {
 		log.Printf("Failed to render index page:\n%v\n", err)
