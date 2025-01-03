@@ -32,7 +32,7 @@ func mapRoutes(app *setup.App) {
 	app.HandleFunc("POST /songQueue", music.PostHandler)
 	app.HandleFunc("GET /songQueue", music.GetSongQueueHandler)
 	app.HandleFunc("GET /player", music.GetSongPlayerHandler)
-	app.HandleFunc("GET /song/{id}", music.GetSongHandler)
+	app.HandleFunc("GET /song/{path...}", music.GetSongHandler)
 	app.HandleFunc("GET /login", login.GetHandler)
 	app.HandleFunc("POST /login", login.PostHandler)
 

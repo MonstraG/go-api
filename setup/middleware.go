@@ -38,7 +38,8 @@ func CreateJwtAuthMiddleware(app App) Middleware {
 	return func(next HandlerFn) HandlerFn {
 		return func(w reqRes.MyWriter, r *reqRes.MyRequest) {
 			if r.URL.Path == "/login" ||
-				strings.HasPrefix(r.URL.Path, "/public") {
+				strings.HasPrefix(r.URL.Path, "/public") ||
+				strings.HasPrefix(r.URL.Path, "/song") {
 				next(w, r)
 				return
 			}

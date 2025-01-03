@@ -132,17 +132,7 @@ func GetSongPlayerHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 }
 
 func GetSongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
-	idString := r.PathValue("id")
-
-	var song models.Song
-	result := r.Db.First(&song, idString)
-	if result.Error != nil {
-		message := fmt.Sprintf("Failed to get song:\n%v\n", result.Error)
-		http.Error(w, message, http.StatusBadRequest)
-		return
-	}
-
-	filename := filepath.Join(r.AppConfig.SongsFolder, song.File)
-
+	pathQueryParam := r.PathValue("path")
+	filename := filepath.Join(r.AppConfig.SongsFolder, pathQueryParam)
 	pages.ServeFile(w, r, filename)
 }
