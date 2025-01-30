@@ -36,7 +36,7 @@ jobs:
           target: "/home/${{ secrets.VPS_USERNAME }}/docker-images"
 
       - name: SSH into VPS and deploy
-        uses: appleboy/ssh-action@v0.1.7
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
