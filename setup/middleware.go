@@ -5,7 +5,6 @@ import (
 	"go-server/setup/reqRes"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -34,16 +33,9 @@ func LoggingMiddleware(next HandlerFn) HandlerFn {
 	}
 }
 
-func CreateJwtAuthMiddleware(app App) Middleware {
+func CreateJwtAuthRequiredMiddleware(app App) Middleware {
 	return func(next HandlerFn) HandlerFn {
 		return func(w reqRes.MyWriter, r *reqRes.MyRequest) {
-			if r.URL.Path == "/login" ||
-				strings.HasPrefix(r.URL.Path, "/public") ||
-				strings.HasPrefix(r.URL.Path, "/song") {
-				next(w, r)
-				return
-			}
-
 			cookie, err := r.CookieIfValid(myJwt.Cookie)
 			if err != nil {
 				w.RedirectToLogin()

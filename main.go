@@ -17,9 +17,6 @@ func main() {
 
 	app := setup.NewApp(config)
 
-	var authMiddleware = setup.CreateJwtAuthMiddleware(*app)
-	app.Use(authMiddleware)
-
 	app.Use(setup.LoggingMiddleware)
 
 	mapRoutes(app)
@@ -28,9 +25,11 @@ func main() {
 }
 
 func mapRoutes(app *setup.App) {
-	app.HandleFunc("GET /", notFound.GetHandler)
+	var authRequired = setup.CreateJwtAuthRequiredMiddleware(*app)
 
-	app.HandleFunc("GET /{$}", index.GetHandler)
+	app.HandleFunc("GET /", authRequired(notFound.GetHandler))
+
+	app.HandleFunc("GET /{$}", authRequired(index.GetHandler))
 
 	app.HandleFunc("GET /login", login.GetHandler)
 	app.HandleFunc("POST /login", login.PostHandler)
