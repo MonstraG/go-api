@@ -6,6 +6,7 @@
 	--spacing: 16px;
 	--primary: #9A9A7A;
 	--input-background: #36343b;
+	--error: #f57069;
 }
 
 body {

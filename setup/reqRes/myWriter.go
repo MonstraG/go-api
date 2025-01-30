@@ -12,23 +12,16 @@ type MyWriter struct {
 	http.ResponseWriter
 }
 
-// WriteSilent calls w.Write without telling you the result
-func (w MyWriter) WriteSilent(content []byte) {
-	_, err := w.ResponseWriter.Write(content)
-	if err != nil {
-		log.Printf("Write failed:\n%v\n", err)
-	}
-}
-
-func (w MyWriter) WriteResponse(status int, content []byte) {
-	w.WriteHeader(status)
-	w.WriteSilent(content)
-}
-
 func (w MyWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	h, ok := w.ResponseWriter.(http.Hijacker)
 	if !ok {
 		return nil, nil, errors.New("hijack not supported")
 	}
 	return h.Hijack()
+}
+
+// Error is a wrapper around http.Error that also logs the message
+func (w MyWriter) Error(statusCode int, message string) {
+	log.Println(message)
+	http.Error(w, message, statusCode)
 }

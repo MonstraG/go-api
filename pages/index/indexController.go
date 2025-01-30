@@ -1,10 +1,11 @@
 package index
 
 import (
+	"fmt"
 	"go-server/pages"
 	"go-server/setup/reqRes"
 	"html/template"
-	"log"
+	"net/http"
 )
 
 var indexTemplate = template.Must(template.ParseFiles(
@@ -13,14 +14,19 @@ var indexTemplate = template.Must(template.ParseFiles(
 	"pages/index/index.gohtml",
 ))
 
+type PageData struct {
+	pages.PageData
+	VpsLoginLink string
+}
+
 func GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
-	var indexPageData = pages.PageData{
-		PageTitle:    "Homepage",
+	var indexPageData = PageData{
+		PageData:     pages.PageData{PageTitle: "Homepage"},
 		VpsLoginLink: r.AppConfig.VpsLoginLink,
 	}
 
 	err := indexTemplate.Execute(w, indexPageData)
 	if err != nil {
-		log.Printf("Failed to render index page:\n%v\n", err)
+		w.Error(http.StatusInternalServerError, fmt.Sprintf("Failed to render index page:\n%v", err))
 	}
 }

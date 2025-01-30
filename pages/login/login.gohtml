@@ -59,11 +59,21 @@
 				background-color: color-mix(in srgb, var(--foreground) 10%, var(--primary));
 			}
 		}
+
+		.error {
+			color: var(--error);
+			font-size: 1rem;
+		}
 	</style>
 {{end}}
 {{define "content"}}
 	<form class="login-form card" action="/login" method="post">
 		<h1>Login</h1>
+
+		{{if .ErrorMessage}}
+			<h2 class="error">{{.ErrorMessage}}</h2>
+		{{end}}
+
 
 		<div class="form-control">
 			<label for="username">Username</label>

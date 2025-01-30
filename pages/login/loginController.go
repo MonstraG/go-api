@@ -3,73 +3,88 @@ package login
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"go-server/models"
 	"go-server/pages"
 	"go-server/setup/myJwt"
 	"go-server/setup/reqRes"
 	"gorm.io/gorm"
 	"html/template"
-	"log"
 	"net/http"
 	"strings"
 )
 
-var indexTemplate = template.Must(template.ParseFiles("pages/base.gohtml", "pages/login/login.gohtml"))
-var indexPageData = pages.PageData{
-	PageTitle: "Login",
+var loginTemplate = template.Must(template.ParseFiles("pages/base.gohtml", "pages/login/login.gohtml"))
+
+type PageData struct {
+	pages.PageData
+	ErrorMessage string
 }
 
 func GetHandler(w reqRes.MyWriter, _ *reqRes.MyRequest) {
-	err := indexTemplate.Execute(w, indexPageData)
+	renderLoginPage(w, "")
+}
+
+func renderLoginPage(w reqRes.MyWriter, errorMessage string) {
+	loginPageData := PageData{
+		PageData:     pages.PageData{PageTitle: "Login"},
+		ErrorMessage: errorMessage,
+	}
+
+	err := loginTemplate.Execute(w, loginPageData)
 	if err != nil {
-		log.Printf("Failed to render login page:\n%v\n", err)
+		w.Error(http.StatusInternalServerError, fmt.Sprintf("Failed to render login page: \n%v", err))
 	}
 }
 
 func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	err := r.ParseForm()
 	if err != nil {
-		log.Printf("Failed to parse form:\n%v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		w.Error(http.StatusBadRequest, fmt.Sprintf("Failed to parse form: \n%v", err))
+		return
 	}
 
 	username := r.Form.Get("username")
 	if username == "" {
-		w.WriteHeader(http.StatusBadRequest)
+		w.Error(http.StatusBadRequest, "username is required")
 		return
 	}
 	password := r.Form.Get("password")
 	if password == "" {
-		w.WriteHeader(http.StatusBadRequest)
+		w.Error(http.StatusBadRequest, "password")
 		return
 	}
 
 	lowercaseUsername := strings.ToLower(username)
 	user := models.User{}
 	result := r.Db.Where("lower(username) = @name", sql.Named("name", lowercaseUsername)).First(&user)
-	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		log.Printf("Hit error when searching for user '%v':\n%v\n", lowercaseUsername, result.Error)
-		w.WriteHeader(http.StatusInternalServerError)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		renderLoginPage(w, "Username or password is invalid")
 		return
 	}
+	if result.Error != nil {
+		w.Error(
+			http.StatusInternalServerError,
+			fmt.Sprintf("Hit error when searching for user '%v': \n%v", lowercaseUsername, result.Error),
+		)
+		return
+	}
+
 	if result.RowsAffected == 0 {
-		// didn't find them
-		// todo: redirect back!
-		w.WriteHeader(http.StatusUnprocessableEntity)
+		fmt.Printf("Rows affected 0 when searching for user '%v'", lowercaseUsername)
+		renderLoginPage(w, "Username or password is invalid")
 		return
 	}
 
 	ok := user.CheckPasswordHash(password)
 	if !ok {
-		// wrong password
-		w.WriteHeader(http.StatusUnprocessableEntity)
+		renderLoginPage(w, "Username or password is invalid")
 		return
 	}
 
 	jwtToken, err := myJwt.Singleton.CreateJwt(user, r.AppConfig)
 	if err != nil {
-		log.Printf("Error generating jwt token for user '%v':\n%v\n", lowercaseUsername, result.Error)
-		w.WriteHeader(http.StatusInternalServerError)
+		w.Error(http.StatusInternalServerError, fmt.Sprintf("Error generating jwt token for user '%v': \n%v", lowercaseUsername, result.Error))
 		return
 	}
 

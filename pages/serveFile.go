@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"go-server/setup/reqRes"
+	"log"
 	"net/http"
 	"os"
 )
@@ -13,20 +14,25 @@ import (
 func ServeFile(w reqRes.MyWriter, r *reqRes.MyRequest, filename string) {
 	fileInfo, err := os.Stat(filename)
 	if err != nil {
-		message := fmt.Sprintf("Failed to stat file %s:\n%v\n", filename, err)
-		http.Error(w, message, http.StatusBadRequest)
+		if os.IsNotExist(err) {
+			message := fmt.Sprintf("Failed to stat file %s:\n%v", filename, err)
+			log.Println(message)
+			w.Error(http.StatusBadRequest, "File not found")
+			return
+		}
+
+		w.Error(http.StatusInternalServerError, fmt.Sprintf("Failed to stat file %s:\n%v", filename, err))
 		return
 	}
+
 	if fileInfo.IsDir() {
-		message := fmt.Sprintf("Failed to stat file: %s, it's a directory", filename)
-		http.Error(w, message, http.StatusBadRequest)
+		w.Error(http.StatusBadRequest, fmt.Sprintf("Failed to get file: %s, it's a directory", filename))
 		return
 	}
 
 	file, err := os.ReadFile(filename)
 	if err != nil {
-		message := fmt.Sprintf("Failed to read file %s:\n%v\n", filename, err)
-		http.Error(w, message, http.StatusInternalServerError)
+		w.Error(http.StatusInternalServerError, fmt.Sprintf("Failed to read file %s:\n%v", filename, err))
 		return
 	}
 
