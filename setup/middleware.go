@@ -50,11 +50,16 @@ func CreateJwtAuthMiddleware(app App) Middleware {
 				return
 			}
 
-			_, err = myJwt.Singleton.ValidateJWT(cookie.Value, app.config)
+			claims, err := myJwt.Singleton.ValidateJWT(cookie.Value, app.config)
 			if err != nil {
 				log.Printf("Error validating JWT:\n%v\n", err)
 				w.RedirectToLogin()
 				return
+			}
+
+			r.Username, err = claims.GetSubject()
+			if err != nil {
+				log.Printf("Failed to get JWT subject, ignoring:\n%v\n", err)
 			}
 
 			next(w, r)

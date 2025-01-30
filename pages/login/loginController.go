@@ -21,13 +21,13 @@ type PageData struct {
 	ErrorMessage string
 }
 
-func GetHandler(w reqRes.MyWriter, _ *reqRes.MyRequest) {
-	renderLoginPage(w, "")
+func GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+	renderLoginPage(w, r, "")
 }
 
-func renderLoginPage(w reqRes.MyWriter, errorMessage string) {
+func renderLoginPage(w reqRes.MyWriter, r *reqRes.MyRequest, errorMessage string) {
 	loginPageData := PageData{
-		PageData:     pages.PageData{PageTitle: "Login"},
+		PageData:     pages.NewPageData(r, "Login"),
 		ErrorMessage: errorMessage,
 	}
 
@@ -59,7 +59,7 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	user := models.User{}
 	result := r.Db.Where("lower(username) = @name", sql.Named("name", lowercaseUsername)).First(&user)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		renderLoginPage(w, "Username or password is invalid")
+		renderLoginPage(w, r, "Username or password is invalid")
 		return
 	}
 	if result.Error != nil {
@@ -72,13 +72,13 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 
 	if result.RowsAffected == 0 {
 		fmt.Printf("Rows affected 0 when searching for user '%v'", lowercaseUsername)
-		renderLoginPage(w, "Username or password is invalid")
+		renderLoginPage(w, r, "Username or password is invalid")
 		return
 	}
 
 	ok := user.CheckPasswordHash(password)
 	if !ok {
-		renderLoginPage(w, "Username or password is invalid")
+		renderLoginPage(w, r, "Username or password is invalid")
 		return
 	}
 

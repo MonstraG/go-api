@@ -5,6 +5,11 @@
             <li><a href="{{.VpsLoginLink}}">VPS login link</a></li>
         </ul>
 
-        <a href="/logout">Log out</a>
+        <div class="profileSection">
+            {{if .UserInitial}}
+                <div class="avatar" title="{{.Username}}">{{.UserInitial}}</div>
+            {{end}}
+            <a href="/logout">Log out</a>
+        </div>
     </nav>
 {{end}}

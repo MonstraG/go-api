@@ -21,7 +21,7 @@ type PageData struct {
 
 func GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	var indexPageData = PageData{
-		PageData:     pages.PageData{PageTitle: "Homepage"},
+		PageData:     pages.NewPageData(r, "Homepage"),
 		VpsLoginLink: r.AppConfig.VpsLoginLink,
 	}
 

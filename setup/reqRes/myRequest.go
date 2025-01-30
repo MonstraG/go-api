@@ -9,6 +9,8 @@ import (
 type MyRequest struct {
 	http.Request
 
+	Username string
+
 	AppConfig appConfig.AppConfig
 	Db        *gorm.DB
 }

@@ -1,7 +1,8 @@
 :root {
 	--background: #121212;
 	--foreground: #fff;
-	--border: color-mix(in srgb, var(--foreground) 10%, var(--background));
+	--borderColor: color-mix(in srgb, var(--foreground) 10%, var(--background));
+	--border: 1px solid var(--borderColor);
 	--elevation-1: color-mix(in srgb, var(--foreground) 5%, var(--background));
 	--spacing: 16px;
 	--primary: #9A9A7A;
@@ -22,7 +23,7 @@ body {
 
 .card {
 	border-radius: var(--spacing);
-	border: 1px solid var(--border);
+	border: var(--border);
 	padding: var(--spacing);
 	background: var(--elevation-1);
 }
@@ -31,7 +32,6 @@ nav {
 	display: flex;
 	justify-content: space-between;
 	gap: var(--spacing);
-	padding-block: var(--spacing);
 
 	ul {
 		display: flex;
@@ -39,6 +39,29 @@ nav {
 		gap: var(--spacing);
 		padding-left: 0;
 		margin-block: 0;
+
+		padding-block: var(--spacing);
+	}
+
+	.profileSection {
+		display: flex;
+		gap: var(--spacing);
+		align-items: center;
+		padding-block: calc(var(--spacing) / 2);
+
+		.avatar {
+			user-select: none;
+			height: calc(var(--spacing) * 2.5);
+			width: calc(var(--spacing) * 2.5);
+			border-radius: 50%;
+			border: var(--borderColor);
+			background: var(--primary);
+			font-size: 1.5rem;
+			text-transform: uppercase;
+			font-weight: 500;
+			display: flex;
+			justify-content: center;
+		}
 	}
 }
 
