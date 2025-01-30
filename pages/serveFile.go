@@ -17,22 +17,28 @@ func ServeFile(w reqRes.MyWriter, r *reqRes.MyRequest, filename string) {
 		if os.IsNotExist(err) {
 			message := fmt.Sprintf("Failed to stat file %s:\n%v", filename, err)
 			log.Println(message)
-			w.Error(http.StatusBadRequest, "File not found")
+			http.Error(w, "File not found", http.StatusBadRequest)
 			return
 		}
 
-		w.Error(http.StatusInternalServerError, fmt.Sprintf("Failed to stat file %s:\n%v", filename, err))
+		message := fmt.Sprintf("Failed to stat file %s:\n%v", filename, err)
+		log.Println(message)
+		http.Error(w, message, http.StatusInternalServerError)
 		return
 	}
 
 	if fileInfo.IsDir() {
-		w.Error(http.StatusBadRequest, fmt.Sprintf("Failed to get file: %s, it's a directory", filename))
+		message := fmt.Sprintf("Failed to get file: %s, it's a directory", filename)
+		log.Println(message)
+		http.Error(w, message, http.StatusBadRequest)
 		return
 	}
 
 	file, err := os.ReadFile(filename)
 	if err != nil {
-		w.Error(http.StatusInternalServerError, fmt.Sprintf("Failed to read file %s:\n%v", filename, err))
+		message := fmt.Sprintf("Failed to read file %s:\n%v", filename, err)
+		log.Println(message)
+		http.Error(w, message, http.StatusInternalServerError)
 		return
 	}
 

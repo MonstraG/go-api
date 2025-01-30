@@ -5,6 +5,7 @@ import (
 	"go-server/pages"
 	"go-server/setup/reqRes"
 	"html/template"
+	"log"
 	"net/http"
 )
 
@@ -27,6 +28,8 @@ func GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 
 	err := indexTemplate.Execute(w, indexPageData)
 	if err != nil {
-		w.Error(http.StatusInternalServerError, fmt.Sprintf("Failed to render index page:\n%v", err))
+		message := fmt.Sprintf("Failed to render index page:\n%v", err)
+		log.Println(message)
+		http.Error(w, message, http.StatusInternalServerError)
 	}
 }

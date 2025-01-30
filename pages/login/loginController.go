@@ -10,6 +10,7 @@ import (
 	"go-server/setup/reqRes"
 	"gorm.io/gorm"
 	"html/template"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -33,25 +34,29 @@ func renderLoginPage(w reqRes.MyWriter, r *reqRes.MyRequest, errorMessage string
 
 	err := loginTemplate.Execute(w, loginPageData)
 	if err != nil {
-		w.Error(http.StatusInternalServerError, fmt.Sprintf("Failed to render login page: \n%v", err))
+		message := fmt.Sprintf("Failed to render login page: \n%v", err)
+		log.Println(message)
+		http.Error(w, message, http.StatusInternalServerError)
 	}
 }
 
 func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	err := r.ParseForm()
 	if err != nil {
-		w.Error(http.StatusBadRequest, fmt.Sprintf("Failed to parse form: \n%v", err))
+		message := fmt.Sprintf("Failed to parse form: \n%v", err)
+		log.Println(message)
+		http.Error(w, message, http.StatusBadRequest)
 		return
 	}
 
 	username := r.Form.Get("username")
 	if username == "" {
-		w.Error(http.StatusBadRequest, "username is required")
+		http.Error(w, "username is required", http.StatusBadRequest)
 		return
 	}
 	password := r.Form.Get("password")
 	if password == "" {
-		w.Error(http.StatusBadRequest, "password")
+		http.Error(w, "password", http.StatusBadRequest)
 		return
 	}
 
@@ -63,10 +68,9 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 		return
 	}
 	if result.Error != nil {
-		w.Error(
-			http.StatusInternalServerError,
-			fmt.Sprintf("Hit error when searching for user '%v': \n%v", lowercaseUsername, result.Error),
-		)
+		message := fmt.Sprintf("Hit error when searching for user '%v': \n%v", lowercaseUsername, result.Error)
+		log.Println(message)
+		http.Error(w, message, http.StatusInternalServerError)
 		return
 	}
 
@@ -84,7 +88,9 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 
 	jwtToken, err := myJwt.Singleton.CreateJwt(user, r.AppConfig)
 	if err != nil {
-		w.Error(http.StatusInternalServerError, fmt.Sprintf("Error generating jwt token for user '%v': \n%v", lowercaseUsername, result.Error))
+		message := fmt.Sprintf("Error generating jwt token for user '%v': \n%v", lowercaseUsername, result.Error)
+		log.Println(message)
+		http.Error(w, message, http.StatusInternalServerError)
 		return
 	}
 
