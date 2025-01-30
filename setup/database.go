@@ -34,15 +34,6 @@ func seedDb(db *gorm.DB, appConfig appConfig.AppConfig) {
 		log.Fatalf("failed to migrate users:\n%v\n", err)
 	}
 
-	err = db.AutoMigrate(&models.Song{})
-	if err != nil {
-		log.Fatalf("failed to migrate songs:\n%v\n", err)
-	}
-	err = db.AutoMigrate(&models.SongQueueItem{})
-	if err != nil {
-		log.Fatalf("failed to migrate songQueues:\n%v\n", err)
-	}
-
 	seedUser(db, appConfig.DefaultUser)
 	seedUser(db, appConfig.GuestUser)
 }

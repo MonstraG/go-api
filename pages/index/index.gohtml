@@ -9,88 +9,13 @@
 			flex-direction: column;
 			gap: 32px;
 		}
-
-		section h2 {
-			margin-bottom: 16px;
-		}
-
-		#player {
-			min-height: 64px;
-		}
 	</style>
-	<script>
-		function registerAddSongSubmitter() {
-			/**
-			 * @type {HTMLFormElement}
-			 */
-			const form = document.getElementById("music");
-			form.addEventListener("submit", (event) => {
-				event.preventDefault();
-
-				const formData = new FormData(form);
-				const button = event.submitter;
-				button.disabled = true;
-
-				fetch("/songQueue", {
-					method: "POST",
-					body: formData,
-					credentials: "include"
-				}).then((response) => {
-					if (!response.ok) {
-						return;
-					}
-
-					form.reset();
-				}).catch((error) => {
-					console.error("Failed to send music", error);
-				}).finally(() => {
-					button.disabled = false;
-				});
-
-			});
-		}
-
-		document.addEventListener("DOMContentLoaded", () => {
-			console.debug("ready");
-			registerAddSongSubmitter();
-
-			htmx.on("htmx:afterRequest", (/** @type {Event} */ event) => {
-				if (event.detail.elt.id === "songQueue") {
-					/** @type {HTMLTableRowElement | null} */
-					const firstRow = event.detail.elt.querySelector("tbody tr");
-					if (firstRow == null) {
-						return;
-					}
-
-					const dataset = firstRow.dataset;
-					const currentSongId = dataset["id"];
-				}
-			});
-		});
-	</script>
 {{end}}
 
 {{define "content"}}
 	<h1>Homepage</h1>
 	<article>
-		<section>
-			<h2>Add song</h2>
-			<form id="music">
-				<div class="form-control">
-					<label for="songUrl">Song</label>
-					<input type="text" id="songUrl" name="songUrl" required>
-				</div>
 
-				<button type="submit">Add</button>
-			</form>
-		</section>
-		<section>
-			<h2>Player</h2>
-			<div hx-get="/player" hx-trigger="ev" id="player"></div>
-		</section>
-		<section>
-			<h2>Song queue</h2>
-			<div hx-get="/songQueue" hx-trigger="every 2s" id="songQueue"></div>
-		</section>
+
 	</article>
 {{end}}
