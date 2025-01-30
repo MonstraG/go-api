@@ -9,7 +9,7 @@
 # cryptic source image names like 'alpine' explained in https://stackoverflow.com/a/59731596/11593686
 # alpine versions: https://alpinelinux.org/downloads/
 # golang versions https://go.dev/dl/
-FROM golang:1.23.4-alpine3.21 AS building-image
+FROM golang:1.23.5-alpine3.21 AS building-image
 
 # mkdir+cd into new directory, we are going to put everything there
 WORKDIR /myapp
