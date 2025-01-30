@@ -46,23 +46,18 @@ func CreateJwtAuthMiddleware(app App) Middleware {
 
 			cookie, err := r.CookieIfValid(myJwt.Cookie)
 			if err != nil {
-				redirectToLogin(w)
+				w.RedirectToLogin()
 				return
 			}
 
 			_, err = myJwt.Singleton.ValidateJWT(cookie.Value, app.config)
 			if err != nil {
 				log.Printf("Error validating JWT:\n%v\n", err)
-				redirectToLogin(w)
+				w.RedirectToLogin()
 				return
 			}
 
 			next(w, r)
 		}
 	}
-}
-
-func redirectToLogin(w reqRes.MyWriter) {
-	w.Header().Set("Location", `/login`)
-	w.WriteHeader(http.StatusTemporaryRedirect)
 }

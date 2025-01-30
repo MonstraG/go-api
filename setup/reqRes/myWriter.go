@@ -25,3 +25,8 @@ func (w MyWriter) Error(statusCode int, message string) {
 	log.Println(message)
 	http.Error(w, message, statusCode)
 }
+
+func (w MyWriter) RedirectToLogin() {
+	w.Header().Set("Location", `/login`)
+	w.WriteHeader(http.StatusTemporaryRedirect)
+}

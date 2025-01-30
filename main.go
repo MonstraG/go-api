@@ -4,6 +4,7 @@ import (
 	"go-server/pages"
 	"go-server/pages/index"
 	"go-server/pages/login"
+	"go-server/pages/logout"
 	"go-server/pages/music"
 	"go-server/pages/notFound"
 	"go-server/setup"
@@ -35,6 +36,7 @@ func mapRoutes(app *setup.App) {
 	app.HandleFunc("GET /song/{path...}", music.GetSongHandler)
 	app.HandleFunc("GET /login", login.GetHandler)
 	app.HandleFunc("POST /login", login.PostHandler)
+	app.HandleFunc("GET /logout", logout.GetHandler)
 
 	// resources
 	app.HandleFunc("GET /public/{path...}", pages.PublicHandler)
