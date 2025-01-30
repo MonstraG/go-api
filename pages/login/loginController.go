@@ -95,7 +95,7 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	}
 
 	cookie := http.Cookie{
-		Name:     "jwtToken",
+		Name:     myJwt.Cookie,
 		Value:    jwtToken,
 		Path:     "/",
 		MaxAge:   myJwt.MaxAge,
