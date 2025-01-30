@@ -25,7 +25,7 @@ body {
 	border-radius: var(--spacing);
 	border: 1px solid var(--border);
 	padding: var(--spacing);
-	background: var(--elevation-1); /* elevation 1 on https://m2.material.io/design/color/dark-theme.html#properties */
+	background: var(--elevation-1);
 }
 
 nav {
