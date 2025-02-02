@@ -8,6 +8,7 @@
 	--primary: #9A9A7A;
 	--input-background: #36343b;
 	--error: #f57069;
+	--black-to-primary-filter: invert(65%) sepia(8%) saturate(905%) hue-rotate(21deg) brightness(93%) contrast(86%);
 }
 
 body {
@@ -43,7 +44,7 @@ nav {
 		padding-block: var(--spacing);
 	}
 
-	.profileSection {
+	.profile-section {
 		display: flex;
 		gap: var(--spacing);
 		align-items: center;
@@ -72,4 +73,8 @@ a {
 	&:hover {
 		text-decoration-color: currentColor;
 	}
+}
+
+.hidden {
+	display: none;
 }

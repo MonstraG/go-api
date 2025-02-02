@@ -13,39 +13,74 @@
 			align-items: center;
 			padding: 64px;
 			gap: 32px;
-
-			button {
-				margin-top: 16px;
-			}
 		}
 
 		.form-control {
 			display: flex;
 			flex-direction: column;
+			width: 300px;
 
 			label {
 				font-size: 0.875rem;
 				margin-bottom: 0.25rem;
 			}
 
-			input {
-				padding: 0.5rem 0.75rem;
+			.input-wrapper {
+				display: flex;
+				gap: 2px;
+				align-items: stretch;
+
 				border-radius: 8px;
-				font-size: 1rem;
 				background-color: var(--input-background);
 				transition: background-color 0.125s ease-in;
-				width: 300px;
-
-				border: none;
-				color: #fff;
+				width: 100%;
+				overflow: hidden;
 
 				&:hover {
 					background-color: color-mix(in srgb, var(--primary) 8%, var(--input-background));
 				}
+
+				&:focus, &:focus-within {
+					outline: 2px solid var(--primary);
+				}
+
+				input {
+					padding: 9px 0.75rem;
+					font-size: 1rem;
+
+					flex-grow: 1;
+
+					border: none;
+					color: #fff;
+					background: transparent;
+					outline: none;
+				}
+
+				button {
+					width: 40px;
+					border-radius: 16px;
+					padding-inline: 3px;
+					cursor: pointer;
+					background: none;
+					border: none;
+					display: flex;
+					align-items: center;
+					color: var(--primary);
+
+					transition: background-color 0.125s ease-in;
+
+					&:focus {
+						background-color: color-mix(in srgb, transparent, var(--primary) 10%);
+					}
+
+					&:active {
+						background-color: color-mix(in srgb, transparent, var(--primary) 20%);
+					}
+				}
 			}
 		}
 
-		button {
+		.submit-button {
 			background-color: var(--primary);
 			padding: 0.75rem 1rem;
 			min-width: 90px;
@@ -59,13 +94,83 @@
 			&:hover {
 				background-color: color-mix(in srgb, var(--foreground) 10%, var(--primary));
 			}
-		}
 
+			&:active {
+				background-color: color-mix(in srgb, var(--foreground) 20%, var(--primary));
+			}
+
+			margin-top: var(--spacing);
+		}
 		.error {
 			color: var(--error);
 			font-size: 1rem;
 		}
 	</style>
+	<script>
+		document.addEventListener("DOMContentLoaded", function initVisibilityButton() {
+			// I actually tried to do this with web components, but they
+			//  1. safari doesn't support customized built-in components
+			//  2. if using autonomous, then css is not inherited, so I need to duplicate button styles
+			//  3. it's god-damn annoying to write even if it worked
+
+			/** @type {HTMLButtonElement} */
+			const button = document.getElementById("password-visibility");
+			if (!button) {
+				console.error("Failed to connect to password visibility button");
+				return;
+			}
+
+			const targetId = button.dataset["targetId"];
+			if (!targetId) {
+				console.error("Target id missing for password visibility button");
+				return;
+			}
+
+			/** @type {HTMLInputElement} */
+			const target = document.getElementById(targetId);
+			if (!target) {
+				console.error(`Target not found by id ${targetId}`);
+				return;
+			}
+
+			/**
+			 * @returns {HTMLImageElement}
+			 */
+			function createImg() {
+				const showImage = document.createElement("img");
+				showImage.width = 32;
+				showImage.height = 32;
+				return showImage;
+			}
+
+			const showImage = createImg();
+			showImage.src = "/public/icons/visibility.svg";
+			showImage.alt = "Show password";
+			button.appendChild(showImage);
+
+			const hideImage = createImg();
+			hideImage.src = "/public/icons/visibility-off.svg";
+			hideImage.alt = "Show password";
+			if (target.type === "password") {
+				hideImage.style.display = "none";
+			}
+			button.appendChild(hideImage);
+
+			button.addEventListener("click", handleClick);
+
+			function handleClick()  {
+				if (target.type === "password") {
+					target.type = "text";
+					showImage.style.display = "none";
+					hideImage.style.display = "initial";
+				} else {
+					target.type = "password";
+					showImage.style.display = "initial";
+					hideImage.style.display = "none";
+				}
+			}
+		})
+	</script>
 {{end}}
 {{define "content"}}
 	<form class="login-form card" action="/login" method="post">
@@ -78,14 +183,19 @@
 
 		<div class="form-control">
 			<label for="username">Username</label>
-			<input type="text" id="username" name="username" required>
+			<div class="input-wrapper">
+				<input type="text" id="username" name="username" required>
+			</div>
 		</div>
 
 		<div class="form-control">
 			<label for="password">Password</label>
-			<input type="password" id="password" name="password" required>
+			<div class="input-wrapper">
+				<input type="password" id="password" name="password" required>
+				<button type="button" id="password-visibility" data-target-id="password"></button>
+			</div>
 		</div>
 
-		<button type="submit">Login</button>
+		<button type="submit" class="submit-button">Login</button>
 	</form>
 {{end}}
