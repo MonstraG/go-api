@@ -9,13 +9,47 @@
 			flex-direction: column;
 			gap: 32px;
 		}
+
+		.songs {
+			max-width: 600px;
+			min-height: 300px;
+
+			h3 {
+				font-size: 16px;
+				margin-bottom: 4px;
+			}
+
+			ul {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+
+				li {
+					display: flex;
+					align-items: center;
+					gap: calc(var(--spacing) / 2);
+					padding: 2px 4px;
+
+					&.clickable {
+						cursor: pointer;
+
+						&:hover {
+							background: color-mix(in srgb, transparent, var(--foreground) 10%);
+						}
+						&:active {
+							background: color-mix(in srgb, transparent, var(--foreground) 20%);
+						}
+					}
+				}
+			}
+		}
 	</style>
 {{end}}
 
 {{define "content"}}
 	<h1>Homepage</h1>
 	<article>
-
-
+		<h2>Available songs</h2>
+		<div class="card songs" hx-get="/listSongs" hx-trigger="load" id="songs-browser"></div>
 	</article>
 {{end}}

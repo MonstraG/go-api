@@ -1,0 +1,30 @@
+<div id="folder-view">
+	<h3>/{{.Path}}</h3>
+
+	<ul>
+        {{if  .HasUpNavigation}}
+			<li hx-get="/listSongs/{{.UpPath}}" hx-trigger="dblclick" hx-target="#folder-view" hx-swap="outerHTML" class="clickable">
+				<img src="/public/icons/folder.svg" width="20" height="20" alt="Folder"/>
+				<span>..</span>
+			</li>
+        {{end}}
+
+        {{range .Items}}
+			<li
+                {{if .IsDir}}
+					hx-get="/listSongs/{{.Path}}" hx-trigger="dblclick" hx-target="#folder-view" hx-swap="outerHTML" class="clickable"
+                {{end}}
+			>
+                {{if .IsDir}}
+					<img src="/public/icons/folder.svg" width="20" height="20" alt="Folder"/>
+                {{else if .IsSong}}
+					<img src="/public/icons/music-note.svg" width="20" height="20" alt="Song"/>
+                {{else}}
+					<img src="/public/icons/question-mark.svg" width="20" height="20" alt="Unknown"/>
+                {{end}}
+				<span>{{.Name}}</span>
+			</li>
+        {{end}}
+	</ul>
+</div>
+
