@@ -27,9 +27,10 @@ func LoggingMiddleware(next HandlerFn) HandlerFn {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile | log.LUTC)
 	return func(w reqRes.MyWriter, r *reqRes.MyRequest) {
 		start := time.Now()
-		log.Printf("Started %s %s", r.Method, r.URL.Path)
+		id := RandId()
+		log.Printf("{%s} Started %s %s", id, r.Method, r.URL.Path)
 		next(w, r)
-		log.Printf("Completed %s %s in %v", r.Method, r.URL.Path, time.Since(start))
+		log.Printf("{%s} Completed %s %s in %v", id, r.Method, r.URL.Path, time.Since(start))
 	}
 }
 
