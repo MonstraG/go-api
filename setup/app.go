@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"net/http"
+	"time"
 )
 
 // App = http.ServeMux + Middleware slice
@@ -50,5 +51,7 @@ func applyMiddlewares(h func(w reqRes.MyWriter, r *reqRes.MyRequest), middleware
 // ListenAndServe is a wrapper around normal http.ListenAndServe
 func (app *App) ListenAndServe() error {
 	log.Println(fmt.Sprintf("Starting server on %s", app.config.Host))
-	return http.ListenAndServe(app.config.Host, app.mux)
+
+	server := &http.Server{Addr: app.config.Host, Handler: app.mux, ReadTimeout: 5 * time.Second, WriteTimeout: 10 * time.Second}
+	return server.ListenAndServe()
 }
