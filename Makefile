@@ -2,6 +2,8 @@ APP_NAME := myapp
 IMAGE_NAME := $(APP_NAME):latest
 SIZE_LOG_FILE := build_size.log
 
+build-and-get-size: build size
+
 build:
 	@echo "Building Docker image..."
 	@docker build -t $(IMAGE_NAME) .
@@ -12,5 +14,3 @@ size:
 	HUMAN_SIZE=$$(numfmt --to=iec --suffix=B --format="%.2f" $${IMAGE_SIZE}) && \
 	echo "Build size: $${HUMAN_SIZE}" && \
 	echo "[$$(date +'%Y-%m-%dT%H:%M:%S')] Build size: $${HUMAN_SIZE}" > $(SIZE_LOG_FILE)
-
-build-and-log-size: build size

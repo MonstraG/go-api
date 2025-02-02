@@ -18,7 +18,8 @@ Generating secret for jwt tokens: `openssl rand -hex 32`
 sudo systemctl start docker
 ```
 
-- run `build-and-log-size` in makefile
+- run `build-and-log-size` from makefile 
+(or just run `make`)
 
 ### Other notes
 
