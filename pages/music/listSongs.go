@@ -19,10 +19,8 @@ import (
 var songsTemplate = template.Must(template.ParseFiles("pages/music/songsPartial.gohtml"))
 
 type SongsData struct {
-	Items           []SongItem
-	HasUpNavigation bool
-	UpPath          string
-	Path            string
+	Items []SongItem
+	Path  string
 }
 
 type SongItem struct {
@@ -30,6 +28,7 @@ type SongItem struct {
 	IsSong bool
 	Name   string
 	Path   string
+	Size   string
 }
 
 func GetSongs(w reqRes.MyWriter, r *reqRes.MyRequest) {
@@ -55,7 +54,7 @@ func readDir(w reqRes.MyWriter, folder string, query string) {
 		return
 	}
 
-	fileInfo, err := dirAsFile.ReadDir(-1)
+	dirEntries, err := dirAsFile.ReadDir(-1)
 	if err != nil {
 		// here I would check if this error is "NotADir" or something, but there seems to
 		// not be a consistent / sane way to do this?
@@ -82,13 +81,11 @@ func readDir(w reqRes.MyWriter, folder string, query string) {
 	}
 
 	var templatePageData = SongsData{
-		Items:           make([]SongItem, len(fileInfo), len(fileInfo)),
-		HasUpNavigation: query != "",
-		UpPath:          path.Join(query, ".."),
-		Path:            query,
+		Items: make([]SongItem, len(dirEntries), len(dirEntries)),
+		Path:  query,
 	}
 
-	for index, file := range fileInfo {
+	for index, file := range dirEntries {
 		isDir := file.IsDir()
 		fileName := file.Name()
 		templatePageData.Items[index] = SongItem{
@@ -96,6 +93,7 @@ func readDir(w reqRes.MyWriter, folder string, query string) {
 			IsSong: !isDir && isSong(fileName),
 			Name:   fileName,
 			Path:   path.Join(query, fileName),
+			Size:   getFormattedFileSize(file),
 		}
 	}
 
@@ -109,6 +107,16 @@ func readDir(w reqRes.MyWriter, folder string, query string) {
 		return strings.Compare(a.Name, b.Name)
 	})
 
+	canGoUp := query != ""
+	if canGoUp {
+		templatePageData.Items = slices.Insert(templatePageData.Items, 0, SongItem{
+			IsDir:  true,
+			IsSong: false,
+			Name:   "..",
+			Path:   path.Join(query, ".."),
+		})
+	}
+
 	err = songsTemplate.Execute(w, templatePageData)
 	if err != nil {
 		message := fmt.Sprintf("Failed to render template: \n%v", err)
@@ -121,4 +129,40 @@ func isSong(fileName string) bool {
 	var extension = path.Ext(fileName)
 	mimeType := mime.TypeByExtension(extension)
 	return strings.HasPrefix(mimeType, "audio/")
+}
+
+var sizes = []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB"}
+
+func getFormattedFileSize(dirEntry os.DirEntry) string {
+	if dirEntry.IsDir() {
+		return ""
+	}
+
+	fileInfo, err := dirEntry.Info()
+	if err != nil {
+		message := fmt.Sprintf("Failure to get file info for '%s': \n%v", dirEntry.Name(), err)
+		log.Println(message)
+		return ""
+	}
+
+	fileSize := fileInfo.Size()
+	return formatFileSize(float64(fileSize))
+}
+
+// adjusted from https://ahmadrosid.com/cheatsheet/go/FormatFileSize
+func formatFileSize(size float64) string {
+	const base = 1024.0
+	unitsLimit := len(sizes)
+	i := 0
+	for size >= base && i < unitsLimit {
+		size = size / base
+		i++
+	}
+
+	f := "%.0f %s"
+	if i > 1 {
+		f = "%.2f %s"
+	}
+
+	return fmt.Sprintf(f, size, sizes[i])
 }
