@@ -11,5 +11,5 @@
   },
   "vpsLoginLink": "google.com",
   "jwtSecret": "put-32-bit-secret-here",
-  "songsFolder": "/songs/"
+  "songsFolder": "data/songs/"
 }
