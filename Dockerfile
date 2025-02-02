@@ -1,10 +1,10 @@
-# syntax=docker.io/docker/dockerfile:1.12-labs
+# syntax=docker.io/docker/dockerfile:1.13-labs
 # using `labs` in the line above changes "syntax" https://docs.docker.com/build/dockerfile/frontend/
 # this syntax allows "exclude" arg for COPY
 # dockerfile syntax verisons: https://hub.docker.com/r/docker/dockerfile
 
 # specifies a parent image:
-# this image is alpine3.20 + all the stuff you need to build a golang application
+# this image is alpine3.21 + all the stuff you need to build a golang application
 # and names this instance 'build'
 # cryptic source image names like 'alpine' explained in https://stackoverflow.com/a/59731596/11593686
 # alpine versions: https://alpinelinux.org/downloads/
