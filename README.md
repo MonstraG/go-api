@@ -8,7 +8,10 @@
 
 - https://jwt.io/introduction
 
-Generating secret for jwt tokens: `openssl rand -hex 32`
+Generating secret for jwt tokens:
+```shell
+openssl rand -hex 32
+```
 
 ### Building
 
