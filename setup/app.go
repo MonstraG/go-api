@@ -52,6 +52,12 @@ func applyMiddlewares(h func(w reqRes.MyWriter, r *reqRes.MyRequest), middleware
 func (app *App) ListenAndServe() error {
 	log.Println(fmt.Sprintf("Starting server on %s", app.config.Host))
 
-	server := &http.Server{Addr: app.config.Host, Handler: app.mux, ReadTimeout: 5 * time.Second, WriteTimeout: 10 * time.Second}
+	server := &http.Server{
+		Addr:         app.config.Host,
+		Handler:      app.mux,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  30 * time.Second,
+	}
 	return server.ListenAndServe()
 }
