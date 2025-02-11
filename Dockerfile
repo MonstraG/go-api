@@ -3,13 +3,16 @@
 # this syntax allows "exclude" arg for COPY
 # dockerfile syntax verisons: https://hub.docker.com/r/docker/dockerfile
 
-# specifies a parent image:
-# this image is alpine3.21 + all the stuff you need to build a golang application
-# and names this instance 'build'
-# cryptic source image names like 'alpine' explained in https://stackoverflow.com/a/59731596/11593686
+
 # alpine versions: https://alpinelinux.org/downloads/
+ARG ALPINE_VERSION="3.21"
 # golang versions https://go.dev/dl/
-FROM golang:1.23.5-alpine3.21 AS building-image
+ARG GO_VERSION="1.24.0"
+
+# specifies a parent image (image is alpine + all the stuff you need to build a golang application)
+# and names this instance 'build'.
+# cryptic source image names like 'alpine' explained in https://stackoverflow.com/a/59731596/11593686
+FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS building-image
 
 # mkdir+cd into new directory, we are going to put everything there
 WORKDIR /myapp
@@ -25,7 +28,7 @@ RUN CGO_ENABLED=0 go build -o go-server
 
 # switch to a new clean alpine without the golang stuff, much smaller
 # General article about so called multi-stage patterns: https://medium.com/swlh/reducing-container-image-size-esp-for-go-applications-db7658e9063a
-FROM alpine:3.21 AS running-image
+FROM alpine${ALPINE_VERSION} AS running-image
 
 # ensure sqlite is available on running-image
 RUN apk add --no-cache sqlite
