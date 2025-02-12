@@ -11,7 +11,8 @@ ARG GO_VERSION="1.24.0"
 
 # specifies a parent image (image is alpine + all the stuff you need to build a golang application)
 # and names this instance 'build'.
-# cryptic source image names like 'alpine' explained in https://stackoverflow.com/a/59731596/11593686
+# cryptic source image names like 'alpine' explained in https://stackoverflow.com/a/59731596/11593686.
+# official docker images for golang: https://hub.docker.com/_/golang/
 FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS building-image
 
 # mkdir+cd into new directory, we are going to put everything there
