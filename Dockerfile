@@ -29,7 +29,7 @@ RUN CGO_ENABLED=0 go build -o go-server
 
 # switch to a new clean alpine without the golang stuff, much smaller
 # General article about so called multi-stage patterns: https://medium.com/swlh/reducing-container-image-size-esp-for-go-applications-db7658e9063a
-FROM alpine${ALPINE_VERSION} AS running-image
+FROM alpine:${ALPINE_VERSION} AS running-image
 
 # ensure sqlite is available on running-image
 RUN apk add --no-cache sqlite
