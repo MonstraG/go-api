@@ -1,15 +1,16 @@
+{{- /*gotype: go-server/pages/index.PageData*/ -}}
 {{define "nav"}}
-    <nav>
-        <ul>
-            <li><a href="/">Homepage</a></li>
-            <li><a href="{{.VpsLoginLink}}">VPS login</a></li>
-        </ul>
+	<nav>
+		<ul>
+			<li><a href="/">Homepage</a></li>
+			<li><a href="{{.VpsLoginLink}}">VPS login</a></li>
+		</ul>
 
-        <div class="profile-section">
+		<div class="profile-section">
             {{if .UserInitial}}
-                <div class="avatar" title="{{.Username}}">{{.UserInitial}}</div>
+				<div class="avatar" title="{{.Username}}">{{.UserInitial}}</div>
             {{end}}
-            <a href="/logout">Log out</a>
-        </div>
-    </nav>
+			<a href="/logout">Log out</a>
+		</div>
+	</nav>
 {{end}}
