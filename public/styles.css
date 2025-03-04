@@ -4,7 +4,7 @@
 	--borderColor: color-mix(in srgb, var(--foreground) 10%, var(--background));
 	--border: 1px solid var(--borderColor);
 	--elevation-1: color-mix(in srgb, var(--foreground) 5%, var(--background));
-	--spacing: 16px;
+	--spacing: 1rem;
 	--primary: #9A9A7A;
 	--input-background: #36343b;
 	--error: #f57069;
@@ -78,3 +78,30 @@ a {
 .hidden {
 	display: none;
 }
+
+input[type="file"].primary-button::file-selector-button,
+button.primary-button {
+	background-color: var(--primary);
+	padding: 0.5rem 0.75rem;
+	min-width: 90px;
+	border-radius: 99px;
+	border: none;
+	cursor: pointer;
+	font-size: 0.875rem;
+
+	transition: background-color 0.125s ease-in;
+
+	&:hover {
+		background-color: color-mix(in srgb, var(--foreground) 10%, var(--primary));
+	}
+
+	&:active {
+		background-color: color-mix(in srgb, var(--foreground) 20%, var(--primary));
+	}
+
+	&.large {
+		padding: 0.75rem 1rem;
+		font-size: 1rem;
+	}
+}
+

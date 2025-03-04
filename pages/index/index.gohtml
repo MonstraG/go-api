@@ -62,12 +62,30 @@
 			}
 
 			#file-upload-form {
-				margin-top: 16px;
+				padding-block: 8px;
+
+
+				#file-input {
+					width: 100%;
+					margin-bottom: 8px;
+					font-size: 1rem;
+				}
+
+				#file-upload-submit-block {
+					display: flex;
+					flex-direction: row;
+					gap: 16px;
+				}
+
+				#file-upload-progress {
+					flex-grow: 1;
+				}
 			}
 		}
 	</style>
 	<script>
 		htmx.onLoad(function initUploadForm() {
+			/** @type {HTMLFormElement | undefined} */
 			const fileUploadForm = htmx.find("#file-upload-form");
 			if (!fileUploadForm) {
 				console.debug("File upload progress not found, waiting");
@@ -78,6 +96,7 @@
 				console.error(error);
 			});
 
+			/** @type {HTMLProgressElement | undefined} */
 			const fileUploadProgress = htmx.find("#file-upload-progress");
 			if (!fileUploadProgress) {
 				console.error("File upload form found, but not fileUploadProgress!");
@@ -85,7 +104,9 @@
 			}
 
 			htmx.on(fileUploadForm, "htmx:xhr:progress", function setUploadProgress(event) {
-				fileUploadProgress.setAttribute("value", event.detail.loaded / event.detail.total * 100);
+				fileUploadProgress.style.display = "block";
+				const progressValue = event.detail.loaded / event.detail.total * 100;
+				fileUploadProgress.setAttribute("value", progressValue.toString());
 			});
 		});
 	</script>
