@@ -2,7 +2,7 @@
 
 - https://gorm.io/docs/
 - https://golang-jwt.github.io/jwt/usage/create/
-- https://github.com/ytdl-org/youtube-dl
+- https://htmx.org/docs/
 
 ### Concept docs
 
