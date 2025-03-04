@@ -24,6 +24,13 @@
 				<td class="align-end">
                     {{.Size}}
 				</td>
+				<td class="align-end">
+                    {{if not .IsDir}}
+						<button class="icon-button">
+							<img src="/public/icons/delete.svg" width="20" height="20" alt="Unknown"/>
+						</button>
+                    {{end}}
+				</td>
 			</tr>
         {{end}}
 		</tbody>
@@ -46,5 +53,17 @@
 		<hr/>
 		<p>{{.ResultMessage}}</p>
     {{end}}
+
+	<dialog class="dialog" id="file-delete-dialog">
+		<p>
+			Are you sure you want to delete this file?
+		</p>
+		<button class="primary-button">
+			No, keep it
+		</button>
+		<button class="primary-button">
+			Yes, delete it
+		</button>
+	</dialog>
 </div>
 

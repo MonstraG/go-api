@@ -83,7 +83,6 @@ input[type="file"].primary-button::file-selector-button,
 button.primary-button {
 	background-color: var(--primary);
 	padding: 0.5rem 0.75rem;
-	min-width: 90px;
 	border-radius: 99px;
 	border: none;
 	cursor: pointer;
@@ -105,3 +104,21 @@ button.primary-button {
 	}
 }
 
+button.icon-button {
+	background-color: transparent;
+	padding: 0.25rem;
+	border: none;
+	cursor: pointer;
+	border-radius: 99px;
+	font-size: 0.875rem;
+
+	transition: background-color 0.125s ease-in;
+
+	&:hover {
+		background-color: color-mix(in srgb, var(--foreground) 10%, transparent);
+	}
+
+	&:active {
+		background-color: color-mix(in srgb, var(--foreground) 20%, transparent);
+	}
+}
