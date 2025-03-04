@@ -10,17 +10,24 @@
 			gap: 32px;
 		}
 
-		.songs {
+		#songs-partial {
 			max-width: 600px;
-			min-height: 300px;
+			min-height: 400px;
+			width: 100%;
+			display: flex;
+			flex-direction: column;
 
-			.folder-view {
-				width: 100%;
+			.grow {
+				flex-grow: 1;
 			}
 
 			h3 {
 				font-size: 16px;
 				margin-bottom: 4px;
+			}
+
+			hr {
+				margin-inline: 0;
 			}
 
 			table {
@@ -93,6 +100,6 @@
 	<h1>Homepage</h1>
 	<article>
 		<h2>Available songs</h2>
-		<div class="card songs" hx-get="/listSongs" hx-trigger="load" id="songs-browser"></div>
+		<div hx-get="/listSongs" hx-trigger="load" id="songs-browser"></div>
 	</article>
 {{end}}

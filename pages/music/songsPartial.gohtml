@@ -1,40 +1,44 @@
 {{- /*gotype: go-server/pages/music.SongsData*/ -}}
-<div id="folder-view">
-	<h3>/{{.Path}}</h3>
-	<table>
-		<tbody>
-        {{range .Items}}
-			<tr
-                    {{if .IsDir}}
-						hx-get="/listSongs/{{.Path}}" hx-trigger="dblclick" hx-target="#folder-view" hx-swap="outerHTML" class="clickable"
-                    {{end}}
-			>
-				<td class="min-width">
-                    {{if .IsDir}}
-						<img src="/public/icons/folder.svg" width="20" height="20" alt="Folder"/>
-                    {{else if .IsSong}}
-						<img src="/public/icons/music-note.svg" width="20" height="20" alt="Song"/>
-                    {{else}}
-						<img src="/public/icons/question-mark.svg" width="20" height="20" alt="Unknown"/>
-                    {{end}}
-				</td>
-				<td class="align-start">
-                    {{.Name}}
-				</td>
-				<td class="align-end">
-                    {{.Size}}
-				</td>
-				<td class="align-end short">
-                    {{if not .IsDir}}
-						<button class="icon-button" hx-delete="/song/{{.Path}}" hx-confirm='Are you sure you want to delete file "{{.Name}}"' hx-target="#songs-browser">
-							<img src="/public/icons/delete.svg" width="20" height="20" alt="Delete" />
-						</button>
-                    {{end}}
-				</td>
-			</tr>
-        {{end}}
-		</tbody>
-	</table>
+<div id="songs-partial" class="card">
+	<div class="grow">
+		<h3>/{{.Path}}</h3>
+		<table>
+			<tbody>
+            {{range .Items}}
+				<tr
+                        {{if .IsDir}}
+							hx-get="/listSongs/{{.Path}}" hx-trigger="dblclick" hx-target="#songs-partial" hx-swap="outerHTML" class="clickable"
+                        {{end}}
+				>
+					<td class="min-width">
+                        {{if .IsDir}}
+							<img src="/public/icons/folder.svg" width="20" height="20" alt="Folder"/>
+                        {{else if .IsSong}}
+							<img src="/public/icons/music-note.svg" width="20" height="20" alt="Song"/>
+                        {{else}}
+							<img src="/public/icons/question-mark.svg" width="20" height="20" alt="Unknown"/>
+                        {{end}}
+					</td>
+					<td class="align-start">
+                        {{.Name}}
+					</td>
+					<td class="align-end">
+                        {{.Size}}
+					</td>
+					<td class="align-end short">
+                        {{if not .IsDir}}
+							<button class="icon-button" hx-delete="/song/{{.Path}}"
+							        hx-confirm='Are you sure you want to delete file "{{.Name}}"'
+							        hx-target="#songs-browser">
+								<img src="/public/icons/delete.svg" width="20" height="20" alt="Delete"/>
+							</button>
+                        {{end}}
+					</td>
+				</tr>
+            {{end}}
+			</tbody>
+		</table>
+	</div>
 
 	<hr/>
 
