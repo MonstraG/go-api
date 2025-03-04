@@ -64,6 +64,7 @@ func readDir(w reqRes.MyWriter, folder string, query string) {
 			message := fmt.Sprintf("Failure to read folde 2r '%s': \n%v", folder, err)
 			log.Printf(message)
 			http.Error(w, message, http.StatusInternalServerError)
+			return
 		}
 
 		message := fmt.Sprintf("Failure to read folder '%s': \n%v", folder, err)
