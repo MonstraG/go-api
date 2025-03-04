@@ -94,15 +94,7 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 		return
 	}
 
-	cookie := http.Cookie{
-		Name:     myJwt.Cookie,
-		Value:    jwtToken,
-		Path:     "/",
-		MaxAge:   myJwt.MaxAge,
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
-	}
-	http.SetCookie(w, &cookie)
+	w.IssueCookie(jwtToken, myJwt.MaxAge)
+
 	http.Redirect(w, &r.Request, "/", http.StatusSeeOther)
 }

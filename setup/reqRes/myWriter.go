@@ -3,6 +3,7 @@ package reqRes
 import (
 	"bufio"
 	"errors"
+	"go-server/setup/myJwt"
 	"net"
 	"net/http"
 )
@@ -22,4 +23,21 @@ func (w MyWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 func (w MyWriter) RedirectToLogin() {
 	w.Header().Set("Location", `/login`)
 	w.WriteHeader(http.StatusTemporaryRedirect)
+}
+
+func (w MyWriter) IssueCookie(value string, age int) {
+	cookie := http.Cookie{
+		Name:     myJwt.Cookie,
+		Value:    value,
+		Path:     "/",
+		MaxAge:   age,
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+	}
+	http.SetCookie(w, &cookie)
+}
+
+func (w MyWriter) ExpireCookie() {
+	w.IssueCookie("", -1)
 }
