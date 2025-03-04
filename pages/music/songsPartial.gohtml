@@ -66,4 +66,30 @@
 		</button>
 	</dialog>
 </div>
+<script>
+	(function initUploadForm() {
+		/** @type {HTMLFormElement | undefined} */
+		const fileUploadForm = htmx.find("#file-upload-form");
+		if (!fileUploadForm) {
+			console.debug("File upload progress not found, waiting");
+			return;
+		}
 
+		htmx.on(fileUploadForm, "htmx:responseError", function logUploadError(error) {
+			console.error(error);
+		});
+
+		/** @type {HTMLProgressElement | undefined} */
+		const fileUploadProgress = htmx.find("#file-upload-progress");
+		if (!fileUploadProgress) {
+			console.error("File upload form found, but not fileUploadProgress!");
+			return;
+		}
+
+		htmx.on(fileUploadForm, "htmx:xhr:progress", function setUploadProgress(event) {
+			fileUploadProgress.style.display = "block";
+			const progressValue = event.detail.loaded / event.detail.total * 100;
+			fileUploadProgress.setAttribute("value", progressValue.toString());
+		});
+	})();
+</script>
