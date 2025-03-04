@@ -28,5 +28,21 @@
         {{end}}
 		</tbody>
 	</table>
+
+	<hr/>
+
+	<form id="file-upload-form" hx-encoding="multipart/form-data" hx-post="/uploadSong/{{.Path}}"
+	      hx-target="#songs-browser">
+		<input type="file" name="file">
+		<button type="submit">
+			Upload
+		</button>
+		<progress id="file-upload-progress" value="0" max="100"></progress>
+	</form>
+
+    {{if .ResultMessage}}
+		<hr/>
+		<p>{{.ResultMessage}}</p>
+    {{end}}
 </div>
 

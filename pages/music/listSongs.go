@@ -19,8 +19,9 @@ import (
 var songsTemplate = template.Must(template.ParseFiles("pages/music/songsPartial.gohtml"))
 
 type SongsData struct {
-	Items []SongItem
-	Path  string
+	Items         []SongItem
+	Path          string
+	ResultMessage string
 }
 
 type SongItem struct {
@@ -35,10 +36,10 @@ func GetSongs(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
 	folder := filepath.Join(r.AppConfig.SongsFolder, pathQueryParam)
 
-	readDir(w, folder, pathQueryParam)
+	readDir(w, folder, pathQueryParam, "")
 }
 
-func readDir(w reqRes.MyWriter, folder string, query string) {
+func readDir(w reqRes.MyWriter, folder string, query string, resultMessage string) {
 	dirAsFile, err := os.Open(folder)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
@@ -82,8 +83,9 @@ func readDir(w reqRes.MyWriter, folder string, query string) {
 	}
 
 	var templatePageData = SongsData{
-		Items: make([]SongItem, len(dirEntries), len(dirEntries)),
-		Path:  query,
+		Items:         make([]SongItem, len(dirEntries), len(dirEntries)),
+		Path:          query,
+		ResultMessage: resultMessage,
 	}
 
 	for index, file := range dirEntries {

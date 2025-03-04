@@ -23,8 +23,6 @@
 				margin-bottom: 4px;
 			}
 
-
-
 			table {
 				width: 100%;
 				border-collapse: collapse;
@@ -35,6 +33,7 @@
 					&:hover {
 						background: color-mix(in srgb, transparent, var(--foreground) 10%);
 					}
+
 					&:active {
 						background: color-mix(in srgb, transparent, var(--foreground) 20%);
 					}
@@ -55,13 +54,41 @@
 					&.align-start {
 						text-align: start;
 					}
+
 					&.align-end {
 						text-align: end;
 					}
 				}
 			}
+
+			#file-upload-form {
+				margin-top: 16px;
+			}
 		}
 	</style>
+	<script>
+		htmx.onLoad(function initUploadForm() {
+			const fileUploadForm = htmx.find("#file-upload-form");
+			if (!fileUploadForm) {
+				console.debug("File upload progress not found, waiting");
+				return;
+			}
+
+			htmx.on(fileUploadForm, "htmx:responseError", function logUploadError(error) {
+				console.error(error);
+			});
+
+			const fileUploadProgress = htmx.find("#file-upload-progress");
+			if (!fileUploadProgress) {
+				console.error("File upload form found, but not fileUploadProgress!");
+				return;
+			}
+
+			htmx.on(fileUploadForm, "htmx:xhr:progress", function setUploadProgress(event) {
+				fileUploadProgress.setAttribute("value", event.detail.loaded / event.detail.total * 100);
+			});
+		});
+	</script>
 {{end}}
 
 {{define "content"}}
