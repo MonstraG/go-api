@@ -13,7 +13,7 @@ import (
 
 const hundredMegs = 100 << 20
 
-func PostUploadSongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func PutSongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
 
 	err := r.ParseMultipartForm(hundredMegs)

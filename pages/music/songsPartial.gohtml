@@ -26,8 +26,8 @@
 				</td>
 				<td class="align-end short">
                     {{if not .IsDir}}
-						<button class="icon-button">
-							<img src="/public/icons/delete.svg" width="20" height="20" alt="Unknown"/>
+						<button class="icon-button" hx-delete="/song/{{.Path}}" hx-confirm='Are you sure you want to delete file "{{.Name}}"' hx-target="#songs-browser">
+							<img src="/public/icons/delete.svg" width="20" height="20" alt="Delete" />
 						</button>
                     {{end}}
 				</td>
@@ -38,7 +38,7 @@
 
 	<hr/>
 
-	<form id="file-upload-form" hx-encoding="multipart/form-data" hx-post="/uploadSong/{{.Path}}"
+	<form id="file-upload-form" hx-encoding="multipart/form-data" hx-put="/song/{{.Path}}"
 	      hx-target="#songs-browser">
 		<input id="file-input" type="file" name="file" class="primary-button">
 		<div id="file-upload-submit-block">
@@ -53,18 +53,6 @@
 		<hr/>
 		<p>{{.ResultMessage}}</p>
     {{end}}
-
-	<dialog class="dialog" id="file-delete-dialog">
-		<p>
-			Are you sure you want to delete this file?
-		</p>
-		<button class="primary-button">
-			No, keep it
-		</button>
-		<button class="primary-button">
-			Yes, delete it
-		</button>
-	</dialog>
 </div>
 <script>
 	(function initUploadForm() {

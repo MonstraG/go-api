@@ -36,8 +36,10 @@ func mapRoutes(app *setup.App) {
 	app.HandleFunc("GET /logout", logout.GetHandler)
 
 	app.HandleFunc("GET /listSongs/{path...}", authRequired(music.GetSongs))
-	app.HandleFunc("POST /uploadSong/{path...}", authRequired(music.PostUploadSongHandler))
 
 	app.HandleFunc("GET /song/{path...}", music.GetSongHandler)
+	app.HandleFunc("PUT /song/{path...}", authRequired(music.PutSongHandler))
+	app.HandleFunc("DELETE /song/{path...}", authRequired(music.DeleteSongHandler))
+
 	app.HandleFunc("GET /public/{path...}", pages.PublicHandler)
 }

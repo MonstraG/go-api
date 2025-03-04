@@ -39,17 +39,17 @@ func GetSongs(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	readDir(w, folder, pathQueryParam, "")
 }
 
-func readDir(w reqRes.MyWriter, folder string, query string, resultMessage string) {
-	dirAsFile, err := os.Open(folder)
+func readDir(w reqRes.MyWriter, fileSystemFolder string, queryFolder string, resultMessage string) {
+	dirAsFile, err := os.Open(fileSystemFolder)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			message := fmt.Sprintf("%s does not exist", folder)
+			message := fmt.Sprintf("%s does not exist", fileSystemFolder)
 			log.Printf(message)
 			http.Error(w, message, http.StatusBadRequest)
 			return
 		}
 
-		message := fmt.Sprintf("Failure to open folder '%s': \n%v", folder, err)
+		message := fmt.Sprintf("Failure to open folder '%s': \n%v", fileSystemFolder, err)
 		log.Printf(message)
 		http.Error(w, message, http.StatusInternalServerError)
 		return
@@ -62,13 +62,13 @@ func readDir(w reqRes.MyWriter, folder string, query string, resultMessage strin
 		// https://github.com/golang/go/issues/46734
 
 		if errors.Is(err, fs.ErrNotExist) {
-			message := fmt.Sprintf("Failure to read folde 2r '%s': \n%v", folder, err)
+			message := fmt.Sprintf("Failure to read folder '%s': \n%v", fileSystemFolder, err)
 			log.Printf(message)
 			http.Error(w, message, http.StatusInternalServerError)
 			return
 		}
 
-		message := fmt.Sprintf("Failure to read folder '%s': \n%v", folder, err)
+		message := fmt.Sprintf("Failure to read folder '%s': \n%v", fileSystemFolder, err)
 		log.Printf(message)
 		http.Error(w, message, http.StatusInternalServerError)
 		return
@@ -76,7 +76,7 @@ func readDir(w reqRes.MyWriter, folder string, query string, resultMessage strin
 
 	err = dirAsFile.Close()
 	if err != nil {
-		message := fmt.Sprintf("Failure to close folder '%s': \n%v", folder, err)
+		message := fmt.Sprintf("Failure to close folder '%s': \n%v", fileSystemFolder, err)
 		log.Printf(message)
 		http.Error(w, message, http.StatusInternalServerError)
 		return
@@ -84,7 +84,7 @@ func readDir(w reqRes.MyWriter, folder string, query string, resultMessage strin
 
 	var templatePageData = SongsData{
 		Items:         make([]SongItem, len(dirEntries), len(dirEntries)),
-		Path:          query,
+		Path:          queryFolder,
 		ResultMessage: resultMessage,
 	}
 
@@ -95,7 +95,7 @@ func readDir(w reqRes.MyWriter, folder string, query string, resultMessage strin
 			IsDir:  isDir,
 			IsSong: !isDir && isSong(fileName),
 			Name:   fileName,
-			Path:   path.Join(query, fileName),
+			Path:   path.Join(queryFolder, fileName),
 			Size:   getFormattedFileSize(file),
 		}
 	}
@@ -110,13 +110,13 @@ func readDir(w reqRes.MyWriter, folder string, query string, resultMessage strin
 		return strings.Compare(a.Name, b.Name)
 	})
 
-	canGoUp := query != ""
+	canGoUp := queryFolder != ""
 	if canGoUp {
 		templatePageData.Items = slices.Insert(templatePageData.Items, 0, SongItem{
 			IsDir:  true,
 			IsSong: false,
 			Name:   "..",
-			Path:   path.Join(query, ".."),
+			Path:   path.Join(queryFolder, ".."),
 		})
 	}
 
