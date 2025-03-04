@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="htmx" type="javaScript">
+    <properties>
+      <option name="frameworkName" value="&lt;Custom&gt;" />
+      <option name="frameworkVersion" value="2.0.4" />
+      <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/public/htmx.esm.js" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/public/htmx.esm.js" />
+      <root url="file://$PROJECT_DIR$/public/htmx2.0.4.min.js" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
