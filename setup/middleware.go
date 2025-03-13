@@ -8,13 +8,13 @@ import (
 	"time"
 )
 
-// HandlerFn is an alias for http.HandlerFunc argument, but with my ytDlp.MyWriter
-type HandlerFn func(w reqRes.MyWriter, r *reqRes.MyRequest)
+// MyHandlerFunc is an alias for http.HandlerFunc argument, but with my reqRes.MyWriter and reqRes.MyRequest
+type MyHandlerFunc func(w reqRes.MyWriter, r *reqRes.MyRequest)
 
-// Middleware is just a HandlerFn that returns a HandlerFn
-type Middleware func(HandlerFn) HandlerFn
+// Middleware is just a MyHandlerFunc that returns a MyHandlerFunc
+type Middleware func(MyHandlerFunc) MyHandlerFunc
 
-func MyReqResWrapperMiddleware(next HandlerFn, app *App) func(w http.ResponseWriter, r *http.Request) {
+func MyReqResWrapperMiddleware(next MyHandlerFunc, app *App) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		myWriter := reqRes.MyWriter{ResponseWriter: w}
 		myRequest := reqRes.MyRequest{Request: *r, Db: app.db, AppConfig: app.config}
@@ -23,7 +23,7 @@ func MyReqResWrapperMiddleware(next HandlerFn, app *App) func(w http.ResponseWri
 }
 
 // LoggingMiddleware is a Middleware that logs a hit and time taken to answer
-func LoggingMiddleware(next HandlerFn) HandlerFn {
+func LoggingMiddleware(next MyHandlerFunc) MyHandlerFunc {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile | log.LUTC)
 	return func(w reqRes.MyWriter, r *reqRes.MyRequest) {
 		start := time.Now()
@@ -35,7 +35,7 @@ func LoggingMiddleware(next HandlerFn) HandlerFn {
 }
 
 func CreateJwtAuthRequiredMiddleware(app App) Middleware {
-	return func(next HandlerFn) HandlerFn {
+	return func(next MyHandlerFunc) MyHandlerFunc {
 		return func(w reqRes.MyWriter, r *reqRes.MyRequest) {
 			cookie, err := r.CookieIfValid(myJwt.Cookie)
 			if err != nil {

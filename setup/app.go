@@ -3,7 +3,6 @@ package setup
 import (
 	"fmt"
 	"go-server/setup/appConfig"
-	"go-server/setup/reqRes"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
@@ -36,16 +35,16 @@ func (app *App) Use(mw Middleware) {
 }
 
 // HandleFunc is a wrapper around normal http.HandleFunc but calling all Middleware-s first
-func (app *App) HandleFunc(pattern string, handlerFunc func(w reqRes.MyWriter, r *reqRes.MyRequest)) {
+func (app *App) HandleFunc(pattern string, handlerFunc MyHandlerFunc) {
 	app.mux.HandleFunc(pattern, MyReqResWrapperMiddleware(applyMiddlewares(handlerFunc, app.middlewares), app))
 }
 
 // applyMiddlewares runs all middlewares in order
-func applyMiddlewares(h func(w reqRes.MyWriter, r *reqRes.MyRequest), middlewares []Middleware) func(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func applyMiddlewares(handlerFunc MyHandlerFunc, middlewares []Middleware) MyHandlerFunc {
 	for _, middleware := range middlewares {
-		h = middleware(h)
+		handlerFunc = middleware(handlerFunc)
 	}
-	return h
+	return handlerFunc
 }
 
 // ListenAndServe is a wrapper around normal http.ListenAndServe

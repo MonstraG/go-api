@@ -22,8 +22,8 @@ type Peer struct {
 }
 
 var (
-	peers   = make(map[string]*Peer)
-	peersMu sync.Mutex
+	peers      = make(map[string]*Peer)
+	peersMutex sync.Mutex
 )
 
 func parseMessage(connection *websocket.Conn) (map[string]any, error) {
@@ -33,14 +33,14 @@ func parseMessage(connection *websocket.Conn) (map[string]any, error) {
 }
 
 func rememberPeer(peer *Peer) {
-	peersMu.Lock()
-	defer peersMu.Unlock()
+	peersMutex.Lock()
+	defer peersMutex.Unlock()
 	peers[peer.Id] = peer
 }
 
 func forgetPeer(peer *Peer) {
-	peersMu.Lock()
-	defer peersMu.Unlock()
+	peersMutex.Lock()
+	defer peersMutex.Unlock()
 	delete(peers, peer.Id)
 }
 
@@ -118,8 +118,8 @@ func handleMessage(senderId string, message map[string]any) {
 }
 
 func handleTargetedMessage(senderId string, targetId string, message map[string]any) {
-	peersMu.Lock()
-	defer peersMu.Unlock()
+	peersMutex.Lock()
+	defer peersMutex.Unlock()
 
 	recipient, found := peers[targetId]
 	if !found {
@@ -134,8 +134,8 @@ func handleTargetedMessage(senderId string, targetId string, message map[string]
 }
 
 func handleGlobalMessage(senderId string, message any) {
-	peersMu.Lock()
-	defer peersMu.Unlock()
+	peersMutex.Lock()
+	defer peersMutex.Unlock()
 
 	for _, peer := range peers {
 		if peer.Id == senderId {

@@ -1,15 +1,15 @@
 {
-  "host": "0.0.0.0:8080",
-  "databaseFile": "data/data.db",
-  "defaultUser": {
-    "username": "admin",
-    "password": "1234"
-  },
-  "guestUser": {
-    "username": "guest",
-    "password": "guest"
-  },
-  "vpsLoginLink": "google.com",
-  "jwtSecret": "put-32-bit-secret-here",
-  "songsFolder": "data/songs/"
+	"host": "0.0.0.0:8080",
+	"databaseFile": "data/data.db",
+	"defaultUser": {
+		"username": "admin",
+		"password": "1234"
+	},
+	"guestUser": {
+		"username": "guest",
+		"password": "guest"
+	},
+	"vpsLoginLink": "google.com",
+	"jwtSecret": "put-32-bit-secret-here",
+	"songsFolder": "data/songs/"
 }
