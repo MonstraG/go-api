@@ -9,6 +9,7 @@ import (
 	"go-server/pages/notFound"
 	"go-server/setup"
 	"go-server/setup/appConfig"
+	"go-server/setup/websockets"
 	"log"
 )
 
@@ -42,4 +43,6 @@ func mapRoutes(app *setup.App) {
 	app.HandleFunc("DELETE /song/{path...}", authRequired(music.DeleteSongHandler))
 
 	app.HandleFunc("GET /public/{path...}", pages.PublicHandler)
+
+	app.HandleFunc("GET /ws", websockets.HandleWebSocket)
 }
