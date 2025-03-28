@@ -41,6 +41,7 @@ func mapRoutes(app *setup.App) {
 	app.HandleFunc("GET /song/{path...}", music.GetSongHandler)
 	app.HandleFunc("PUT /song/{path...}", authRequired(music.PutSongHandler))
 	app.HandleFunc("DELETE /song/{path...}", authRequired(music.DeleteSongHandler))
+	app.HandleFunc("PUT /songFolder/{path...}", authRequired(music.CreateFolderHandler))
 
 	app.HandleFunc("GET /public/{path...}", pages.PublicHandler)
 

@@ -41,21 +41,43 @@
 	</div>
 
 	<hr/>
+	<section>
+		<h4>Upload file</h4>
+		<form id="file-upload-form" hx-encoding="multipart/form-data" hx-put="/song/{{.Path}}"
+		      hx-target="#songs-browser">
+			<input id="file-input" type="file" name="file" class="primary-button">
+			<div class="form-submit-block">
+				<button type="submit" class="primary-button">
+					Upload
+				</button>
+				<progress id="file-upload-progress" value="0" max="100" style="display: none;"></progress>
+			</div>
+		</form>
+	</section>
 
-	<form id="file-upload-form" hx-encoding="multipart/form-data" hx-put="/song/{{.Path}}"
-	      hx-target="#songs-browser">
-		<input id="file-input" type="file" name="file" class="primary-button">
-		<div id="file-upload-submit-block">
-			<button type="submit" class="primary-button">
-				Upload
-			</button>
-			<progress id="file-upload-progress" value="0" max="100" style="display: none;"></progress>
-		</div>
-	</form>
+	<hr/>
+	<section>
+		<h4>Create folder</h4>
+		<form id="create-folder-form" hx-encoding="multipart/form-data" hx-put="/songFolder/{{.Path}}"
+		      hx-target="#songs-browser">
+			<label for="folder-name-input">
+				Folder name
+			</label>
+			<input id="folder-name-input" type="text" name="name">
+			<div class="form-submit-block">
+				<button type="submit" class="primary-button">
+					Create
+				</button>
+			</div>
+		</form>
+	</section>
+
 
     {{if .ResultMessage}}
 		<hr/>
-		<p>{{.ResultMessage}}</p>
+		<section>
+			<p>{{.ResultMessage}}</p>
+		</section>
     {{end}}
 </div>
 <script>
