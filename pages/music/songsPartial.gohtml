@@ -26,9 +26,9 @@
                         {{.Size}}
 					</td>
 					<td class="align-end short">
-                        {{if not .IsDir}}
+                        {{if not .IsGoUp}}
 							<button class="icon-button" hx-delete="/song/{{.Path}}"
-							        hx-confirm='Are you sure you want to delete file "{{.Name}}"'
+							        hx-confirm='Are you sure you want to delete {{if .IsDir}}folder{{else}}file{{end}} "{{.Name}}"?'
 							        hx-target="#songs-browser">
 								<img src="/public/icons/delete.svg" width="20" height="20" alt="Delete"/>
 							</button>

@@ -27,6 +27,7 @@ type SongsData struct {
 type SongItem struct {
 	IsDir  bool
 	IsSong bool
+	IsGoUp bool
 	Name   string
 	Path   string
 	Size   string
@@ -115,6 +116,7 @@ func readDir(w reqRes.MyWriter, fileSystemFolder string, queryFolder string, res
 		templatePageData.Items = slices.Insert(templatePageData.Items, 0, SongItem{
 			IsDir:  true,
 			IsSong: false,
+			IsGoUp: true,
 			Name:   "..",
 			Path:   path.Join(queryFolder, ".."),
 		})
