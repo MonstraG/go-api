@@ -49,3 +49,11 @@ And, just in case, list containers:
 ```shell
 docker container list
 ```
+
+### Updating
+
+1. Update locally installed go version
+2. Update dependencies in go.mod
+3. Update github action versions
+4. Update alpine/go versions in Dockerfile
+5. Update vendored htmx version
