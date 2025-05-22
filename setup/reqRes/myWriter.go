@@ -20,9 +20,8 @@ func (w MyWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return h.Hijack()
 }
 
-func (w MyWriter) RedirectToLogin() {
-	w.Header().Set("Location", `/login`)
-	w.WriteHeader(http.StatusTemporaryRedirect)
+func (w MyWriter) RedirectToLogin(r *MyRequest) {
+	http.Redirect(w, &r.Request, "/login", http.StatusTemporaryRedirect)
 }
 
 func (w MyWriter) IssueCookie(value string, age int) {

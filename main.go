@@ -2,6 +2,7 @@ package main
 
 import (
 	"go-server/pages"
+	"go-server/pages/forgotPassword"
 	"go-server/pages/index"
 	"go-server/pages/login"
 	"go-server/pages/logout"
@@ -32,7 +33,12 @@ func mapRoutes(app *setup.App) {
 
 	var authRequired = setup.CreateJwtAuthRequiredMiddleware(&jwtService)
 
-	app.HandleFunc("GET /", authRequired(notFound.GetHandler))
+	app.HandleFunc("GET /", notFound.GetHandler)
+
+	var forgotPasswordController = forgotPassword.NewController(app.Db)
+
+	app.HandleFunc("GET /forgot-password", forgotPasswordController.GetHandler)
+	app.HandleFunc("POST /forgot-password", forgotPasswordController.PostHandler)
 
 	var indexController = index.NewController(app.Config)
 	app.HandleFunc("GET /{$}", authRequired(indexController.GetHandler))

@@ -9,12 +9,13 @@ import (
 )
 
 type User struct {
-	ID           string `gorm:"primarykey"`
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	DeletedAt    sql.NullTime `gorm:"index"`
-	Username     string       `gorm:"unique"`
-	PasswordHash string
+	ID               string `gorm:"primarykey"`
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+	DeletedAt        sql.NullTime `gorm:"index"`
+	Username         string       `gorm:"unique"`
+	PasswordHash     string
+	CanResetPassword bool
 }
 
 func (user *User) BeforeCreate(*gorm.DB) (err error) {

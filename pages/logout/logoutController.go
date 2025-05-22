@@ -4,7 +4,7 @@ import (
 	"go-server/setup/reqRes"
 )
 
-func GetHandler(w reqRes.MyWriter, _ *reqRes.MyRequest) {
+func GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	w.ExpireCookie()
-	w.RedirectToLogin()
+	w.RedirectToLogin(r)
 }

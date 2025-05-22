@@ -66,6 +66,7 @@ func (controller *Controller) PutSongHandler(w reqRes.MyWriter, r *reqRes.MyRequ
 		message := fmt.Sprintf("Failed to save file: \n%v", err)
 		log.Println(message)
 		http.Error(w, message, http.StatusInternalServerError)
+		return
 	}
 
 	readDir(w, folder, pathQueryParam, "File uploaded!")

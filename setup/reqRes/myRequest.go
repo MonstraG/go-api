@@ -6,6 +6,7 @@ import (
 
 type MyRequest struct {
 	http.Request
+	UserId   string
 	Username string
 }
 
