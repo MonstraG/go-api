@@ -3,6 +3,7 @@ package index
 import (
 	"fmt"
 	"go-server/pages"
+	"go-server/setup/appConfig"
 	"go-server/setup/reqRes"
 	"html/template"
 	"log"
@@ -20,10 +21,20 @@ type PageData struct {
 	VpsLoginLink string
 }
 
-func GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+type Controller struct {
+	vpsLoginLink string
+}
+
+func NewController(config appConfig.AppConfig) *Controller {
+	return &Controller{
+		vpsLoginLink: config.VpsLoginLink,
+	}
+}
+
+func (controller *Controller) GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	var indexPageData = PageData{
 		PageData:     pages.NewPageData(r, "Homepage"),
-		VpsLoginLink: r.AppConfig.VpsLoginLink,
+		VpsLoginLink: controller.vpsLoginLink,
 	}
 
 	err := indexTemplate.Execute(w, indexPageData)

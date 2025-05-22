@@ -13,7 +13,7 @@ import (
 
 const hundredMegs = 100 << 20
 
-func PutSongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) PutSongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
 
 	err := r.ParseMultipartForm(hundredMegs)
@@ -43,7 +43,7 @@ func PutSongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	fmt.Printf("File Size: %+v\n", handler.Size)
 	fmt.Printf("MIME Header: %+v\n", handler.Header)
 
-	folder := filepath.Join(r.AppConfig.SongsFolder, pathQueryParam)
+	folder := filepath.Join(controller.songsFolder, pathQueryParam)
 	path := filepath.Join(folder, handler.Filename)
 
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)

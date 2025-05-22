@@ -23,14 +23,15 @@ type PageData struct {
 }
 
 type Controller struct {
-	MyJwt myJwt.Service
+	MyJwt *myJwt.Service
+	Db    *gorm.DB
 }
 
-func NewController(myJwt myJwt.Service) *Controller {
-	return &Controller{MyJwt: myJwt}
+func NewController(myJwt *myJwt.Service, Db *gorm.DB) *Controller {
+	return &Controller{MyJwt: myJwt, Db: Db}
 }
 
-func (loginController *Controller) GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	renderLoginPage(w, r, "")
 }
 
@@ -48,7 +49,7 @@ func renderLoginPage(w reqRes.MyWriter, r *reqRes.MyRequest, errorMessage string
 	}
 }
 
-func (loginController *Controller) PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	err := r.ParseForm()
 	if err != nil {
 		message := fmt.Sprintf("Failed to parse form: \n%v", err)
@@ -70,7 +71,7 @@ func (loginController *Controller) PostHandler(w reqRes.MyWriter, r *reqRes.MyRe
 
 	lowercaseUsername := strings.ToLower(username)
 	user := models.User{}
-	result := r.Db.Where("lower(username) = @name", sql.Named("name", lowercaseUsername)).First(&user)
+	result := controller.Db.Where("lower(username) = @name", sql.Named("name", lowercaseUsername)).First(&user)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		renderLoginPage(w, r, "Username or password is invalid")
 		return
@@ -94,7 +95,7 @@ func (loginController *Controller) PostHandler(w reqRes.MyWriter, r *reqRes.MyRe
 		return
 	}
 
-	jwtToken, err := loginController.MyJwt.CreateJwt(user)
+	jwtToken, err := controller.MyJwt.CreateJwt(user)
 	if err != nil {
 		message := fmt.Sprintf("Error generating jwt token for user '%v': \n%v", lowercaseUsername, result.Error)
 		log.Println(message)

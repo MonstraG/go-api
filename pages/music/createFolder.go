@@ -11,7 +11,7 @@ import (
 
 const kilobyte = 1 << 10
 
-func CreateFolderHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) CreateFolderHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
 
 	err := r.ParseMultipartForm(kilobyte)
@@ -30,7 +30,7 @@ func CreateFolderHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 		return
 	}
 
-	folder := filepath.Join(r.AppConfig.SongsFolder, pathQueryParam)
+	folder := filepath.Join(controller.songsFolder, pathQueryParam)
 	path := filepath.Join(folder, value)
 
 	err = os.Mkdir(path, 0666)

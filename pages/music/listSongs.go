@@ -33,9 +33,9 @@ type SongItem struct {
 	Size   string
 }
 
-func GetSongs(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) GetSongs(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
-	folder := filepath.Join(r.AppConfig.SongsFolder, pathQueryParam)
+	folder := filepath.Join(controller.songsFolder, pathQueryParam)
 
 	readDir(w, folder, pathQueryParam, "")
 }

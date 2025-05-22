@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 )
 
-func DeleteSongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) DeleteSongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
-	pathToRemove := filepath.Join(r.AppConfig.SongsFolder, pathQueryParam)
+	pathToRemove := filepath.Join(controller.songsFolder, pathQueryParam)
 
 	stat, err := os.Stat(pathToRemove)
 	if errors.Is(err, os.ErrNotExist) {

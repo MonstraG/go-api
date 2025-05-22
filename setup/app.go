@@ -3,7 +3,6 @@ package setup
 import (
 	"fmt"
 	"go-server/setup/appConfig"
-	"go-server/setup/myJwt"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
@@ -14,9 +13,8 @@ import (
 type App struct {
 	mux         *http.ServeMux
 	middlewares []Middleware
-	config      appConfig.AppConfig
-	db          *gorm.DB
-	MyJwt       myJwt.Service
+	Config      appConfig.AppConfig
+	Db          *gorm.DB
 }
 
 // NewApp is a constructor for App
@@ -26,9 +24,8 @@ func NewApp(appConfig appConfig.AppConfig) *App {
 	return &App{
 		mux:         http.NewServeMux(),
 		middlewares: []Middleware{},
-		config:      appConfig,
-		db:          db,
-		MyJwt:       myJwt.CreateMyJwt(appConfig, time.Now),
+		Config:      appConfig,
+		Db:          db,
 	}
 }
 
@@ -39,7 +36,7 @@ func (app *App) Use(mw Middleware) {
 
 // HandleFunc is a wrapper around normal http.HandleFunc but calling all Middleware-s first
 func (app *App) HandleFunc(pattern string, handlerFunc MyHandlerFunc) {
-	app.mux.HandleFunc(pattern, MyReqResWrapperMiddleware(applyMiddlewares(handlerFunc, app.middlewares), app))
+	app.mux.HandleFunc(pattern, MyReqResWrapperMiddleware(applyMiddlewares(handlerFunc, app.middlewares)))
 }
 
 // applyMiddlewares runs all middlewares in order
@@ -52,10 +49,10 @@ func applyMiddlewares(handlerFunc MyHandlerFunc, middlewares []Middleware) MyHan
 
 // ListenAndServe is a wrapper around normal http.ListenAndServe
 func (app *App) ListenAndServe() error {
-	log.Println(fmt.Sprintf("Starting server on %s", app.config.Host))
+	log.Println(fmt.Sprintf("Starting server on %s", app.Config.Host))
 
 	server := &http.Server{
-		Addr:         app.config.Host,
+		Addr:         app.Config.Host,
 		Handler:      app.mux,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,

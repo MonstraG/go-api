@@ -9,8 +9,10 @@ import (
 	"go-server/pages/notFound"
 	"go-server/setup"
 	"go-server/setup/appConfig"
+	"go-server/setup/myJwt"
 	"go-server/setup/websockets"
 	"log"
+	"time"
 )
 
 func main() {
@@ -26,24 +28,27 @@ func main() {
 }
 
 func mapRoutes(app *setup.App) {
-	var authRequired = setup.CreateJwtAuthRequiredMiddleware(*app)
+	var jwtService = myJwt.CreateMyJwt(app.Config, time.Now)
+
+	var authRequired = setup.CreateJwtAuthRequiredMiddleware(&jwtService)
 
 	app.HandleFunc("GET /", authRequired(notFound.GetHandler))
 
-	app.HandleFunc("GET /{$}", authRequired(index.GetHandler))
+	var indexController = index.NewController(app.Config)
+	app.HandleFunc("GET /{$}", authRequired(indexController.GetHandler))
 
-	var loginController = login.NewController(app.MyJwt)
-
+	var loginController = login.NewController(&jwtService, app.Db)
 	app.HandleFunc("GET /login", loginController.GetHandler)
 	app.HandleFunc("POST /login", loginController.PostHandler)
+
 	app.HandleFunc("GET /logout", logout.GetHandler)
 
-	app.HandleFunc("GET /listSongs/{path...}", authRequired(music.GetSongs))
-
-	app.HandleFunc("GET /song/{path...}", music.GetSongHandler)
-	app.HandleFunc("PUT /song/{path...}", authRequired(music.PutSongHandler))
-	app.HandleFunc("DELETE /song/{path...}", authRequired(music.DeleteSongHandler))
-	app.HandleFunc("PUT /songFolder/{path...}", authRequired(music.CreateFolderHandler))
+	var musicController = music.NewController(app.Config)
+	app.HandleFunc("GET /listSongs/{path...}", authRequired(musicController.GetSongs))
+	app.HandleFunc("GET /song/{path...}", musicController.GetSongHandler)
+	app.HandleFunc("PUT /song/{path...}", authRequired(musicController.PutSongHandler))
+	app.HandleFunc("DELETE /song/{path...}", authRequired(musicController.DeleteSongHandler))
+	app.HandleFunc("PUT /songFolder/{path...}", authRequired(musicController.CreateFolderHandler))
 
 	app.HandleFunc("GET /public/{path...}", pages.PublicHandler)
 

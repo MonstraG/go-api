@@ -14,10 +14,10 @@ type MyHandlerFunc func(w reqRes.MyWriter, r *reqRes.MyRequest)
 // Middleware is just a MyHandlerFunc that returns a MyHandlerFunc
 type Middleware func(MyHandlerFunc) MyHandlerFunc
 
-func MyReqResWrapperMiddleware(next MyHandlerFunc, app *App) func(w http.ResponseWriter, r *http.Request) {
+func MyReqResWrapperMiddleware(next MyHandlerFunc) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		myWriter := reqRes.MyWriter{ResponseWriter: w}
-		myRequest := reqRes.MyRequest{Request: *r, Db: app.db, AppConfig: app.config}
+		myRequest := reqRes.MyRequest{Request: *r}
 		next(myWriter, &myRequest)
 	}
 }
@@ -34,7 +34,7 @@ func LoggingMiddleware(next MyHandlerFunc) MyHandlerFunc {
 	}
 }
 
-func CreateJwtAuthRequiredMiddleware(app App) Middleware {
+func CreateJwtAuthRequiredMiddleware(jwtService *myJwt.Service) Middleware {
 	return func(next MyHandlerFunc) MyHandlerFunc {
 		return func(w reqRes.MyWriter, r *reqRes.MyRequest) {
 			cookie, err := r.CookieIfValid(myJwt.Cookie)
@@ -43,7 +43,7 @@ func CreateJwtAuthRequiredMiddleware(app App) Middleware {
 				return
 			}
 
-			claims, err := app.MyJwt.ValidateJWT(cookie.Value)
+			claims, err := jwtService.ValidateJWT(cookie.Value)
 			if err != nil {
 				log.Printf("Error validating JWT:\n%v\n", err)
 				w.RedirectToLogin()
