@@ -29,21 +29,7 @@ func OpenDb(appConfig appConfig.AppConfig) *gorm.DB {
 }
 
 func seedDb(db *gorm.DB, appConfig appConfig.AppConfig) {
-	err := db.Migrator().DropTable("users")
-	if err != nil {
-		log.Fatalf("failed to drop users:\n%v\n", err)
-	}
-
-	err = db.AutoMigrate(&models.User{})
-	if err != nil {
-		log.Fatalf("failed to migrate users:\n%v\n", err)
-	}
-
-	err = db.Migrator().DropTable("songs")
-	if err != nil {
-		log.Fatalf("failed to migrate users:\n%v\n", err)
-	}
-	err = db.Migrator().DropTable("song_queue_items")
+	err := db.AutoMigrate(&models.User{})
 	if err != nil {
 		log.Fatalf("failed to migrate users:\n%v\n", err)
 	}
