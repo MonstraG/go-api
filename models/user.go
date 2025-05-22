@@ -1,14 +1,26 @@
 package models
 
 import (
+	"database/sql"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"time"
 )
 
 type User struct {
-	gorm.Model
-	Username     string `gorm:"unique"`
+	ID           string `gorm:"primarykey"`
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	DeletedAt    sql.NullTime `gorm:"index"`
+	Username     string       `gorm:"unique"`
 	PasswordHash string
+}
+
+func (user *User) BeforeCreate(*gorm.DB) (err error) {
+	// UUID version 4
+	user.ID = uuid.NewString()
+	return
 }
 
 func HashPassword(password string) (string, error) {
@@ -16,7 +28,7 @@ func HashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-func (u *User) CheckPasswordHash(password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(password))
+func (user *User) CheckPasswordHash(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
 	return err == nil
 }
