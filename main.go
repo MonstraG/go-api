@@ -34,11 +34,13 @@ func mapRoutes(app *setup.App) {
 	var authRequired = setup.CreateJwtAuthRequiredMiddleware(&jwtService)
 
 	app.HandleFunc("GET /", notFound.GetHandler)
+	app.HandleFunc("POST /", notFound.GetHandler)
 
 	var forgotPasswordController = forgotPassword.NewController(app.Db)
 
 	app.HandleFunc("GET /forgot-password", forgotPasswordController.GetHandler)
 	app.HandleFunc("POST /forgot-password", forgotPasswordController.PostHandler)
+	app.HandleFunc("POST /set-password", forgotPasswordController.PostSetPasswordHandler)
 
 	var indexController = index.NewController(app.Config)
 	app.HandleFunc("GET /{$}", authRequired(indexController.GetHandler))

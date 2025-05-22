@@ -15,7 +15,7 @@ type User struct {
 	DeletedAt        sql.NullTime `gorm:"index"`
 	Username         string       `gorm:"unique"`
 	PasswordHash     string
-	CanResetPassword bool
+	CanResetPassword bool `gorm:"not null;default:false"`
 }
 
 func (user *User) BeforeCreate(*gorm.DB) (err error) {
