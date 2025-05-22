@@ -3,6 +3,7 @@ package setup
 import (
 	"fmt"
 	"go-server/setup/appConfig"
+	"go-server/setup/myJwt"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
@@ -15,6 +16,7 @@ type App struct {
 	middlewares []Middleware
 	config      appConfig.AppConfig
 	db          *gorm.DB
+	MyJwt       myJwt.Service
 }
 
 // NewApp is a constructor for App
@@ -26,6 +28,7 @@ func NewApp(appConfig appConfig.AppConfig) *App {
 		middlewares: []Middleware{},
 		config:      appConfig,
 		db:          db,
+		MyJwt:       myJwt.CreateMyJwt(appConfig, time.Now),
 	}
 }
 

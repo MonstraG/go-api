@@ -22,7 +22,15 @@ type PageData struct {
 	ErrorMessage string
 }
 
-func GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+type Controller struct {
+	MyJwt myJwt.Service
+}
+
+func NewController(myJwt myJwt.Service) *Controller {
+	return &Controller{MyJwt: myJwt}
+}
+
+func (loginController *Controller) GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	renderLoginPage(w, r, "")
 }
 
@@ -40,7 +48,7 @@ func renderLoginPage(w reqRes.MyWriter, r *reqRes.MyRequest, errorMessage string
 	}
 }
 
-func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (loginController *Controller) PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	err := r.ParseForm()
 	if err != nil {
 		message := fmt.Sprintf("Failed to parse form: \n%v", err)
@@ -86,7 +94,7 @@ func PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 		return
 	}
 
-	jwtToken, err := myJwt.Singleton.CreateJwt(user, r.AppConfig)
+	jwtToken, err := loginController.MyJwt.CreateJwt(user)
 	if err != nil {
 		message := fmt.Sprintf("Error generating jwt token for user '%v': \n%v", lowercaseUsername, result.Error)
 		log.Println(message)

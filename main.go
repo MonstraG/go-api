@@ -32,8 +32,10 @@ func mapRoutes(app *setup.App) {
 
 	app.HandleFunc("GET /{$}", authRequired(index.GetHandler))
 
-	app.HandleFunc("GET /login", login.GetHandler)
-	app.HandleFunc("POST /login", login.PostHandler)
+	var loginController = login.NewController(app.MyJwt)
+
+	app.HandleFunc("GET /login", loginController.GetHandler)
+	app.HandleFunc("POST /login", loginController.PostHandler)
 	app.HandleFunc("GET /logout", logout.GetHandler)
 
 	app.HandleFunc("GET /listSongs/{path...}", authRequired(music.GetSongs))

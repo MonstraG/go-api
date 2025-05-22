@@ -3,15 +3,10 @@ package myJwt
 import (
 	"go-server/models"
 	"go-server/setup/appConfig"
+	"strings"
 	"testing"
 	"time"
 )
-
-// token is generated via https://jwt.io/#debugger-io
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MzQwMjExNzIsImlzcyI6ImdvLWFwaSIsInN1YiI6IkpvaG4ifQ.i_yYoxfV_7TYeWJKII26wUsaWnVwpdcCTlWKWgDva_U"
-
-var user = models.User{Username: "John"}
-var config = appConfig.AppConfig{JWTSecret: "secret"}
 
 // if changing this, make sure to remove the milliseconds as the issued at claim doesn't save that
 func preChosenTime() time.Time {
@@ -22,25 +17,33 @@ func preChosenTime() time.Time {
 	return chosenTime
 }
 
-var testSingleton = MyJwt{
-	now: preChosenTime,
-}
+var config = appConfig.AppConfig{JWTSecret: "random-32-bit-secret-for-testing"}
+
+var myJwt = CreateMyJwt(config, preChosenTime)
+
+// token is generated via https://jwt.io/#debugger-io
+// (JWT Encoder tab)
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MzQwMjExNzIsImlzcyI6ImdvLWFwaSIsIm5hbWUiOiJKb2huIiwic3ViIjoiYWQxZTg5OTQtNTc2MC00OWM1LWI3MzEtNWI4YmE2MmQyM2ZlIn0.Bi9yRd8Fj4nZ0lmX3yx4S6v-k5xkfpR5omtKhJmDPG0"
+
+// uuid.NewString()
+var userId = "ad1e8994-5760-49c5-b731-5b8ba62d23fe"
+var user = models.User{Username: "John", ID: userId}
 
 func TestCreateJwt(t *testing.T) {
-	jwt, err := testSingleton.CreateJwt(user, config)
+	jwt, err := myJwt.CreateJwt(user)
 	if err != nil {
 		t.Fatalf("Failed to create JWT: %v", err)
 		return
 	}
 
 	want := token
-	if jwt != want {
-		t.Fatalf("want %s, got %s", want, jwt)
+	if !strings.HasPrefix(jwt, want) {
+		t.Fatalf("want \n%s,\ngot \n%s\n", want, jwt)
 	}
 }
 
 func TestValidateJwt(t *testing.T) {
-	claims, err := testSingleton.ValidateJWT(token, config)
+	claims, err := myJwt.ValidateJWT(token)
 	if err != nil {
 		t.Fatalf("Failed to validate JWT: %v", err)
 	}
@@ -67,7 +70,7 @@ func TestValidateJwt(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to get sub, %v", err)
 	}
-	wantSub := user.Username
+	wantSub := user.ID
 	if gotSub != wantSub {
 		t.Fatalf("Invalid sub, want %v, got %v", wantIssuedAt, gotIssuedAt)
 	}

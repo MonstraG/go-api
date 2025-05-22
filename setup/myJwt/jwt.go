@@ -13,36 +13,45 @@ const issuer = "go-api"
 const Cookie = "jwtToken"
 const MaxAge = 3600 * 24
 
-type MyJwt struct {
-	now func() time.Time
+type Service struct {
+	now       func() time.Time
+	secretKey []byte
 }
 
-// Singleton exists only to set "default" now time
-// which, in turn, exists only to support passing custom time in tests :(
-var Singleton = MyJwt{
-	now: time.Now,
+type MyCustomClaims struct {
+	Username string `json:"name"`
+	jwt.RegisteredClaims
 }
 
-func (myJwt *MyJwt) CreateJwt(user models.User, config appConfig.AppConfig) (string, error) {
-	key := []byte(config.JWTSecret)
+func CreateMyJwt(config appConfig.AppConfig, now func() time.Time) Service {
+	return Service{
+		now:       now,
+		secretKey: []byte(config.JWTSecret),
+	}
+}
+
+func (myJwt *Service) CreateJwt(user models.User) (string, error) {
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"iss": issuer,
-		"sub": user.Username,
-		"iat": myJwt.now().Unix(),
+		"iss":  issuer,
+		"sub":  user.ID,
+		"iat":  myJwt.now().Unix(),
+		"name": user.Username,
 	})
 
-	return jwtToken.SignedString(key)
+	return jwtToken.SignedString(myJwt.secretKey)
 }
 
-func (myJwt *MyJwt) ValidateJWT(tokenString string, config appConfig.AppConfig) (jwt.Claims, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
+var validationMethod = []string{"HS256"}
+
+func (myJwt *Service) ValidateJWT(tokenString string) (*MyCustomClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &MyCustomClaims{}, func(token *jwt.Token) (any, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return []byte(config.JWTSecret), nil
-	}, jwt.WithValidMethods([]string{"HS256"}), jwt.WithIssuer(issuer), jwt.WithIssuedAt())
+		return myJwt.secretKey, nil
+	}, jwt.WithValidMethods(validationMethod), jwt.WithIssuer(issuer), jwt.WithIssuedAt(), jwt.WithLeeway(5*time.Second))
 
 	if err != nil {
 		return nil, err
@@ -52,21 +61,15 @@ func (myJwt *MyJwt) ValidateJWT(tokenString string, config appConfig.AppConfig) 
 		return nil, ErrTokenInvalid
 	}
 
-	iat, err := token.Claims.GetIssuedAt()
-	if err != nil {
-		return nil, ErrIssuedAtMissing
+	claims, ok := token.Claims.(*MyCustomClaims)
+	if !ok {
+		return nil, ErrTokenClaimCastFailed
 	}
 
-	expired := iat.Time.Add(MaxAge * time.Second).Before(myJwt.now())
-	if expired {
-		return nil, ErrTokenExpired
-	}
-
-	return token.Claims, nil
+	return claims, nil
 }
 
 var (
-	ErrTokenInvalid    = errors.New("token is invalid")
-	ErrIssuedAtMissing = errors.New("issued at time is missing")
-	ErrTokenExpired    = errors.New("token is expired")
+	ErrTokenInvalid         = errors.New("token is invalid")
+	ErrTokenClaimCastFailed = errors.New("failed to cast")
 )
