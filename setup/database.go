@@ -39,8 +39,6 @@ func seedDb(db *gorm.DB, appConfig appConfig.AppConfig) {
 }
 
 func seedUser(db *gorm.DB, user appConfig.DefaultUser) {
-	// todo: don't do anything if already exists
-
 	passwordHash, err := models.HashPassword(user.Password)
 	if err != nil {
 		myLog.Fatal.Logf("Failed to hash default user %s password:\n%v\n", user.Username, err)
