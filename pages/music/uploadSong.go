@@ -19,16 +19,14 @@ func (controller *Controller) PutSongHandler(w reqRes.MyWriter, r *reqRes.MyRequ
 	err := r.ParseMultipartForm(hundredMegs)
 	if err != nil {
 		message := fmt.Sprintf("Failed to parse form: \n%v", err)
-		log.Println(message)
-		http.Error(w, message, http.StatusInternalServerError)
+		w.Error(message, http.StatusInternalServerError)
 		return
 	}
 
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		message := fmt.Sprintf("Failed to retrieve file: \n%v", err)
-		log.Println(message)
-		http.Error(w, message, http.StatusInternalServerError)
+		w.Error(message, http.StatusInternalServerError)
 		return
 	}
 	defer func(file multipart.File) {
@@ -49,8 +47,7 @@ func (controller *Controller) PutSongHandler(w reqRes.MyWriter, r *reqRes.MyRequ
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		message := fmt.Sprintf("Failed to retrieve file: \n%v", err)
-		log.Println(message)
-		http.Error(w, message, http.StatusInternalServerError)
+		w.Error(message, http.StatusInternalServerError)
 		return
 	}
 	defer func(f *os.File) {
@@ -64,8 +61,7 @@ func (controller *Controller) PutSongHandler(w reqRes.MyWriter, r *reqRes.MyRequ
 	_, err = io.Copy(f, file)
 	if err != nil {
 		message := fmt.Sprintf("Failed to save file: \n%v", err)
-		log.Println(message)
-		http.Error(w, message, http.StatusInternalServerError)
+		w.Error(message, http.StatusInternalServerError)
 		return
 	}
 

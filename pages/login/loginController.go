@@ -10,7 +10,6 @@ import (
 	"go-server/setup/reqRes"
 	"gorm.io/gorm"
 	"html/template"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -36,36 +35,25 @@ func (controller *Controller) GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest)
 }
 
 func renderLoginPage(w reqRes.MyWriter, r *reqRes.MyRequest, errorMessage string) {
-	loginPageData := PageData{
+	pageData := PageData{
 		PageData:     pages.NewPageData(r, "Login"),
 		ErrorMessage: errorMessage,
 	}
 
-	err := loginTemplate.Execute(w, loginPageData)
-	if err != nil {
-		message := fmt.Sprintf("Failed to render login page: \n%v", err)
-		log.Println(message)
-		http.Error(w, message, http.StatusInternalServerError)
-	}
+	w.RenderTemplate(loginTemplate, pageData)
 }
 
 func (controller *Controller) PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
-	err := r.ParseForm()
-	if err != nil {
-		message := fmt.Sprintf("Failed to parse form: \n%v", err)
-		log.Println(message)
-		http.Error(w, message, http.StatusBadRequest)
+	ok := r.ParseFormRequired(w)
+	if !ok {
 		return
 	}
-
-	username := r.Form.Get("username")
+	username := r.GetFormFieldRequired(w, "username")
 	if username == "" {
-		http.Error(w, "username is required", http.StatusBadRequest)
 		return
 	}
-	password := r.Form.Get("password")
+	password := r.GetFormFieldRequired(w, "password")
 	if password == "" {
-		http.Error(w, "password", http.StatusBadRequest)
 		return
 	}
 
@@ -78,8 +66,7 @@ func (controller *Controller) PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest
 	}
 	if result.Error != nil {
 		message := fmt.Sprintf("Hit error when searching for user '%v': \n%v", lowercaseUsername, result.Error)
-		log.Println(message)
-		http.Error(w, message, http.StatusInternalServerError)
+		w.Error(message, http.StatusInternalServerError)
 		return
 	}
 
@@ -89,7 +76,7 @@ func (controller *Controller) PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest
 		return
 	}
 
-	ok := user.CheckPasswordHash(password)
+	ok = user.CheckPasswordHash(password)
 	if !ok {
 		renderLoginPage(w, r, "Username or password is invalid")
 		return
@@ -98,8 +85,7 @@ func (controller *Controller) PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest
 	jwtToken, err := controller.MyJwt.CreateJwt(user)
 	if err != nil {
 		message := fmt.Sprintf("Error generating jwt token for user '%v': \n%v", lowercaseUsername, result.Error)
-		log.Println(message)
-		http.Error(w, message, http.StatusInternalServerError)
+		w.Error(message, http.StatusInternalServerError)
 		return
 	}
 

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"go-server/setup/reqRes"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -16,9 +15,8 @@ func (controller *Controller) DeleteSongHandler(w reqRes.MyWriter, r *reqRes.MyR
 
 	stat, err := os.Stat(pathToRemove)
 	if errors.Is(err, os.ErrNotExist) {
-		message := fmt.Sprintf("Failed to remove: \n%v", err)
-		log.Println(message)
-		http.Error(w, "Path not found", http.StatusBadRequest)
+		message := fmt.Sprintf("Path not found: \n%v", err)
+		w.Error(message, http.StatusBadRequest)
 	}
 
 	isDir := stat.IsDir()
@@ -29,8 +27,7 @@ func (controller *Controller) DeleteSongHandler(w reqRes.MyWriter, r *reqRes.MyR
 	}
 	if err != nil {
 		message := fmt.Sprintf("Failed to remove: \n%v", err)
-		log.Println(message)
-		http.Error(w, message, http.StatusInternalServerError)
+		w.Error(message, http.StatusInternalServerError)
 	}
 
 	fileSystemFolder := filepath.Dir(pathToRemove)

@@ -2,8 +2,8 @@ package setup
 
 import (
 	"go-server/setup/myJwt"
+	"go-server/setup/myLog"
 	"go-server/setup/reqRes"
-	"log"
 	"net/http"
 	"time"
 )
@@ -17,20 +17,18 @@ type Middleware func(MyHandlerFunc) MyHandlerFunc
 func MyReqResWrapperMiddleware(next MyHandlerFunc) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		myWriter := reqRes.MyWriter{ResponseWriter: w}
-		myRequest := reqRes.MyRequest{Request: *r}
+		myRequest := reqRes.MyRequest{Request: *r, RequestId: RandId()}
 		next(myWriter, &myRequest)
 	}
 }
 
 // LoggingMiddleware is a Middleware that logs a hit and time taken to answer
 func LoggingMiddleware(next MyHandlerFunc) MyHandlerFunc {
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile | log.LUTC)
 	return func(w reqRes.MyWriter, r *reqRes.MyRequest) {
 		start := time.Now()
-		id := RandId()
-		log.Printf("{%s} Started %s %s", id, r.Method, r.URL.Path)
+		myLog.Logf(0, "{%s} Started %s %s", r.RequestId, r.Method, r.URL.Path)
 		next(w, r)
-		log.Printf("{%s} Completed %s %s in %v", id, r.Method, r.URL.Path, time.Since(start))
+		myLog.Logf(0, "{%s} Completed %s %s in %v", r.RequestId, r.Method, r.URL.Path, time.Since(start))
 	}
 }
 
@@ -45,14 +43,14 @@ func CreateJwtAuthRequiredMiddleware(jwtService *myJwt.Service) Middleware {
 
 			claims, err := jwtService.ValidateJWT(cookie.Value)
 			if err != nil {
-				log.Printf("Error validating JWT:\n%v\n", err)
+				myLog.Logf(0, "Error validating JWT:\n%v\n", err)
 				w.RedirectToLogin(r)
 				return
 			}
 
 			r.UserId, err = claims.GetSubject()
 			if err != nil {
-				log.Printf("Failed to get JWT subject, ignoring:\n%v\n", err)
+				myLog.Logf(0, "Failed to get JWT subject, ignoring:\n%v\n", err)
 			}
 
 			r.Username = claims.Username

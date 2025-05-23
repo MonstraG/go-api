@@ -45,14 +45,12 @@ func readDir(w reqRes.MyWriter, fileSystemFolder string, queryFolder string, res
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			message := fmt.Sprintf("%s does not exist", fileSystemFolder)
-			log.Printf(message)
-			http.Error(w, message, http.StatusBadRequest)
+			w.Error(message, http.StatusBadRequest)
 			return
 		}
 
 		message := fmt.Sprintf("Failure to open folder '%s': \n%v", fileSystemFolder, err)
-		log.Printf(message)
-		http.Error(w, message, http.StatusInternalServerError)
+		w.Error(message, http.StatusInternalServerError)
 		return
 	}
 
@@ -64,22 +62,19 @@ func readDir(w reqRes.MyWriter, fileSystemFolder string, queryFolder string, res
 
 		if errors.Is(err, fs.ErrNotExist) {
 			message := fmt.Sprintf("Failure to read folder '%s': \n%v", fileSystemFolder, err)
-			log.Printf(message)
-			http.Error(w, message, http.StatusInternalServerError)
+			w.Error(message, http.StatusInternalServerError)
 			return
 		}
 
 		message := fmt.Sprintf("Failure to read folder '%s': \n%v", fileSystemFolder, err)
-		log.Printf(message)
-		http.Error(w, message, http.StatusInternalServerError)
+		w.Error(message, http.StatusInternalServerError)
 		return
 	}
 
 	err = dirAsFile.Close()
 	if err != nil {
 		message := fmt.Sprintf("Failure to close folder '%s': \n%v", fileSystemFolder, err)
-		log.Printf(message)
-		http.Error(w, message, http.StatusInternalServerError)
+		w.Error(message, http.StatusInternalServerError)
 		return
 	}
 
@@ -122,12 +117,7 @@ func readDir(w reqRes.MyWriter, fileSystemFolder string, queryFolder string, res
 		})
 	}
 
-	err = songsTemplate.Execute(w, templatePageData)
-	if err != nil {
-		message := fmt.Sprintf("Failed to render template: \n%v", err)
-		log.Println(message)
-		http.Error(w, message, http.StatusInternalServerError)
-	}
+	w.RenderTemplate(songsTemplate, templatePageData)
 }
 
 func isSong(fileName string) bool {

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"go-server/models"
 	"go-server/pages"
+	"go-server/setup/myLog"
 	"go-server/setup/reqRes"
 	"gorm.io/gorm"
 	"html/template"
-	"log"
 	"net/http"
 )
 
@@ -38,7 +38,7 @@ func NewController(db *gorm.DB) *Controller {
 	return &Controller{db: db}
 }
 
-func (controller Controller) GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	renderForgotPasswordPage(w, r, "")
 }
 
@@ -48,45 +48,35 @@ func renderForgotPasswordPage(w reqRes.MyWriter, r *reqRes.MyRequest, errorMessa
 		ErrorMessage: errorMessage,
 	}
 
-	err := forgotPasswordTemplate.Execute(w, pageData)
-	if err != nil {
-		message := fmt.Sprintf("Failed to render page: \n%v", err)
-		log.Println(message)
-		http.Error(w, message, http.StatusInternalServerError)
-	}
+	w.RenderTemplate(forgotPasswordTemplate, pageData)
 }
 
-func (controller Controller) PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
-	err := r.ParseForm()
-	if err != nil {
-		message := fmt.Sprintf("Failed to parse form: \n%v", err)
-		log.Println(message)
-		http.Error(w, message, http.StatusBadRequest)
+func (controller *Controller) PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+	ok := r.ParseFormRequired(w)
+	if !ok {
 		return
 	}
 
-	username := r.Form.Get("username")
+	username := r.GetFormFieldRequired(w, "username")
 	if username == "" {
-		http.Error(w, "username is required", http.StatusBadRequest)
 		return
 	}
 
 	var user *models.User
 	result := controller.db.First(&user, "username = ?", username)
 	if result.RowsAffected == 0 || errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		log.Println(fmt.Sprintf("User %s not found", username))
+		myLog.Logf(0, "User %s not found", username)
 		renderForgotPasswordPage(w, r, "User not found")
 		return
 	}
 	if result.Error != nil {
 		message := fmt.Sprintf("Failed to search for user: \n%v", result.Error)
-		log.Println(message)
-		http.Error(w, message, http.StatusInternalServerError)
+		w.Error(message, http.StatusInternalServerError)
 		return
 	}
 
 	if !user.CanResetPassword {
-		log.Println(fmt.Sprintf("User %s cannot reset password", username))
+		myLog.Logf(0, "User %s cannot reset password", username)
 		renderForgotPasswordPage(w, r, "User cannot reset password")
 		return
 	}
@@ -102,38 +92,25 @@ func renderResetPasswordForm(w reqRes.MyWriter, r *reqRes.MyRequest, username st
 		MinLength:    minPasswordLength,
 	}
 
-	err := resetPasswordFormTemplate.Execute(w, pageData)
-	if err != nil {
-		message := fmt.Sprintf("Failed to render page: \n%v", err)
-		log.Println(message)
-		http.Error(w, message, http.StatusInternalServerError)
-	}
+	w.RenderTemplate(resetPasswordFormTemplate, pageData)
 }
 
-func (controller Controller) PostSetPasswordHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
-	err := r.ParseForm()
-	if err != nil {
-		message := fmt.Sprintf("Failed to parse form: \n%v", err)
-		log.Println(message)
-		http.Error(w, message, http.StatusBadRequest)
+func (controller *Controller) PostSetPasswordHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+	ok := r.ParseFormRequired(w)
+	if !ok {
 		return
 	}
 
-	username := r.Form.Get("username")
+	username := r.GetFormFieldRequired(w, "username")
 	if username == "" {
-		http.Error(w, "username is required", http.StatusBadRequest)
 		return
 	}
-
-	password := r.Form.Get("password")
+	password := r.GetFormFieldRequired(w, "password")
 	if password == "" {
-		http.Error(w, "password is required", http.StatusBadRequest)
 		return
 	}
-
-	repeatPassword := r.Form.Get("repeatPassword")
+	repeatPassword := r.GetFormFieldRequired(w, "repeatPassword")
 	if repeatPassword == "" {
-		http.Error(w, "repeatPassword is required", http.StatusBadRequest)
 		return
 	}
 
@@ -151,28 +128,27 @@ func (controller Controller) PostSetPasswordHandler(w reqRes.MyWriter, r *reqRes
 	result := controller.db.First(&user, "username = ?", username)
 	if result.RowsAffected == 0 || errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		message := fmt.Sprintf("User %s not found", username)
-		log.Println(message)
-		http.Error(w, message, http.StatusBadRequest)
+		w.Error(message, http.StatusBadRequest)
 		return
 	}
 	if result.Error != nil {
 		message := fmt.Sprintf("Failed to search for user: \n%v", result.Error)
-		log.Println(message)
-		http.Error(w, message, http.StatusInternalServerError)
+		w.Error(message, http.StatusInternalServerError)
 		return
 	}
 
 	passwordHash, err := models.HashPassword(password)
+	if err != nil {
+		message := fmt.Sprintf("Failed to hash password: \n%v", err)
+		w.Error(message, http.StatusInternalServerError)
+		return
+	}
 	user.PasswordHash = passwordHash
 	controller.db.Save(&user)
 
 	pageData := ResetPasswordPageData{
 		PageData: pages.NewPageData(r, "Password reset"),
 	}
-	err = passwordResetSuccessfullyTemplate.Execute(w, pageData)
-	if err != nil {
-		message := fmt.Sprintf("Failed to render page: \n%v", err)
-		log.Println(message)
-		http.Error(w, message, http.StatusInternalServerError)
-	}
+
+	w.RenderTemplate(passwordResetSuccessfullyTemplate, pageData)
 }

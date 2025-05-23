@@ -3,7 +3,6 @@ package music
 import (
 	"fmt"
 	"go-server/setup/reqRes"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -17,16 +16,14 @@ func (controller *Controller) CreateFolderHandler(w reqRes.MyWriter, r *reqRes.M
 	err := r.ParseMultipartForm(kilobyte)
 	if err != nil {
 		message := fmt.Sprintf("Failed to parse form: \n%v", err)
-		log.Println(message)
-		http.Error(w, message, http.StatusInternalServerError)
+		w.Error(message, http.StatusInternalServerError)
 		return
 	}
 
 	value := r.FormValue("name")
 	if value == "" {
 		message := fmt.Sprintf("No name provided for folder")
-		log.Println(message)
-		http.Error(w, message, http.StatusBadRequest)
+		w.Error(message, http.StatusBadRequest)
 		return
 	}
 
@@ -36,8 +33,7 @@ func (controller *Controller) CreateFolderHandler(w reqRes.MyWriter, r *reqRes.M
 	err = os.Mkdir(path, 0666)
 	if err != nil {
 		message := fmt.Sprintf("Failed to create folder: \n%v", err)
-		log.Println(message)
-		http.Error(w, message, http.StatusInternalServerError)
+		w.Error(message, http.StatusInternalServerError)
 		return
 	}
 

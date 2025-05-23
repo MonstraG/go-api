@@ -11,8 +11,8 @@ import (
 	"go-server/setup"
 	"go-server/setup/appConfig"
 	"go-server/setup/myJwt"
+	"go-server/setup/myLog"
 	"go-server/setup/websockets"
-	"log"
 	"time"
 )
 
@@ -25,7 +25,10 @@ func main() {
 
 	mapRoutes(app)
 
-	log.Fatal(app.ListenAndServe())
+	err := app.ListenAndServe()
+	if err != nil {
+		myLog.Fatal(0, err.Error())
+	}
 }
 
 func mapRoutes(app *setup.App) {
