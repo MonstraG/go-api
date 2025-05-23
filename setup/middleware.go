@@ -26,9 +26,9 @@ func MyReqResWrapperMiddleware(next MyHandlerFunc) func(w http.ResponseWriter, r
 func LoggingMiddleware(next MyHandlerFunc) MyHandlerFunc {
 	return func(w reqRes.MyWriter, r *reqRes.MyRequest) {
 		start := time.Now()
-		myLog.Logf(0, "{%s} Started %s %s", r.RequestId, r.Method, r.URL.Path)
+		myLog.Info.Logf("{%s} Started %s %s", r.RequestId, r.Method, r.URL.Path)
 		next(w, r)
-		myLog.Logf(0, "{%s} Completed %s %s in %v", r.RequestId, r.Method, r.URL.Path, time.Since(start))
+		myLog.Info.Logf("{%s} Completed %s %s in %v", r.RequestId, r.Method, r.URL.Path, time.Since(start))
 	}
 }
 
@@ -43,14 +43,14 @@ func CreateJwtAuthRequiredMiddleware(jwtService *myJwt.Service) Middleware {
 
 			claims, err := jwtService.ValidateJWT(cookie.Value)
 			if err != nil {
-				myLog.Logf(0, "Error validating JWT:\n%v\n", err)
+				myLog.Info.Logf("Error validating JWT:\n%v\n", err)
 				w.RedirectToLogin(r)
 				return
 			}
 
 			r.UserId, err = claims.GetSubject()
 			if err != nil {
-				myLog.Logf(0, "Failed to get JWT subject, ignoring:\n%v\n", err)
+				myLog.Info.Logf("Failed to get JWT subject, ignoring:\n%v\n", err)
 			}
 
 			r.Username = claims.Username

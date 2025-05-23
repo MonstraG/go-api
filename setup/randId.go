@@ -1,7 +1,7 @@
 package setup
 
 import (
-	"log"
+	"go-server/setup/myLog"
 	"math/rand"
 	"strings"
 )
@@ -29,10 +29,10 @@ func init() {
 	stringBuilder.Grow(lettersToMake)
 
 	if lettersToMake > lettersPerRandomCall {
-		log.Fatalf("You cannot generate so many letters from one int63 call, max is %d", lettersPerRandomCall)
+		myLog.Fatal.Logf("You cannot generate so many letters from one int63 call, max is %d", lettersPerRandomCall)
 	}
 	if len(alphabet) < bitMask {
-		log.Fatalf("Alphabet is too small, and must have at least %d letters", bitMask)
+		myLog.Fatal.Logf("Alphabet is too small, and must have at least %d letters", bitMask)
 	}
 }
 

@@ -1,10 +1,9 @@
 package setup
 
 import (
-	"fmt"
 	"go-server/setup/appConfig"
+	"go-server/setup/myLog"
 	"gorm.io/gorm"
-	"log"
 	"net/http"
 	"time"
 )
@@ -49,7 +48,7 @@ func applyMiddlewares(handlerFunc MyHandlerFunc, middlewares []Middleware) MyHan
 
 // ListenAndServe is a wrapper around normal http.ListenAndServe
 func (app *App) ListenAndServe() error {
-	log.Println(fmt.Sprintf("Starting server on %s", app.Config.Host))
+	myLog.Info.Logf("Starting server on %s", app.Config.Host)
 
 	server := &http.Server{
 		Addr:         app.Config.Host,

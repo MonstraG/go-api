@@ -2,9 +2,9 @@ package music
 
 import (
 	"fmt"
+	"go-server/setup/myLog"
 	"go-server/setup/reqRes"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -32,8 +32,7 @@ func (controller *Controller) PutSongHandler(w reqRes.MyWriter, r *reqRes.MyRequ
 	defer func(file multipart.File) {
 		err := file.Close()
 		if err != nil {
-			message := fmt.Sprintf("Failed to close file: \n%v", err)
-			log.Println(message)
+			myLog.Info.Logf("Failed to close file: \n%v", err)
 		}
 	}(file)
 
@@ -53,8 +52,7 @@ func (controller *Controller) PutSongHandler(w reqRes.MyWriter, r *reqRes.MyRequ
 	defer func(f *os.File) {
 		err := f.Close()
 		if err != nil {
-			message := fmt.Sprintf("Failed to close file: \n%v", err)
-			log.Println(message)
+			myLog.Info.Logf("Failed to close file: \n%v", err)
 		}
 	}(f)
 

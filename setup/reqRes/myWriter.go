@@ -38,10 +38,10 @@ func (myWriter MyWriter) RedirectToLogin(r *MyRequest) {
 }
 
 func (myWriter MyWriter) Error(message string, code int) {
-	if code > 500 {
-		myLog.Error(1, message)
+	if code >= 500 {
+		myLog.Error.SkipLog(1, message)
 	} else {
-		myLog.Log(1, message)
+		myLog.Info.SkipLog(1, message)
 	}
 	http.Error(myWriter, message, code)
 }

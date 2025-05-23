@@ -27,7 +27,7 @@ func main() {
 
 	err := app.ListenAndServe()
 	if err != nil {
-		myLog.Fatal(0, err.Error())
+		myLog.Fatal.Log(err.Error())
 	}
 }
 

@@ -3,10 +3,10 @@ package music
 import (
 	"errors"
 	"fmt"
+	"go-server/setup/myLog"
 	"go-server/setup/reqRes"
 	"html/template"
 	"io/fs"
-	"log"
 	"mime"
 	"net/http"
 	"os"
@@ -135,8 +135,7 @@ func getFormattedFileSize(dirEntry os.DirEntry) string {
 
 	fileInfo, err := dirEntry.Info()
 	if err != nil {
-		message := fmt.Sprintf("Failure to get file info for '%s': \n%v", dirEntry.Name(), err)
-		log.Println(message)
+		myLog.Info.Logf("Failure to get file info for '%s': \n%v", dirEntry.Name(), err)
 		return ""
 	}
 

@@ -3,8 +3,8 @@ package websockets
 import (
 	"errors"
 	"go-server/setup"
+	"go-server/setup/myLog"
 	"go-server/setup/reqRes"
-	"log"
 	"net/http"
 	"sync"
 
@@ -96,31 +96,31 @@ type MessageUserLeaves struct {
 func HandleWebSocket(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	connection, err := upgrader.Upgrade(w, &r.Request, nil)
 	if err != nil {
-		log.Printf("WebSocket upgrade error error: \n%v\n", err)
+		myLog.Info.Logf("WebSocket upgrade error error: \n%v\n", err)
 		return
 	}
 	defer func(conn *websocket.Conn) {
 		err := conn.Close()
 		if err != nil {
-			log.Printf("WebSocket connection close error: \n%v\n", err)
+			myLog.Info.Logf("WebSocket connection close error: \n%v\n", err)
 		}
 	}(connection)
 
 	peerId := setup.RandId()
-	log.Printf("New peer %s trying to connect, wating for the room message\n", peerId)
+	myLog.Info.Logf("New peer %s trying to connect, wating for the room message\n", peerId)
 
 	initialMsg, err := parseMessage(connection)
 	if err != nil {
-		log.Printf("Failed to read initial message: \n%v\n", err)
+		myLog.Info.Logf("Failed to read initial message: \n%v\n", err)
 		return
 	}
 
 	roomId, ok := initialMsg["roomId"].(string)
 	if !ok || roomId == "" {
-		log.Println("Client did not send a valid roomId, closing connection.")
+		myLog.Info.Log("Client did not send a valid roomId, closing connection.")
 		err := connection.Close()
 		if err != nil {
-			log.Printf("WebSocket connection close error: \n%v\n", err)
+			myLog.Info.Logf("WebSocket connection close error: \n%v\n", err)
 		}
 		return
 	}
@@ -134,17 +134,17 @@ func HandleWebSocket(w reqRes.MyWriter, r *reqRes.MyRequest) {
 
 	ok = sendMessage(peer, messageAssignId)
 	if !ok {
-		log.Printf("Failed to send messageAssignId to peer %s in room %s, I guess we just drop the connection.\n", peer.Id, peer.Room)
+		myLog.Info.Logf("Failed to send messageAssignId to peer %s in room %s, I guess we just drop the connection.\n", peer.Id, peer.Room)
 		return
 	}
 
-	log.Printf("New WebRTC peer connected: %s in room %s\n", peer.Id, peer.Room)
+	myLog.Info.Logf("New WebRTC peer connected: %s in room %s\n", peer.Id, peer.Room)
 	rememberPeer(peer, room)
 
 	for {
 		msg, err := parseMessage(connection)
 		if err != nil {
-			log.Printf("Error reading JSON: \n%v\n", err)
+			myLog.Info.Logf("Error reading JSON: \n%v\n", err)
 			break
 		}
 
@@ -156,13 +156,13 @@ func HandleWebSocket(w reqRes.MyWriter, r *reqRes.MyRequest) {
 
 	// Cleanup on disconnect
 	forgetPeer(peer, room)
-	log.Printf("WebRTC peer disconnected: %s\n", peer.Id)
+	myLog.Info.Logf("WebRTC peer disconnected: %s\n", peer.Id)
 }
 
 func sendMessage(peer *Peer, message any) bool {
 	err := peer.Conn.WriteJSON(message)
 	if err != nil {
-		log.Printf("WebSocket send error to peer %s: \n%v\n", peer.Id, err)
+		myLog.Info.Logf("WebSocket send error to peer %s: \n%v\n", peer.Id, err)
 		return false
 	}
 	return true
@@ -180,7 +180,7 @@ func handleMessage(sender *Peer, message map[string]any) {
 func handleTargetedMessage(sender *Peer, targetId string, message map[string]any) {
 	room, err := getRoom(sender.Room)
 	if err != nil {
-		log.Printf("Sender %s tried to send to target %s but room %s was not found!\n", sender.Id, targetId, sender.Room)
+		myLog.Info.Logf("Sender %s tried to send to target %s but room %s was not found!\n", sender.Id, targetId, sender.Room)
 		return
 	}
 
@@ -189,20 +189,20 @@ func handleTargetedMessage(sender *Peer, targetId string, message map[string]any
 
 	recipient, found := room.Peers[targetId]
 	if !found {
-		log.Printf("Sender %s tried to send to target %s but they were not found!\n", sender.Id, targetId)
+		myLog.Info.Logf("Sender %s tried to send to target %s but they were not found!\n", sender.Id, targetId)
 		return
 	}
 
 	err = recipient.Conn.WriteJSON(message)
 	if err != nil {
-		log.Printf("Sender %s tried to send to target %s but sending failed: \n%v\n", sender.Id, targetId, err)
+		myLog.Info.Logf("Sender %s tried to send to target %s but sending failed: \n%v\n", sender.Id, targetId, err)
 	}
 }
 
 func handleRoomMessage(sender *Peer, message any) {
 	room, err := getRoom(sender.Room)
 	if err != nil {
-		log.Printf("Sender %s tried to send to room %s, but it was not found!\n", sender.Id, sender.Room)
+		myLog.Info.Logf("Sender %s tried to send to room %s, but it was not found!\n", sender.Id, sender.Room)
 		return
 	}
 
@@ -216,7 +216,7 @@ func handleRoomMessage(sender *Peer, message any) {
 
 		err = peer.Conn.WriteJSON(message)
 		if err != nil {
-			log.Printf("Sender %s tried to send to target %s but sending failed: \n%v\n", sender.Id, peer.Id, err)
+			myLog.Info.Logf("Sender %s tried to send to target %s but sending failed: \n%v\n", sender.Id, peer.Id, err)
 		}
 	}
 }

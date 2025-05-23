@@ -4,23 +4,23 @@ import (
 	"github.com/glebarez/sqlite"
 	"go-server/models"
 	"go-server/setup/appConfig"
+	"go-server/setup/myLog"
 	"gorm.io/gorm"
-	"log"
 )
 
 const foreignKeySwitch = "?_pragma=foreign_keys(1)"
 
 func OpenDb(appConfig appConfig.AppConfig) *gorm.DB {
 	if len(appConfig.DatabaseFile) == 0 {
-		log.Fatalf("Database file not specified")
+		myLog.Fatal.Log("Database file not specified")
 	}
 
 	dsn := appConfig.DatabaseFile + foreignKeySwitch
-	log.Printf("Opening database %s", dsn)
+	myLog.Info.Logf("Opening database %s", dsn)
 
 	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("failed to open database:\n%v\n", err)
+		myLog.Fatal.Logf("failed to open database:\n%v\n", err)
 	}
 
 	seedDb(db, appConfig)
@@ -31,7 +31,7 @@ func OpenDb(appConfig appConfig.AppConfig) *gorm.DB {
 func seedDb(db *gorm.DB, appConfig appConfig.AppConfig) {
 	err := db.AutoMigrate(&models.User{})
 	if err != nil {
-		log.Fatalf("failed to migrate users:\n%v\n", err)
+		myLog.Fatal.Logf("failed to migrate users:\n%v\n", err)
 	}
 
 	seedUser(db, appConfig.DefaultUser)
@@ -43,7 +43,7 @@ func seedUser(db *gorm.DB, user appConfig.DefaultUser) {
 
 	passwordHash, err := models.HashPassword(user.Password)
 	if err != nil {
-		log.Fatalf("Failed to hash default user %s password:\n%v\n", user.Username, err)
+		myLog.Fatal.Logf("Failed to hash default user %s password:\n%v\n", user.Username, err)
 	}
 
 	userModel := models.User{
@@ -54,6 +54,6 @@ func seedUser(db *gorm.DB, user appConfig.DefaultUser) {
 	result := db.Where(models.User{Username: user.Username}).FirstOrCreate(&userModel)
 
 	if result.Error != nil {
-		log.Fatalf("Failed to insert default user %s:\n%v\n", user.Username, err)
+		myLog.Fatal.Logf("Failed to insert default user %s:\n%v\n", user.Username, err)
 	}
 }

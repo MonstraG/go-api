@@ -8,29 +8,31 @@ import (
 
 var flags = log.Ldate | log.Ltime | log.Lshortfile | log.LUTC
 
-var errorLogger = log.New(os.Stdout, "log: ", flags)
-var infoLogger = log.New(os.Stdout, "err: ", flags)
-var fatalLogger = log.New(os.Stdout, "FATAL: ", flags)
+var Info = MyLogger{logger: log.New(os.Stdout, "log: ", flags), die: false}
+var Error = MyLogger{logger: log.New(os.Stdout, "err: ", flags), die: false}
+var Fatal = MyLogger{logger: log.New(os.Stdout, "FATAL: ", flags), die: true}
 
-func Log(skip int, message string) {
-	_ = infoLogger.Output(skip+2, message)
+type MyLogger struct {
+	logger *log.Logger
+	die    bool
 }
 
-func Logf(skip int, format string, a ...any) {
+func (myLogger *MyLogger) output(skip int, message string) {
+	_ = myLogger.logger.Output(skip+2, message)
+	if myLogger.die {
+		os.Exit(0)
+	}
+}
+
+func (myLogger *MyLogger) SkipLog(skip int, message string) {
+	myLogger.output(skip+1, message)
+}
+
+func (myLogger *MyLogger) Log(message string) {
+	myLogger.SkipLog(1, message)
+}
+
+func (myLogger *MyLogger) Logf(format string, a ...any) {
 	message := fmt.Sprintf(format, a...)
-	Log(skip+1, message)
-}
-
-func Error(skip int, message string) {
-	_ = errorLogger.Output(skip+2, message)
-}
-
-func Errorf(skip int, format string, a ...any) {
-	message := fmt.Sprintf(format, a...)
-	Errorf(skip+1, message)
-}
-
-func Fatal(skip int, message string) {
-	_ = fatalLogger.Output(skip+2, message)
-	os.Exit(1)
+	myLogger.SkipLog(1, message)
 }

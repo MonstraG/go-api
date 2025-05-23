@@ -2,7 +2,6 @@ package reqRes
 
 import (
 	"fmt"
-	"go-server/setup/myLog"
 	"net/http"
 )
 
@@ -29,7 +28,6 @@ func (myRequest *MyRequest) GetFormFieldRequired(w MyWriter, key string) string 
 	value := myRequest.Form.Get(key)
 	if value == "" {
 		message := fmt.Sprintf("%s is required", key)
-		myLog.Log(1, message)
 		w.Error(message, http.StatusBadRequest)
 		return ""
 	}
