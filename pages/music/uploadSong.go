@@ -43,7 +43,7 @@ func (controller *Controller) PutSongHandler(w reqRes.MyWriter, r *reqRes.MyRequ
 	folder := filepath.Join(controller.songsFolder, pathQueryParam)
 	path := filepath.Join(folder, handler.Filename)
 
-	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, filePermissions)
 	if err != nil {
 		message := fmt.Sprintf("Failed to retrieve file: \n%v", err)
 		w.Error(message, http.StatusInternalServerError)

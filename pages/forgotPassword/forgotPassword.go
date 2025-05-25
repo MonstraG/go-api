@@ -12,9 +12,12 @@ import (
 	"net/http"
 )
 
-var forgotPasswordTemplate = template.Must(template.ParseFiles("pages/base.gohtml", "pages/forgotPassword/forgotPassword.gohtml"))
-var resetPasswordFormTemplate = template.Must(template.ParseFiles("pages/base.gohtml", "pages/forgotPassword/resetPasswordForm.gohtml"))
-var passwordResetSuccessfullyTemplate = template.Must(template.ParseFiles("pages/base.gohtml", "pages/forgotPassword/passwordResetSuccessfully.gohtml"))
+var forgotPasswordTemplate = template.Must(
+	template.ParseFiles("pages/base.gohtml", "pages/forgotPassword/forgotPassword.gohtml"))
+var resetPasswordFormTemplate = template.Must(
+	template.ParseFiles("pages/base.gohtml", "pages/forgotPassword/resetPasswordForm.gohtml"))
+var passwordResetSuccessfullyTemplate = template.Must(
+	template.ParseFiles("pages/base.gohtml", "pages/forgotPassword/passwordResetSuccessfully.gohtml"))
 
 const minPasswordLength = 16
 

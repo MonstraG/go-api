@@ -10,6 +10,8 @@ import (
 
 const kilobyte = 1 << 10
 
+const filePermissions = 0666
+
 func (controller *Controller) CreateFolderHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
 
@@ -29,7 +31,7 @@ func (controller *Controller) CreateFolderHandler(w reqRes.MyWriter, r *reqRes.M
 	folder := filepath.Join(controller.songsFolder, pathQueryParam)
 	path := filepath.Join(folder, value)
 
-	err = os.Mkdir(path, 0666)
+	err = os.Mkdir(path, filePermissions)
 	if err != nil {
 		message := fmt.Sprintf("Failed to create folder: \n%v", err)
 		w.Error(message, http.StatusInternalServerError)
