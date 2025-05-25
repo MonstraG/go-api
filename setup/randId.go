@@ -10,13 +10,15 @@ const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 
 const (
 	// 6 bits are enough to represent 64 indexes (6 = 111111 in binary)
-	bitsForAlphabet = 6
-	// the bits 0..0111111, exactly the bitsForAlphabet value in binary
-	bitMask = 1<<bitsForAlphabet - 1
+	bitsForLetter = 6
+	// all bits set
+	bitMask = 1<<bitsForLetter - 1
+	// I use int63 to generate random bits, it has 63 bits
+	randomCallBitSize = 63
 	// number of letter indices fitting in 63 bits
-	lettersPerRandomCall = 63 / bitsForAlphabet
+	lettersPerRandomCall = randomCallBitSize / bitsForLetter
 	// this can be increased up to lettersPerRandomCall
-	lettersToMake = 6
+	idLength = 6
 )
 
 var stringBuilder = strings.Builder{}
@@ -26,13 +28,13 @@ var stringBuilder = strings.Builder{}
 //
 //goland:noinspection GoBoolExpressions
 func init() {
-	stringBuilder.Grow(lettersToMake)
+	stringBuilder.Grow(idLength)
 
-	if lettersToMake > lettersPerRandomCall {
+	if idLength > lettersPerRandomCall {
 		myLog.Fatal.Logf("You cannot generate so many letters from one int63 call, max is %d", lettersPerRandomCall)
 	}
 	if len(alphabet) < bitMask {
-		myLog.Fatal.Logf("Alphabet is too small, and must have at least %d letters", bitMask)
+		myLog.Fatal.Logf("Alphabet is too small, and must have at least %d letters", bitMask+1)
 	}
 }
 
@@ -44,11 +46,11 @@ func RandId() string {
 	stringBuilder.Reset()
 	randomBits := rand.Int63()
 
-	for lettersRemain := lettersToMake; lettersRemain > 0; {
+	for lettersRemain := idLength; lettersRemain > 0; {
 		// take part of the bits and figure out letter index
 		letterIndex := int(randomBits & bitMask)
 		// get rid of these bits by shifting everything to the right
-		randomBits >>= bitsForAlphabet
+		randomBits >>= bitsForLetter
 		// add this letter
 		stringBuilder.WriteByte(alphabet[letterIndex])
 		lettersRemain--
