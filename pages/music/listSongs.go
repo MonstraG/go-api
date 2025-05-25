@@ -79,7 +79,7 @@ func readDir(w reqRes.MyWriter, fileSystemFolder string, queryFolder string, res
 	}
 
 	var templatePageData = SongsData{
-		Items:         make([]SongItem, len(dirEntries), len(dirEntries)),
+		Items:         make([]SongItem, len(dirEntries)),
 		Path:          queryFolder,
 		ResultMessage: resultMessage,
 	}

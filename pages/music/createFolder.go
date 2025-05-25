@@ -22,8 +22,7 @@ func (controller *Controller) CreateFolderHandler(w reqRes.MyWriter, r *reqRes.M
 
 	value := r.FormValue("name")
 	if value == "" {
-		message := fmt.Sprintf("No name provided for folder")
-		w.Error(message, http.StatusBadRequest)
+		w.Error("No name provided for folder", http.StatusBadRequest)
 		return
 	}
 
