@@ -1,7 +1,7 @@
 package logout
 
 import (
-	"go-server/setup/reqRes"
+	"go-api/setup/reqRes"
 )
 
 func GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {

@@ -1,18 +1,18 @@
 package main
 
 import (
-	"go-server/pages"
-	"go-server/pages/forgotPassword"
-	"go-server/pages/index"
-	"go-server/pages/login"
-	"go-server/pages/logout"
-	"go-server/pages/music"
-	"go-server/pages/notFound"
-	"go-server/setup"
-	"go-server/setup/appConfig"
-	"go-server/setup/myJwt"
-	"go-server/setup/myLog"
-	"go-server/setup/websockets"
+	"go-api/pages"
+	"go-api/pages/forgotPassword"
+	"go-api/pages/index"
+	"go-api/pages/login"
+	"go-api/pages/logout"
+	"go-api/pages/music"
+	"go-api/pages/notFound"
+	"go-api/setup"
+	"go-api/setup/appConfig"
+	"go-api/setup/myJwt"
+	"go-api/setup/myLog"
+	"go-api/setup/websockets"
 	"time"
 )
 

@@ -2,8 +2,8 @@ package music
 
 import (
 	"fmt"
-	"go-server/setup/myLog"
-	"go-server/setup/reqRes"
+	"go-api/setup/myLog"
+	"go-api/setup/reqRes"
 	"io"
 	"mime/multipart"
 	"net/http"

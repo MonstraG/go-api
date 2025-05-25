@@ -24,8 +24,8 @@ COPY --exclude=*.sqlite . .
 # install all dependencies (of which there are zero, but just as an example, I'll do that anyway)
 RUN go mod download
 
-# run go build, name the executable "go-server" and also disable CGO because people keep telling me that
-RUN CGO_ENABLED=0 go build -o go-server
+# run go build, name the executable "go-api" and also disable CGO because people keep telling me that
+RUN CGO_ENABLED=0 go build -o go-api
 
 # switch to a new clean alpine without the golang stuff, much smaller
 # General article about so called multi-stage patterns: https://medium.com/swlh/reducing-container-image-size-esp-for-go-applications-db7658e9063a
@@ -49,4 +49,4 @@ WORKDIR /myapp
 VOLUME ["/myapp/data"]
 
 # tell docker what to run
-ENTRYPOINT ["/myapp/go-server",  "--config", "/myapp/data/config.json"]
+ENTRYPOINT ["/myapp/go-api",  "--config", "/myapp/data/config.json"]

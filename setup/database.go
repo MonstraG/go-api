@@ -2,9 +2,9 @@ package setup
 
 import (
 	"github.com/glebarez/sqlite"
-	"go-server/models"
-	"go-server/setup/appConfig"
-	"go-server/setup/myLog"
+	"go-api/models"
+	"go-api/setup/appConfig"
+	"go-api/setup/myLog"
 	"gorm.io/gorm"
 )
 

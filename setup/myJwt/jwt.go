@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
-	"go-server/models"
-	"go-server/setup/appConfig"
+	"go-api/models"
+	"go-api/setup/appConfig"
 	"time"
 )
 

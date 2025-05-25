@@ -1,9 +1,9 @@
 package setup
 
 import (
-	"go-server/setup/myJwt"
-	"go-server/setup/myLog"
-	"go-server/setup/reqRes"
+	"go-api/setup/myJwt"
+	"go-api/setup/myLog"
+	"go-api/setup/reqRes"
 	"net/http"
 	"time"
 )

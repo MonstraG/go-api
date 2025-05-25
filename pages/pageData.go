@@ -1,6 +1,6 @@
 package pages
 
-import "go-server/setup/reqRes"
+import "go-api/setup/reqRes"
 
 type PageData struct {
 	PageTitle   string

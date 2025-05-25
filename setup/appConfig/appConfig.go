@@ -3,7 +3,7 @@ package appConfig
 import (
 	"encoding/json"
 	"flag"
-	"go-server/setup/myLog"
+	"go-api/setup/myLog"
 	"os"
 )
 

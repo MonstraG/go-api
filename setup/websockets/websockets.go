@@ -2,9 +2,9 @@ package websockets
 
 import (
 	"errors"
-	"go-server/setup"
-	"go-server/setup/myLog"
-	"go-server/setup/reqRes"
+	"go-api/setup"
+	"go-api/setup/myLog"
+	"go-api/setup/reqRes"
 	"net/http"
 	"sync"
 

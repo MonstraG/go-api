@@ -1,7 +1,7 @@
 package pages
 
 import (
-	"go-server/setup/reqRes"
+	"go-api/setup/reqRes"
 	"net/http"
 	"path/filepath"
 )

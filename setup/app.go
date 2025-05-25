@@ -1,8 +1,8 @@
 package setup
 
 import (
-	"go-server/setup/appConfig"
-	"go-server/setup/myLog"
+	"go-api/setup/appConfig"
+	"go-api/setup/myLog"
 	"gorm.io/gorm"
 	"net/http"
 	"time"

@@ -3,8 +3,8 @@ package music
 import (
 	"errors"
 	"fmt"
-	"go-server/setup/myLog"
-	"go-server/setup/reqRes"
+	"go-api/setup/myLog"
+	"go-api/setup/reqRes"
 	"html/template"
 	"io/fs"
 	"mime"
