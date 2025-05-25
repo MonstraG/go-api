@@ -144,6 +144,7 @@ func (controller *Controller) PostSetPasswordHandler(w reqRes.MyWriter, r *reqRe
 		return
 	}
 	user.PasswordHash = passwordHash
+	user.CanResetPassword = false
 	controller.db.Save(&user)
 
 	pageData := ResetPasswordPageData{
