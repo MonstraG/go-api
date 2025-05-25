@@ -3,7 +3,10 @@ package pages
 import "go-api/setup/reqRes"
 
 type PageData struct {
-	PageTitle   string
+	PageTitle string
+
+	ErrorMessage string
+
 	Username    string
 	UserInitial string
 }

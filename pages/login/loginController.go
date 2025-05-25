@@ -40,6 +40,9 @@ func renderLoginPage(w reqRes.MyWriter, r *reqRes.MyRequest, errorMessage string
 		ErrorMessage: errorMessage,
 	}
 
+	if errorMessage == "" {
+		w.WriteHeader(http.StatusBadRequest)
+	}
 	w.RenderTemplate(loginTemplate, pageData)
 }
 

@@ -48,6 +48,9 @@ func renderForgotPasswordPage(w reqRes.MyWriter, r *reqRes.MyRequest, errorMessa
 		ErrorMessage: errorMessage,
 	}
 
+	if errorMessage == "" {
+		w.WriteHeader(http.StatusBadRequest)
+	}
 	w.RenderTemplate(forgotPasswordTemplate, pageData)
 }
 
@@ -92,6 +95,9 @@ func renderResetPasswordForm(w reqRes.MyWriter, r *reqRes.MyRequest, username st
 		MinLength:    minPasswordLength,
 	}
 
+	if errorMessage != "" {
+		w.WriteHeader(http.StatusBadRequest)
+	}
 	w.RenderTemplate(resetPasswordFormTemplate, pageData)
 }
 
@@ -120,7 +126,8 @@ func (controller *Controller) PostSetPasswordHandler(w reqRes.MyWriter, r *reqRe
 	}
 
 	if len(password) < minPasswordLength {
-		renderResetPasswordForm(w, r, username, "Password must be at least 20 characters")
+		errorMessage := fmt.Sprintf("Password must be at least %d characters", minPasswordLength)
+		renderResetPasswordForm(w, r, username, errorMessage)
 		return
 	}
 
