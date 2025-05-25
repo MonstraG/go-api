@@ -15,7 +15,7 @@ type MyWriter struct {
 	http.ResponseWriter
 }
 
-func (myWriter MyWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+func (myWriter *MyWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	h, ok := myWriter.ResponseWriter.(http.Hijacker)
 	if !ok {
 		return nil, nil, errors.New("hijack not supported")
@@ -23,7 +23,7 @@ func (myWriter MyWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return h.Hijack()
 }
 
-func (myWriter MyWriter) RenderTemplate(tmpl *template.Template, data any) bool {
+func (myWriter *MyWriter) RenderTemplate(tmpl *template.Template, data any) bool {
 	err := tmpl.Execute(myWriter, data)
 	if err != nil {
 		message := fmt.Sprintf("Failed to render template: \n%v", err)
@@ -33,11 +33,11 @@ func (myWriter MyWriter) RenderTemplate(tmpl *template.Template, data any) bool 
 	return true
 }
 
-func (myWriter MyWriter) RedirectToLogin(r *MyRequest) {
+func (myWriter *MyWriter) RedirectToLogin(r *MyRequest) {
 	http.Redirect(myWriter, &r.Request, "/login", http.StatusTemporaryRedirect)
 }
 
-func (myWriter MyWriter) Error(message string, code int) {
+func (myWriter *MyWriter) Error(message string, code int) {
 	if code >= 500 {
 		myLog.Error.SkipLog(1, message)
 	} else {
@@ -46,7 +46,7 @@ func (myWriter MyWriter) Error(message string, code int) {
 	http.Error(myWriter, message, code)
 }
 
-func (myWriter MyWriter) IssueCookie(value string, age int) {
+func (myWriter *MyWriter) IssueCookie(value string, age int) {
 	cookie := http.Cookie{
 		Name:     myJwt.Cookie,
 		Value:    value,
@@ -59,6 +59,6 @@ func (myWriter MyWriter) IssueCookie(value string, age int) {
 	http.SetCookie(myWriter, &cookie)
 }
 
-func (myWriter MyWriter) ExpireCookie() {
+func (myWriter *MyWriter) ExpireCookie() {
 	myWriter.IssueCookie("", -1)
 }
