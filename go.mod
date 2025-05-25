@@ -1,6 +1,6 @@
 module go-api
 
-go 1.24
+go 1.24.3
 
 require (
 	github.com/glebarez/sqlite v1.11.0
