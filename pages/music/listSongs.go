@@ -135,7 +135,7 @@ func getFormattedFileSize(dirEntry os.DirEntry) string {
 
 	fileInfo, err := dirEntry.Info()
 	if err != nil {
-		myLog.Info.Logf("Failure to get file info for '%s': \n%v", dirEntry.Name(), err)
+		myLog.Info.Logf("Failure to get file info for '%s': \n\t%v", dirEntry.Name(), err)
 		return ""
 	}
 

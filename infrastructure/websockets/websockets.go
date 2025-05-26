@@ -96,17 +96,17 @@ type MessageUserLeaves struct {
 func HandleWebSocket(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	connection, err := upgrader.Upgrade(w, &r.Request, nil)
 	if err != nil {
-		myLog.Info.Logf("WebSocket upgrade error error: \n%v\n", err)
+		myLog.Info.Logf("WebSocket upgrade error error: \n\t%v", err)
 		return
 	}
 	defer helpers.CloseSafely(connection)
 
 	peerId := helpers.RandId()
-	myLog.Info.Logf("New peer %s trying to connect, wating for the room message\n", peerId)
+	myLog.Info.Logf("New peer %s trying to connect, wating for the room message", peerId)
 
 	initialMsg, err := parseMessage(connection)
 	if err != nil {
-		myLog.Info.Logf("Failed to read initial message: \n%v\n", err)
+		myLog.Info.Logf("Failed to read initial message: \n\t%v", err)
 		return
 	}
 
@@ -115,7 +115,7 @@ func HandleWebSocket(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 		myLog.Info.Log("Client did not send a valid roomId, closing connection.")
 		err := connection.Close()
 		if err != nil {
-			myLog.Info.Logf("WebSocket connection close error: \n%v\n", err)
+			myLog.Info.Logf("WebSocket connection close error: \n\t%v", err)
 		}
 		return
 	}
@@ -129,17 +129,17 @@ func HandleWebSocket(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 
 	ok = sendMessage(peer, messageAssignId)
 	if !ok {
-		myLog.Info.Logf("Failed to send messageAssignId to peer %s in room %s, I guess we just drop the connection.\n", peer.Id, peer.Room)
+		myLog.Info.Logf("Failed to send messageAssignId to peer %s in room %s, I guess we just drop the connection.", peer.Id, peer.Room)
 		return
 	}
 
-	myLog.Info.Logf("New WebRTC peer connected: %s in room %s\n", peer.Id, peer.Room)
+	myLog.Info.Logf("New WebRTC peer connected: %s in room %s", peer.Id, peer.Room)
 	rememberPeer(peer, room)
 
 	for {
 		msg, err := parseMessage(connection)
 		if err != nil {
-			myLog.Info.Logf("Error reading JSON: \n%v\n", err)
+			myLog.Info.Logf("Error reading JSON: \n\t%v", err)
 			break
 		}
 
@@ -151,13 +151,13 @@ func HandleWebSocket(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 
 	// Cleanup on disconnect
 	forgetPeer(peer, room)
-	myLog.Info.Logf("WebRTC peer disconnected: %s\n", peer.Id)
+	myLog.Info.Logf("WebRTC peer disconnected: %s", peer.Id)
 }
 
 func sendMessage(peer *Peer, message any) bool {
 	err := peer.Conn.WriteJSON(message)
 	if err != nil {
-		myLog.Info.Logf("WebSocket send error to peer %s: \n%v\n", peer.Id, err)
+		myLog.Info.Logf("WebSocket send error to peer %s: \n\t%v", peer.Id, err)
 		return false
 	}
 	return true
@@ -175,7 +175,7 @@ func handleMessage(sender *Peer, message map[string]any) {
 func handleTargetedMessage(sender *Peer, targetId string, message map[string]any) {
 	room, err := getRoom(sender.Room)
 	if err != nil {
-		myLog.Info.Logf("Sender %s tried to send to target %s but room %s was not found!\n", sender.Id, targetId, sender.Room)
+		myLog.Info.Logf("Sender %s tried to send to target %s but room %s was not found!", sender.Id, targetId, sender.Room)
 		return
 	}
 
@@ -184,20 +184,20 @@ func handleTargetedMessage(sender *Peer, targetId string, message map[string]any
 
 	recipient, found := room.Peers[targetId]
 	if !found {
-		myLog.Info.Logf("Sender %s tried to send to target %s but they were not found!\n", sender.Id, targetId)
+		myLog.Info.Logf("Sender %s tried to send to target %s but they were not found!", sender.Id, targetId)
 		return
 	}
 
 	err = recipient.Conn.WriteJSON(message)
 	if err != nil {
-		myLog.Info.Logf("Sender %s tried to send to target %s but sending failed: \n%v\n", sender.Id, targetId, err)
+		myLog.Info.Logf("Sender %s tried to send to target %s but sending failed: \n\t%v", sender.Id, targetId, err)
 	}
 }
 
 func handleRoomMessage(sender *Peer, message any) {
 	room, err := getRoom(sender.Room)
 	if err != nil {
-		myLog.Info.Logf("Sender %s tried to send to room %s, but it was not found!\n", sender.Id, sender.Room)
+		myLog.Info.Logf("Sender %s tried to send to room %s, but it was not found!", sender.Id, sender.Room)
 		return
 	}
 
@@ -211,7 +211,7 @@ func handleRoomMessage(sender *Peer, message any) {
 
 		err = peer.Conn.WriteJSON(message)
 		if err != nil {
-			myLog.Info.Logf("Sender %s tried to send to target %s but sending failed: \n%v\n", sender.Id, peer.Id, err)
+			myLog.Info.Logf("Sender %s tried to send to target %s but sending failed: \n\t%v", sender.Id, peer.Id, err)
 		}
 	}
 }

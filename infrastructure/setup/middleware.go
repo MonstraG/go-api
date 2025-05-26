@@ -44,14 +44,14 @@ func createJwtAuthRequiredMiddleware(jwtService *myJwt.Service) Middleware {
 
 			claims, err := jwtService.ValidateJWT(cookie.Value)
 			if err != nil {
-				myLog.Info.Logf("Error validating JWT:\n%v\n", err)
+				myLog.Info.Logf("Error validating JWT:\n\t%v", err)
 				w.RedirectToLogin(r)
 				return
 			}
 
 			r.UserId, err = claims.GetSubject()
 			if err != nil {
-				myLog.Info.Logf("Failed to get JWT subject, ignoring:\n%v\n", err)
+				myLog.Info.Logf("Failed to get JWT subject, ignoring:\n\t%v", err)
 			}
 
 			r.Username = claims.Username
