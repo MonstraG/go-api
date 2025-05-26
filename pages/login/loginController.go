@@ -30,11 +30,11 @@ func NewController(myJwt *myJwt.Service, Db *gorm.DB) *Controller {
 	return &Controller{MyJwt: myJwt, Db: Db}
 }
 
-func (controller *Controller) GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) GetHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	renderLoginPage(w, r, "")
 }
 
-func renderLoginPage(w reqRes.MyWriter, r *reqRes.MyRequest, errorMessage string) {
+func renderLoginPage(w reqRes.MyResponseWriter, r *reqRes.MyRequest, errorMessage string) {
 	pageData := PageData{
 		PageData:     pages.NewPageData(r, "Login"),
 		ErrorMessage: errorMessage,
@@ -46,7 +46,7 @@ func renderLoginPage(w reqRes.MyWriter, r *reqRes.MyRequest, errorMessage string
 	w.RenderTemplate(loginTemplate, pageData)
 }
 
-func (controller *Controller) PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) PostHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	ok := r.ParseFormRequired(w)
 	if !ok {
 		return

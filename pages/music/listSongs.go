@@ -33,14 +33,14 @@ type SongItem struct {
 	Size   string
 }
 
-func (controller *Controller) GetSongs(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) GetSongs(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
 	folder := filepath.Join(controller.songsFolder, pathQueryParam)
 
 	readDir(w, folder, pathQueryParam, "")
 }
 
-func readDir(w reqRes.MyWriter, fileSystemFolder string, queryFolder string, resultMessage string) {
+func readDir(w reqRes.MyResponseWriter, fileSystemFolder string, queryFolder string, resultMessage string) {
 	dirAsFile, err := os.Open(fileSystemFolder)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {

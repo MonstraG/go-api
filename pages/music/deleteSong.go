@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-func (controller *Controller) DeleteSongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) DeleteSongHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
 	pathToRemove := filepath.Join(controller.songsFolder, pathQueryParam)
 

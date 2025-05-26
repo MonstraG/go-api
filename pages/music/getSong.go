@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-func (controller *Controller) GetSongHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) GetSongHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
 	filename := filepath.Join(controller.songsFolder, pathQueryParam)
 	http.ServeFile(w, &r.Request, filename)

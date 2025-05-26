@@ -93,7 +93,7 @@ type MessageUserLeaves struct {
 	Bye    bool   `json:"bye"`
 }
 
-func HandleWebSocket(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func HandleWebSocket(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	connection, err := upgrader.Upgrade(w, &r.Request, nil)
 	if err != nil {
 		myLog.Info.Logf("WebSocket upgrade error error: \n%v\n", err)

@@ -12,7 +12,7 @@ const kilobyte = 1 << 10
 
 const filePermissions = 0666
 
-func (controller *Controller) CreateFolderHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) CreateFolderHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
 
 	err := r.ParseMultipartForm(kilobyte)

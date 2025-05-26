@@ -41,11 +41,11 @@ func NewController(db *gorm.DB) *Controller {
 	return &Controller{db: db}
 }
 
-func (controller *Controller) GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) GetHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	renderForgotPasswordPage(w, r, "")
 }
 
-func renderForgotPasswordPage(w reqRes.MyWriter, r *reqRes.MyRequest, errorMessage string) {
+func renderForgotPasswordPage(w reqRes.MyResponseWriter, r *reqRes.MyRequest, errorMessage string) {
 	pageData := PageData{
 		PageData:     pages.NewPageData(r, "Forgot password"),
 		ErrorMessage: errorMessage,
@@ -57,7 +57,7 @@ func renderForgotPasswordPage(w reqRes.MyWriter, r *reqRes.MyRequest, errorMessa
 	w.RenderTemplate(forgotPasswordTemplate, pageData)
 }
 
-func (controller *Controller) PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) PostHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	ok := r.ParseFormRequired(w)
 	if !ok {
 		return
@@ -90,7 +90,7 @@ func (controller *Controller) PostHandler(w reqRes.MyWriter, r *reqRes.MyRequest
 	renderResetPasswordForm(w, r, user.Username, "")
 }
 
-func renderResetPasswordForm(w reqRes.MyWriter, r *reqRes.MyRequest, username string, errorMessage string) {
+func renderResetPasswordForm(w reqRes.MyResponseWriter, r *reqRes.MyRequest, username string, errorMessage string) {
 	pageData := ResetPasswordPageData{
 		PageData:     pages.NewPageData(r, "Reset password"),
 		Username:     username,
@@ -104,7 +104,7 @@ func renderResetPasswordForm(w reqRes.MyWriter, r *reqRes.MyRequest, username st
 	w.RenderTemplate(resetPasswordFormTemplate, pageData)
 }
 
-func (controller *Controller) PostSetPasswordHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) PostSetPasswordHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	ok := r.ParseFormRequired(w)
 	if !ok {
 		return

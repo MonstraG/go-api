@@ -11,42 +11,42 @@ import (
 	"net/http"
 )
 
-type MyWriter struct {
+type MyResponseWriter struct {
 	http.ResponseWriter
 }
 
-func (myWriter *MyWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
-	h, ok := myWriter.ResponseWriter.(http.Hijacker)
+func (myResponseWriter *MyResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	h, ok := myResponseWriter.ResponseWriter.(http.Hijacker)
 	if !ok {
 		return nil, nil, errors.New("hijack not supported")
 	}
 	return h.Hijack()
 }
 
-func (myWriter *MyWriter) RenderTemplate(tmpl *template.Template, data any) bool {
-	err := tmpl.Execute(myWriter, data)
+func (myResponseWriter *MyResponseWriter) RenderTemplate(tmpl *template.Template, data any) bool {
+	err := tmpl.Execute(myResponseWriter, data)
 	if err != nil {
 		message := fmt.Sprintf("Failed to render template: \n%v", err)
-		myWriter.Error(message, http.StatusInternalServerError)
+		myResponseWriter.Error(message, http.StatusInternalServerError)
 		return false
 	}
 	return true
 }
 
-func (myWriter *MyWriter) RedirectToLogin(r *MyRequest) {
-	http.Redirect(myWriter, &r.Request, "/login", http.StatusTemporaryRedirect)
+func (myResponseWriter *MyResponseWriter) RedirectToLogin(r *MyRequest) {
+	http.Redirect(myResponseWriter, &r.Request, "/login", http.StatusTemporaryRedirect)
 }
 
-func (myWriter *MyWriter) Error(message string, code int) {
+func (myResponseWriter *MyResponseWriter) Error(message string, code int) {
 	if code >= 500 {
 		myLog.Error.SkipLog(1, message)
 	} else {
 		myLog.Info.SkipLog(1, message)
 	}
-	http.Error(myWriter, message, code)
+	http.Error(myResponseWriter, message, code)
 }
 
-func (myWriter *MyWriter) IssueCookie(value string, age int) {
+func (myResponseWriter *MyResponseWriter) IssueCookie(value string, age int) {
 	cookie := http.Cookie{
 		Name:     myJwt.Cookie,
 		Value:    value,
@@ -56,9 +56,9 @@ func (myWriter *MyWriter) IssueCookie(value string, age int) {
 		Secure:   true,
 		SameSite: http.SameSiteStrictMode,
 	}
-	http.SetCookie(myWriter, &cookie)
+	http.SetCookie(myResponseWriter, &cookie)
 }
 
-func (myWriter *MyWriter) ExpireCookie() {
-	myWriter.IssueCookie("", -1)
+func (myResponseWriter *MyResponseWriter) ExpireCookie() {
+	myResponseWriter.IssueCookie("", -1)
 }

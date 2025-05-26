@@ -28,7 +28,7 @@ func NewController(config appConfig.AppConfig) *Controller {
 	}
 }
 
-func (controller *Controller) GetHandler(w reqRes.MyWriter, r *reqRes.MyRequest) {
+func (controller *Controller) GetHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	var pageData = PageData{
 		PageData:     pages.NewPageData(r, "Homepage"),
 		VpsLoginLink: controller.vpsLoginLink,
