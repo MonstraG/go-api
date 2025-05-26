@@ -112,7 +112,7 @@ func HandleWebSocket(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 
 	roomId, ok := initialMsg["roomId"].(string)
 	if !ok || roomId == "" {
-		myLog.Info.Log("Client did not send a valid roomId, closing connection.")
+		myLog.Info.Logf("Client did not send a valid roomId, closing connection.")
 		err := connection.Close()
 		if err != nil {
 			myLog.Info.Logf("WebSocket connection close error: \n\t%v", err)

@@ -71,7 +71,7 @@ func (controller *Controller) PostHandler(w reqRes.MyResponseWriter, r *reqRes.M
 	var user *models.User
 	result := controller.db.First(&user, "username = ?", username)
 	if result.RowsAffected == 0 || errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		myLog.Info.Log("User %s not found", username)
+		myLog.Info.Logf("User %s not found", username)
 		renderForgotPasswordPage(w, r, "User not found")
 		return
 	}
@@ -82,7 +82,7 @@ func (controller *Controller) PostHandler(w reqRes.MyResponseWriter, r *reqRes.M
 	}
 
 	if !user.CanResetPassword {
-		myLog.Info.Log("User %s cannot reset password", username)
+		myLog.Info.Logf("User %s cannot reset password", username)
 		renderForgotPasswordPage(w, r, "User cannot reset password")
 		return
 	}

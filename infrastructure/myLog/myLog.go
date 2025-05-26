@@ -17,22 +17,29 @@ type MyLogger struct {
 	die    bool
 }
 
-func (myLogger *MyLogger) output(skip int, message string) {
+// lazySprintf will
+func lazySprintf(format string, a ...any) string {
+	if len(a) == 0 {
+		return format
+	}
+	return fmt.Sprintf(format, a...)
+}
+
+func (myLogger *MyLogger) output(skip int, format string, a ...any) {
+	message := lazySprintf(format, a...)
 	_ = myLogger.logger.Output(skip+2, message)
 	if myLogger.die {
 		os.Exit(0)
 	}
 }
 
-func (myLogger *MyLogger) SkipLog(skip int, message string) {
-	myLogger.output(skip+1, message)
+// SkipLog logs a message, but skips this amount of stack levels to show real code point
+// only useful in helpers, otherwise just use Logf
+func (myLogger *MyLogger) SkipLog(skip int, format string, a ...any) {
+	myLogger.output(skip+1, format, a...)
 }
 
-func (myLogger *MyLogger) Log(message string) {
-	myLogger.SkipLog(1, message)
-}
-
+// Logf logs a message
 func (myLogger *MyLogger) Logf(format string, a ...any) {
-	message := fmt.Sprintf(format, a...)
-	myLogger.SkipLog(1, message)
+	myLogger.SkipLog(1, format, a...)
 }

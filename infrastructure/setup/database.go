@@ -12,7 +12,7 @@ const foreignKeySwitch = "?_pragma=foreign_keys(1)"
 
 func OpenDb(appConfig appConfig.AppConfig) *gorm.DB {
 	if len(appConfig.DatabaseFile) == 0 {
-		myLog.Fatal.Log("Database file not specified")
+		myLog.Fatal.Logf("Database file not specified")
 	}
 
 	dsn := appConfig.DatabaseFile + foreignKeySwitch
