@@ -1,7 +1,7 @@
-package setup
+package helpers
 
 import (
-	"go-api/setup/myLog"
+	"go-api/infrastructure/myLog"
 	"math/rand"
 	"strings"
 )

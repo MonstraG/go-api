@@ -1,8 +1,8 @@
 package notFound
 
 import (
+	"go-api/infrastructure/reqRes"
 	"go-api/pages"
-	"go-api/setup/reqRes"
 	"html/template"
 )
 

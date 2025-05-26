@@ -2,8 +2,8 @@ package music
 
 import (
 	"fmt"
-	"go-api/helpers"
-	"go-api/setup/reqRes"
+	"go-api/infrastructure/helpers"
+	"go-api/infrastructure/reqRes"
 	"io"
 	"net/http"
 	"os"

@@ -1,6 +1,11 @@
 package main
 
 import (
+	"go-api/infrastructure/appConfig"
+	"go-api/infrastructure/myJwt"
+	"go-api/infrastructure/myLog"
+	"go-api/infrastructure/setup"
+	"go-api/infrastructure/websockets"
 	"go-api/pages"
 	"go-api/pages/forgotPassword"
 	"go-api/pages/index"
@@ -8,11 +13,6 @@ import (
 	"go-api/pages/logout"
 	"go-api/pages/music"
 	"go-api/pages/notFound"
-	"go-api/setup"
-	"go-api/setup/appConfig"
-	"go-api/setup/myJwt"
-	"go-api/setup/myLog"
-	"go-api/setup/websockets"
 	"time"
 )
 

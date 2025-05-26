@@ -1,9 +1,10 @@
 package setup
 
 import (
-	"go-api/setup/myJwt"
-	"go-api/setup/myLog"
-	"go-api/setup/reqRes"
+	"go-api/infrastructure/helpers"
+	"go-api/infrastructure/myJwt"
+	"go-api/infrastructure/myLog"
+	"go-api/infrastructure/reqRes"
 	"net/http"
 	"time"
 )
@@ -17,7 +18,7 @@ type Middleware func(MyHandlerFunc) MyHandlerFunc
 func MyReqResWrapperMiddleware(next MyHandlerFunc) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		myWriter := reqRes.MyWriter{ResponseWriter: w}
-		myRequest := reqRes.MyRequest{Request: *r, RequestId: RandId()}
+		myRequest := reqRes.MyRequest{Request: *r, RequestId: helpers.RandId()}
 		next(myWriter, &myRequest)
 	}
 }

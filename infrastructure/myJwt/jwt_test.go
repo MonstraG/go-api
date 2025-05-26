@@ -1,8 +1,8 @@
 package myJwt
 
 import (
-	"go-api/models"
-	"go-api/setup/appConfig"
+	"go-api/infrastructure/appConfig"
+	"go-api/infrastructure/models"
 	"strings"
 	"testing"
 	"time"

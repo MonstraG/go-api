@@ -2,10 +2,9 @@ package websockets
 
 import (
 	"errors"
-	"go-api/helpers"
-	"go-api/setup"
-	"go-api/setup/myLog"
-	"go-api/setup/reqRes"
+	"go-api/infrastructure/helpers"
+	"go-api/infrastructure/myLog"
+	"go-api/infrastructure/reqRes"
 	"net/http"
 	"sync"
 
@@ -102,7 +101,7 @@ func HandleWebSocket(w reqRes.MyWriter, r *reqRes.MyRequest) {
 	}
 	defer helpers.CloseSafely(connection)
 
-	peerId := setup.RandId()
+	peerId := helpers.RandId()
 	myLog.Info.Logf("New peer %s trying to connect, wating for the room message\n", peerId)
 
 	initialMsg, err := parseMessage(connection)

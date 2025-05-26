@@ -3,7 +3,7 @@ package music
 import (
 	"errors"
 	"fmt"
-	"go-api/setup/reqRes"
+	"go-api/infrastructure/reqRes"
 	"net/http"
 	"os"
 	"path/filepath"

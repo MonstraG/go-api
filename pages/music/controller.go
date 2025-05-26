@@ -1,6 +1,6 @@
 package music
 
-import "go-api/setup/appConfig"
+import "go-api/infrastructure/appConfig"
 
 type Controller struct {
 	songsFolder string

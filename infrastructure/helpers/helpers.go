@@ -2,7 +2,7 @@ package helpers
 
 import (
 	"fmt"
-	"go-api/setup/myLog"
+	"go-api/infrastructure/myLog"
 	"io"
 )
 

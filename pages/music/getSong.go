@@ -1,7 +1,7 @@
 package music
 
 import (
-	"go-api/setup/reqRes"
+	"go-api/infrastructure/reqRes"
 	"net/http"
 	"path/filepath"
 )

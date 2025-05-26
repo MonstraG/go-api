@@ -1,9 +1,9 @@
 package index
 
 import (
+	"go-api/infrastructure/appConfig"
+	"go-api/infrastructure/reqRes"
 	"go-api/pages"
-	"go-api/setup/appConfig"
-	"go-api/setup/reqRes"
 	"html/template"
 )
 

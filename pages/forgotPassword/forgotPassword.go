@@ -3,10 +3,10 @@ package forgotPassword
 import (
 	"errors"
 	"fmt"
-	"go-api/models"
+	"go-api/infrastructure/models"
+	"go-api/infrastructure/myLog"
+	"go-api/infrastructure/reqRes"
 	"go-api/pages"
-	"go-api/setup/myLog"
-	"go-api/setup/reqRes"
 	"gorm.io/gorm"
 	"html/template"
 	"net/http"
