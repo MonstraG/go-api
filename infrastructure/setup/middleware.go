@@ -15,7 +15,7 @@ type MyHandlerFunc func(w reqRes.MyResponseWriter, r *reqRes.MyRequest)
 // Middleware is just a MyHandlerFunc that returns a MyHandlerFunc
 type Middleware func(MyHandlerFunc) MyHandlerFunc
 
-func MyReqResWrapperMiddleware(next MyHandlerFunc) func(w http.ResponseWriter, r *http.Request) {
+func myReqResWrapperMiddleware(next MyHandlerFunc) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		myWriter := reqRes.MyResponseWriter{ResponseWriter: w}
 		myRequest := reqRes.MyRequest{Request: *r, RequestId: helpers.RandId()}
@@ -33,7 +33,7 @@ func LoggingMiddleware(next MyHandlerFunc) MyHandlerFunc {
 	}
 }
 
-func CreateJwtAuthRequiredMiddleware(jwtService *myJwt.Service) Middleware {
+func createJwtAuthRequiredMiddleware(jwtService *myJwt.Service) Middleware {
 	return func(next MyHandlerFunc) MyHandlerFunc {
 		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 			cookie, err := r.CookieIfValid(myJwt.Cookie)
