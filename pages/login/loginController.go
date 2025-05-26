@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"go-api/infrastructure/models"
 	"go-api/infrastructure/myJwt"
+	"go-api/infrastructure/myLog"
 	"go-api/infrastructure/reqRes"
 	"go-api/pages"
 	"gorm.io/gorm"
@@ -41,6 +42,7 @@ func renderLoginPage(w reqRes.MyResponseWriter, r *reqRes.MyRequest, errorMessag
 	}
 
 	if errorMessage != "" {
+		myLog.Error.Logf("Login failed with errorMessage: %s", errorMessage)
 		w.WriteHeader(http.StatusBadRequest)
 	}
 	w.RenderTemplate(loginTemplate, pageData)

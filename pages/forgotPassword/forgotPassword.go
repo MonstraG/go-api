@@ -52,6 +52,7 @@ func renderForgotPasswordPage(w reqRes.MyResponseWriter, r *reqRes.MyRequest, er
 	}
 
 	if errorMessage != "" {
+		myLog.Error.Logf("Forgot password start failed with errorMessage: %s", errorMessage)
 		w.WriteHeader(http.StatusBadRequest)
 	}
 	w.RenderTemplate(forgotPasswordTemplate, pageData)
@@ -99,6 +100,7 @@ func renderResetPasswordForm(w reqRes.MyResponseWriter, r *reqRes.MyRequest, use
 	}
 
 	if errorMessage != "" {
+		myLog.Error.Logf("Reset password failed with errorMessage: %s", errorMessage)
 		w.WriteHeader(http.StatusBadRequest)
 	}
 	w.RenderTemplate(resetPasswordFormTemplate, pageData)
