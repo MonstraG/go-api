@@ -2,10 +2,9 @@ package music
 
 import (
 	"fmt"
-	"go-api/setup/myLog"
+	"go-api/helpers"
 	"go-api/setup/reqRes"
 	"io"
-	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -23,18 +22,13 @@ func (controller *Controller) PutSongHandler(w reqRes.MyWriter, r *reqRes.MyRequ
 		return
 	}
 
-	file, handler, err := r.FormFile("file")
+	formFile, handler, err := r.FormFile("file")
 	if err != nil {
 		message := fmt.Sprintf("Failed to retrieve file: \n%v", err)
 		w.Error(message, http.StatusInternalServerError)
 		return
 	}
-	defer func(file multipart.File) {
-		err := file.Close()
-		if err != nil {
-			myLog.Info.Logf("Failed to close file: \n%v", err)
-		}
-	}(file)
+	defer helpers.CloseSafely(formFile)
 
 	fmt.Printf("Uploaded File: %+v\n", handler.Filename)
 	fmt.Printf("File Size: %+v\n", handler.Size)
@@ -43,20 +37,15 @@ func (controller *Controller) PutSongHandler(w reqRes.MyWriter, r *reqRes.MyRequ
 	folder := filepath.Join(controller.songsFolder, pathQueryParam)
 	path := filepath.Join(folder, handler.Filename)
 
-	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, filePermissions)
+	diskFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, filePermissions)
 	if err != nil {
 		message := fmt.Sprintf("Failed to retrieve file: \n%v", err)
 		w.Error(message, http.StatusInternalServerError)
 		return
 	}
-	defer func(f *os.File) {
-		err := f.Close()
-		if err != nil {
-			myLog.Info.Logf("Failed to close file: \n%v", err)
-		}
-	}(f)
+	defer helpers.CloseSafely(diskFile)
 
-	_, err = io.Copy(f, file)
+	_, err = io.Copy(diskFile, formFile)
 	if err != nil {
 		message := fmt.Sprintf("Failed to save file: \n%v", err)
 		w.Error(message, http.StatusInternalServerError)
