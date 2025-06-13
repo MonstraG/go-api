@@ -12,6 +12,7 @@ func main() {
 	app := setup.NewApp(config)
 
 	app.Use(setup.LoggingMiddleware)
+	app.Use(setup.VersionMiddleware)
 	app.MapRoutes()
 
 	err := app.ListenAndServe()
