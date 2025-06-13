@@ -25,6 +25,12 @@ sudo systemctl start docker
 - run `build-and-get-size` from makefile
   (or just run `make`)
 
+And to run it:
+
+```shell
+docker run --name go-api-container --publish 8080:8080 --volume ./data:/myapp/data myapp
+```
+
 ### Other notes
 
 Default address is 0.0.0.0 not
