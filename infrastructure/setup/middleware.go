@@ -6,7 +6,6 @@ import (
 	"go-api/infrastructure/myLog"
 	"go-api/infrastructure/reqRes"
 	"net/http"
-	"runtime/debug"
 	"time"
 )
 
@@ -34,15 +33,12 @@ func LoggingMiddleware(next MyHandlerFunc) MyHandlerFunc {
 	}
 }
 
-func VersionMiddleware(next MyHandlerFunc) MyHandlerFunc {
-	buildInfo, ok := debug.ReadBuildInfo()
-	if !ok {
-		myLog.Fatal.Logf("Failed to read build info")
-	}
-
-	return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
-		w.Header().Set("X-Version", buildInfo.Main.Version)
-		next(w, r)
+func VersionMiddleware(version string) Middleware {
+	return func(next MyHandlerFunc) MyHandlerFunc {
+		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+			w.Header().Set("X-Version", version)
+			next(w, r)
+		}
 	}
 }
 
