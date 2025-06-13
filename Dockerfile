@@ -10,7 +10,7 @@ ARG ALPINE_VERSION="3.22"
 ARG GO_VERSION="1.24.4"
 
 # specifies a parent image (image is alpine + all the stuff you need to build a golang application)
-# and names this instance 'build'.
+# and names this instance 'building-image'.
 # cryptic source image names like 'alpine' explained in https://stackoverflow.com/a/59731596/11593686.
 # official docker images for golang: https://hub.docker.com/_/golang/
 FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS building-image
@@ -24,6 +24,9 @@ COPY . .
 # install all dependencies
 RUN go mod download
 
+# install git so that go will be able to write down current version when building
+RUN apk add --no-cache git
+
 # run go build, name the executable "go-api" and also disable CGO because people keep telling me that
 RUN CGO_ENABLED=0 go build -o go-api
 
@@ -36,7 +39,8 @@ RUN apk add --no-cache sqlite
 
 # copy everything from our folder (so, repo + built executable) from our building-image into the same folder but into the second image
 # also exclude all the source files, so the final build is even smaller (although it saves like 20kb)
-COPY --exclude=**/*.go --exclude=go.mod --from=building-image /myapp /myapp
+# finally, exclude .git folder, we needed it in building-image to bake in version information, but not anymore
+COPY --exclude=**/*.go --exclude=go.mod --exclude=go.sum --exclude=.git --from=building-image /myapp /myapp
 
 # notify docker we are going to be using port 8080
 EXPOSE 8080

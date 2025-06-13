@@ -1,6 +1,9 @@
-.git
-.idea
-data
+# IDE configs
+/.idea
+# github workflows
+/.github
+# temp data folder
+/data
 .dockerignore
 .gitignore
 build_size.log
@@ -8,3 +11,8 @@ Dockerfile
 README.md
 Makefile
 *.sqlite
+# config for air
+.air.toml
+# temporary folder for air
+/tmp
+example.config.json
