@@ -1,13 +1,13 @@
-# syntax=docker.io/docker/dockerfile:1.14-labs
+# syntax=docker.io/docker/dockerfile:1.16-labs
 # using `labs` in the line above changes "syntax" https://docs.docker.com/build/dockerfile/frontend/
 # this syntax allows "exclude" arg for COPY
 # dockerfile syntax verisons: https://hub.docker.com/r/docker/dockerfile
 
 
 # alpine versions: https://alpinelinux.org/downloads/
-ARG ALPINE_VERSION="3.21"
+ARG ALPINE_VERSION="3.22"
 # golang versions https://go.dev/dl/
-ARG GO_VERSION="1.24.3"
+ARG GO_VERSION="1.24.4"
 
 # specifies a parent image (image is alpine + all the stuff you need to build a golang application)
 # and names this instance 'build'.
@@ -19,9 +19,9 @@ FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS building-image
 WORKDIR /myapp
 
 # copy entire project there (except for what's listed in .dockerignore)
-COPY --exclude=*.sqlite . .
+COPY . .
 
-# install all dependencies (of which there are zero, but just as an example, I'll do that anyway)
+# install all dependencies
 RUN go mod download
 
 # run go build, name the executable "go-api" and also disable CGO because people keep telling me that

@@ -7,3 +7,4 @@ build_size.log
 Dockerfile
 README.md
 Makefile
+*.sqlite

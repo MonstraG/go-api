@@ -47,7 +47,7 @@ Will delete all build artefacts from disk.
 And, just in case, list containers:
 
 ```shell
-docker container list
+docker container list --all
 ```
 
 ### Updating

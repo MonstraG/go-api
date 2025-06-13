@@ -1,4 +1,4 @@
-data.sqlite
+*.sqlite
 config.json
 # air dir
 /tmp
