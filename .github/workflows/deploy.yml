@@ -54,4 +54,4 @@ jobs:
             docker rm go-api-container || true
 
             # Run the new container with the loaded image
-            docker run -d --restart unless-stopped --name go-api-container -p 8080:8080 -v /home/${{ secrets.VPS_USERNAME }}/data:/myapp/data go-api
+            docker run --detach --restart unless-stopped --name go-api-container --publish 8080:8080 --volume /home/${{ secrets.VPS_USERNAME }}/data:/myapp/data go-api
