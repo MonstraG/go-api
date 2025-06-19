@@ -53,22 +53,14 @@ function initVisibilityButton(button) {
 	}
 }
 
-document.addEventListener("DOMContentLoaded", function initVisibilityButtons() {
-	// I actually tried to do this with web components, but they have some problems:
-	//  1. safari doesn't support customized built-in components
-	//  2. if using autonomous, then css is not inherited, so I need to duplicate button styles
-	//  3. it's god-damn annoying to write even if it worked
-	// maybe I'll try another time later.
+// I actually tried to do this with web components, but they have some problems:
+//  1. safari doesn't support customized built-in components
+//  2. if using autonomous, then css is not inherited, so I need to duplicate button styles
+//  3. it's god-damn annoying to write even if it worked
 
-	/** @type {HTMLButtonElement[]} */
-	const buttons = [...document.querySelectorAll(".password-visibility")];
+/** @type {NodeListOf<HTMLButtonElement>} */
+const buttons = document.querySelectorAll(".password-visibility");
 
-	if (buttons.length === 0) {
-		console.error("Failed to connect to password visibility button");
-		return;
-	}
-
-	for (let button of buttons) {
-		initVisibilityButton(button);
-	}
-});
+for (const button of buttons) {
+	initVisibilityButton(button);
+}
