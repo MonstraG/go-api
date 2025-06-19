@@ -14,6 +14,7 @@ import (
 	"go-api/pages/notFound"
 	"gorm.io/gorm"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -28,6 +29,11 @@ type App struct {
 // NewApp is a constructor for App
 func NewApp(appConfig appConfig.AppConfig) *App {
 	db := OpenDb(appConfig)
+
+	err := os.MkdirAll(appConfig.SongsFolder, 0766)
+	if err != nil {
+		myLog.Fatal.Logf("Failed to ensure songs folder exists")
+	}
 
 	return &App{
 		mux:         http.NewServeMux(),

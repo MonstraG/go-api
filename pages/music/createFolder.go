@@ -10,7 +10,7 @@ import (
 
 const kilobyte = 1 << 10
 
-const filePermissions = 0666
+const filePermissions = 0766
 
 func (controller *Controller) CreateFolderHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
