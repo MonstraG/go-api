@@ -96,7 +96,7 @@ type MessageUserLeaves struct {
 func HandleWebSocket(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	connection, err := upgrader.Upgrade(w, &r.Request, nil)
 	if err != nil {
-		myLog.Info.Logf("WebSocket upgrade error error: \n\t%v", err)
+		myLog.Info.Logf("WebSocket upgrade error: \n\t%v", err)
 		return
 	}
 	defer helpers.CloseSafely(connection)

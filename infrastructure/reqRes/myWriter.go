@@ -11,11 +11,12 @@ import (
 	"net/http"
 )
 
+// MyResponseWriter must use value receivers for the Hijack
 type MyResponseWriter struct {
 	http.ResponseWriter
 }
 
-func (myResponseWriter *MyResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+func (myResponseWriter MyResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	h, ok := myResponseWriter.ResponseWriter.(http.Hijacker)
 	if !ok {
 		return nil, nil, errors.New("hijack not supported")
@@ -23,7 +24,7 @@ func (myResponseWriter *MyResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter,
 	return h.Hijack()
 }
 
-func (myResponseWriter *MyResponseWriter) RenderTemplate(tmpl *template.Template, data any) bool {
+func (myResponseWriter MyResponseWriter) RenderTemplate(tmpl *template.Template, data any) bool {
 	err := tmpl.Execute(myResponseWriter, data)
 	if err != nil {
 		message := fmt.Sprintf("Failed to render template: \n%v", err)
@@ -33,11 +34,11 @@ func (myResponseWriter *MyResponseWriter) RenderTemplate(tmpl *template.Template
 	return true
 }
 
-func (myResponseWriter *MyResponseWriter) RedirectToLogin(r *MyRequest) {
+func (myResponseWriter MyResponseWriter) RedirectToLogin(r *MyRequest) {
 	http.Redirect(myResponseWriter, &r.Request, "/login", http.StatusTemporaryRedirect)
 }
 
-func (myResponseWriter *MyResponseWriter) Error(message string, code int) {
+func (myResponseWriter MyResponseWriter) Error(message string, code int) {
 	if code >= 500 {
 		myLog.Error.SkipLog(1, message)
 	} else {
@@ -46,7 +47,7 @@ func (myResponseWriter *MyResponseWriter) Error(message string, code int) {
 	http.Error(myResponseWriter, message, code)
 }
 
-func (myResponseWriter *MyResponseWriter) IssueCookie(value string, age int) {
+func (myResponseWriter MyResponseWriter) IssueCookie(value string, age int) {
 	cookie := http.Cookie{
 		Name:     myJwt.Cookie,
 		Value:    value,
@@ -59,6 +60,6 @@ func (myResponseWriter *MyResponseWriter) IssueCookie(value string, age int) {
 	http.SetCookie(myResponseWriter, &cookie)
 }
 
-func (myResponseWriter *MyResponseWriter) ExpireCookie() {
+func (myResponseWriter MyResponseWriter) ExpireCookie() {
 	myResponseWriter.IssueCookie("", -1)
 }
