@@ -27,6 +27,9 @@ RUN go mod download
 # install git so that go will be able to write down current version when building
 RUN apk add --no-cache git
 
+# install mailcap to add mime type support, https://stackoverflow.com/a/38033047
+RUN apk add --no-cache mailcap
+
 # run go build, name the executable "go-api" and also disable CGO because people keep telling me that
 RUN CGO_ENABLED=0 go build -o go-api
 
