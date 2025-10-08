@@ -17,7 +17,7 @@ type MyLogger struct {
 	die    bool
 }
 
-// lazySprintf will
+// lazySprintf will try to format message only if there are any variables provided
 func lazySprintf(format string, a ...any) string {
 	if len(a) == 0 {
 		return format
