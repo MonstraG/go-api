@@ -1,4 +1,21 @@
+{{- /*gotype: go-api/pages/player.Queue*/ -}}
 <div id="player-partial" class="card">
+	<div class="grow">
+		<table>
+			<tbody>
+			{{range .Items}}
+				<tr>
+					<td class="min-width">
+						{{.CreatedAt}}
+					</td>
+					<td class="align-start">
+						{{.Path}}
+					</td>
+				</tr>
+			{{end}}
+			</tbody>
+		</table>
+	</div>
 </div>
 <script type="module">
 </script>

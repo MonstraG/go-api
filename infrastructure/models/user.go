@@ -2,10 +2,11 @@ package models
 
 import (
 	"database/sql"
+	"time"
+
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"time"
 )
 
 type User struct {

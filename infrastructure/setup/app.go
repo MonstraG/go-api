@@ -93,7 +93,9 @@ func (app *App) MapRoutes() {
 	app.handleFunc("DELETE /file/{path...}", authRequired(explorerController.DeleteFile))
 	app.handleFunc("PUT /directory/{path...}", authRequired(explorerController.PutDirectory))
 
-	app.handleFunc("GET /player", authRequired(player.GetPlayer))
+	var playerController = player.NewController(app.Config, app.Db)
+	app.handleFunc("GET /player", authRequired(playerController.GetPlayer))
+	app.handleFunc("POST /addSong/{path...}", authRequired(playerController.AddSong))
 
 	app.handleFunc("GET /public/{path...}", pages.PublicHandler)
 

@@ -1,10 +1,11 @@
 package setup
 
 import (
-	"github.com/glebarez/sqlite"
 	"go-api/infrastructure/appConfig"
 	"go-api/infrastructure/models"
 	"go-api/infrastructure/myLog"
+
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -29,7 +30,7 @@ func OpenDb(appConfig appConfig.AppConfig) *gorm.DB {
 }
 
 func seedDb(db *gorm.DB, appConfig appConfig.AppConfig) {
-	err := db.AutoMigrate(&models.User{})
+	err := db.AutoMigrate(&models.User{}, &models.QueuedSong{})
 	if err != nil {
 		myLog.Fatal.Logf("failed to migrate users:\n\t%v", err)
 	}

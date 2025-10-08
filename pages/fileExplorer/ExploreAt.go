@@ -89,7 +89,7 @@ func renderExplorer(w reqRes.MyResponseWriter, fileSystemFolder string, queryFol
 		fileName := file.Name()
 		templatePageData.Items[index] = SongItem{
 			IsDir:  isDir,
-			IsSong: !isDir && isSong(fileName),
+			IsSong: !isDir && IsSong(fileName),
 			Name:   fileName,
 			Path:   path.Join(queryFolder, fileName),
 			Size:   getFormattedFileSize(file),
@@ -120,7 +120,7 @@ func renderExplorer(w reqRes.MyResponseWriter, fileSystemFolder string, queryFol
 	w.RenderTemplate(fileExplorerTemplate, templatePageData)
 }
 
-func isSong(fileName string) bool {
+func IsSong(fileName string) bool {
 	var extension = path.Ext(fileName)
 	mimeType := mime.TypeByExtension(extension)
 	return strings.HasPrefix(mimeType, "audio/")

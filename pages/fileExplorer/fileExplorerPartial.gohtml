@@ -22,8 +22,15 @@
 					<td class="align-start">
 						{{.Name}}
 					</td>
-					<td class="align-end">
+					<td class="align-end nowrap">
 						{{.Size}}
+					</td>
+					<td class="align-end short">
+						{{if .IsSong}}
+							<button class="icon-button" hx-post="/addSong/{{.Path}}" hx-target="#player">
+								<img src="/public/icons/add.svg" width="20" height="20" alt="Add"/>
+							</button>
+						{{end}}
 					</td>
 					<td class="align-end short">
 						{{if not .IsGoUp}}
