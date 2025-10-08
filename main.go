@@ -26,6 +26,6 @@ func main() {
 
 	err := app.ListenAndServe()
 	if err != nil {
-		myLog.Fatal.Logf(err.Error())
+		myLog.Fatal.Logf("%v", err.Error())
 	}
 }
