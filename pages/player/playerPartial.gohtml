@@ -1,8 +1,5 @@
 {{- /*gotype: go-api/pages/player.Queue*/ -}}
 <div id="player-partial" class="card">
-	<button type="button" id="unmute">
-		Unmute
-	</button>
 	<div class="grow">
 		{{if .CurrentSong.Path}}
 			<audio controls autoplay muted src="/file/{{.CurrentSong.Path}}" id="audio-player"></audio>
@@ -35,21 +32,6 @@
 			console.error("Failed to find the audio player!");
 			return;
 		}
-
-		/**
-		 * @type {HTMLButtonElement | null}
-		 */
-		const unmute = document.querySelector("#unmute");
-		if (!unmute) {
-			console.error("Failed to find the unmute button!");
-			return;
-		}
-
-		unmute.addEventListener("click", () => {
-			console.debug("Unmuted");
-			audioPlayer.muted = false;
-			unmute.remove();
-		}, {once: true});
 
 		audioPlayer.volume = 0.20;
 
