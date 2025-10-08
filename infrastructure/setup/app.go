@@ -12,6 +12,7 @@ import (
 	"go-api/pages/login"
 	"go-api/pages/logout"
 	"go-api/pages/notFound"
+	"go-api/pages/player"
 	"net/http"
 	"os"
 	"time"
@@ -91,6 +92,8 @@ func (app *App) MapRoutes() {
 	app.handleFunc("PUT /file/{path...}", authRequired(explorerController.PutFile))
 	app.handleFunc("DELETE /file/{path...}", authRequired(explorerController.DeleteFile))
 	app.handleFunc("PUT /directory/{path...}", authRequired(explorerController.PutDirectory))
+
+	app.handleFunc("GET /player", authRequired(player.GetPlayer))
 
 	app.handleFunc("GET /public/{path...}", pages.PublicHandler)
 
