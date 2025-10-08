@@ -15,6 +15,7 @@ func main() {
 	buildInfo, ok := debug.ReadBuildInfo()
 	if !ok {
 		myLog.Fatal.Logf("Failed to read build info")
+		return
 	}
 
 	myLog.Info.Logf("Version: %s", buildInfo.Main.Version)
