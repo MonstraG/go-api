@@ -9,10 +9,13 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
+	"time"
 )
 
 type Queue struct {
-	Items []models.QueuedSong
+	CurrentSong models.QueuedSong
+	Items       []models.QueuedSong
 }
 
 var playerTemplate = template.Must(template.ParseFiles("pages/player/playerPartial.gohtml"))
@@ -20,15 +23,21 @@ var playerTemplate = template.Must(template.ParseFiles("pages/player/playerParti
 func (controller *Controller) GetPlayer(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	var queuedSongs []models.QueuedSong
 
-	result := controller.db.Find(&queuedSongs)
+	result := controller.db.Where("duration = 0 OR datetime(ends_at) > datetime()").Find(&queuedSongs)
 	if result.Error != nil {
 		message := fmt.Sprintf("Failed to render player: \n%v", result.Error)
 		w.Error(message, http.StatusBadRequest)
 		return
 	}
 
+	var currentSong models.QueuedSong
+	if len(queuedSongs) > 0 {
+		currentSong = queuedSongs[0]
+	}
+
 	pageData := Queue{
-		Items: queuedSongs,
+		CurrentSong: currentSong,
+		Items:       queuedSongs,
 	}
 
 	w.RenderTemplate(playerTemplate, pageData)
@@ -58,7 +67,7 @@ func (controller *Controller) AddSong(w reqRes.MyResponseWriter, r *reqRes.MyReq
 	}
 
 	result := controller.db.Create(&models.QueuedSong{
-		Path: pathToFile,
+		Path: pathQueryParam,
 	})
 
 	if result.Error != nil {
@@ -68,4 +77,36 @@ func (controller *Controller) AddSong(w reqRes.MyResponseWriter, r *reqRes.MyReq
 	}
 
 	controller.GetPlayer(w, r)
+}
+
+// ReportSongDuration should be called by client to tell the server when the song actually ends
+// It would have been nice to be able to figure out duration server-side, but that seems to not be that easy
+func (controller *Controller) ReportSongDuration(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+	queuedSongId := r.PathValue("queuedSongId")
+	durationStr := r.URL.Query().Get("duration")
+
+	var song models.QueuedSong
+	result := controller.db.First(&song, queuedSongId)
+	if result.RowsAffected == 0 {
+		message := fmt.Sprintf("Failed to report song duration, song not found")
+		w.Error(message, http.StatusBadRequest)
+		return
+	}
+
+	if song.Duration == 0 {
+		duration, err := strconv.ParseFloat(durationStr, 64)
+		if err != nil {
+			message := fmt.Sprintf("Failed to parse duration: %v", err.Error())
+			w.Error(message, http.StatusBadRequest)
+			return
+		}
+
+		song.Duration = time.Duration(duration * float64(time.Second))
+		song.EndsAt = song.CreatedAt.Add(song.Duration)
+		controller.db.Updates(&song)
+	} else {
+		// duration already known, ignore
+	}
+
+	w.Header().Set("HX-Trigger", "playerReloadEvent")
 }

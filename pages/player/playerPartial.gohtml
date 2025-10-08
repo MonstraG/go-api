@@ -1,5 +1,13 @@
 {{- /*gotype: go-api/pages/player.Queue*/ -}}
 <div id="player-partial" class="card">
+	<button type="button" id="unmute">
+		Unmute
+	</button>
+	<div class="grow">
+		{{if .CurrentSong.Path}}
+			<audio controls autoplay muted src="/file/{{.CurrentSong.Path}}" id="audio-player"></audio>
+		{{end}}
+	</div>
 	<div class="grow">
 		<table>
 			<tbody>
@@ -18,4 +26,77 @@
 	</div>
 </div>
 <script type="module">
+	(function runThePlayer() {
+		/**
+		 * @type {HTMLAudioElement | null}
+		 */
+		const audioPlayer = document.querySelector("#audio-player");
+		if (!audioPlayer) {
+			console.error("Failed to find the audio player!");
+			return;
+		}
+
+		/**
+		 * @type {HTMLButtonElement | null}
+		 */
+		const unmute = document.querySelector("#unmute");
+		if (!unmute) {
+			console.error("Failed to find the unmute button!");
+			return;
+		}
+
+		unmute.addEventListener("click", () => {
+			console.debug("Unmuted");
+			audioPlayer.muted = false;
+			unmute.remove();
+		}, {once: true});
+
+		audioPlayer.volume = 0.20;
+
+		audioPlayer.addEventListener("ended", () => {
+			console.debug("Song ended, reloading");
+			htmx.trigger(audioPlayer, "playerReloadEvent");
+		});
+	})();
+
+	(function tryReportSongLength() {
+		/**
+		 * @param duration {number}
+		 */
+		function reportSongLength(duration) {
+			console.debug("Reporting song length");
+			fetch(`/reportSongDuration/{{.CurrentSong.ID}}?duration=${duration}`, {
+				method: "POST",
+				credentials: "same-origin",
+			}).catch((error) => {
+				console.error("Failed to report song duration", error);
+			});
+		}
+
+
+		const knownLength = {{.CurrentSong.Duration.Seconds}};
+		if (knownLength > 0) {
+			return;
+		}
+
+		console.debug("Length not known, reporting");
+
+		/**
+		 * @type {HTMLAudioElement | null}
+		 */
+		const audioPlayer = document.querySelector("#audio-player");
+		if (!audioPlayer) {
+			console.error("Failed to find the audio player!");
+			return;
+		}
+
+		const hasDuration = audioPlayer.readyState > 1;
+		if (hasDuration) {
+			reportSongLength(audioPlayer.duration);
+		} else {
+			audioPlayer.addEventListener("loadedmetadata", () => {
+				reportSongLength(audioPlayer.duration);
+			}, {once: true});
+		}
+	})();
 </script>

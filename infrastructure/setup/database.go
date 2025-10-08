@@ -7,6 +7,7 @@ import (
 
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 const foreignKeySwitch = "?_pragma=foreign_keys(1)"
@@ -19,7 +20,9 @@ func OpenDb(appConfig appConfig.AppConfig) *gorm.DB {
 	dsn := appConfig.DatabaseFile + foreignKeySwitch
 	myLog.Info.Logf("Opening database %s", dsn)
 
-	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		myLog.Fatal.Logf("failed to open database:\n\t%v", err)
 	}

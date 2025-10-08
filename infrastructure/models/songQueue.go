@@ -5,8 +5,10 @@ import (
 )
 
 type QueuedSong struct {
-	ID        string `gorm:"primarykey"`
+	ID        uint `gorm:"primarykey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	Path      string
+	Duration  time.Duration
+	EndsAt    time.Time
 }
