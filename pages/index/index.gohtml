@@ -10,7 +10,7 @@
 			gap: 32px;
 		}
 
-		#songs-partial {
+		#files-partial {
 			max-width: 600px;
 			min-height: 400px;
 			width: 100%;
@@ -102,7 +102,7 @@
 {{define "content"}}
 	<h1>Homepage</h1>
 	<article>
-		<h2>Available songs</h2>
-		<div hx-get="/listSongs" hx-trigger="load" id="songs-browser"></div>
+		<h2>File explorer</h2>
+		<div hx-get="/exploreAt" hx-trigger="load" id="file-explorer"></div>
 	</article>
 {{end}}

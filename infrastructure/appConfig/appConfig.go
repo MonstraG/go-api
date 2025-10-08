@@ -8,14 +8,15 @@ import (
 )
 
 type AppConfig struct {
-	Host             string      `json:"host"`
-	DatabaseFile     string      `json:"databaseFile"`
-	DefaultUser      DefaultUser `json:"defaultUser"`
-	GuestUser        DefaultUser `json:"guestUser"`
-	VpsLoginLink     string      `json:"vpsLoginLink"`
-	JWTSecret        string      `json:"jwtSecret"`
-	SongsFolder      string      `json:"songsFolder"`
-	WebSocketOrigins []string    `json:"webSocketOrigins"`
+	Host         string      `json:"host"`
+	DatabaseFile string      `json:"databaseFile"`
+	DefaultUser  DefaultUser `json:"defaultUser"`
+	GuestUser    DefaultUser `json:"guestUser"`
+	VpsLoginLink string      `json:"vpsLoginLink"`
+	JWTSecret    string      `json:"jwtSecret"`
+	// todo: rename json and update config
+	ExplorerRoot     string   `json:"songsFolder"`
+	WebSocketOrigins []string `json:"webSocketOrigins"`
 }
 
 type DefaultUser struct {

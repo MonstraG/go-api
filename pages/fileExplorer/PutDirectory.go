@@ -1,4 +1,4 @@
-package music
+package fileExplorer
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ const kilobyte = 1 << 10
 
 const filePermissions = 0766
 
-func (controller *Controller) CreateFolderHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+func (controller *Controller) PutDirectory(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
 
 	err := r.ParseMultipartForm(kilobyte)
@@ -28,7 +28,7 @@ func (controller *Controller) CreateFolderHandler(w reqRes.MyResponseWriter, r *
 		return
 	}
 
-	folder := filepath.Join(controller.songsFolder, pathQueryParam)
+	folder := filepath.Join(controller.explorerRoot, pathQueryParam)
 	path := filepath.Join(folder, value)
 
 	err = os.Mkdir(path, filePermissions)
@@ -38,5 +38,5 @@ func (controller *Controller) CreateFolderHandler(w reqRes.MyResponseWriter, r *
 		return
 	}
 
-	readDir(w, folder, pathQueryParam, "Folder created!")
+	renderExplorer(w, folder, pathQueryParam, "Folder created!")
 }

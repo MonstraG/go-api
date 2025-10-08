@@ -1,4 +1,4 @@
-package music
+package fileExplorer
 
 import (
 	"errors"
@@ -16,9 +16,9 @@ import (
 	"strings"
 )
 
-var songsTemplate = template.Must(template.ParseFiles("pages/music/songsPartial.gohtml"))
+var fileExplorerTemplate = template.Must(template.ParseFiles("pages/fileExplorer/fileExplorerPartial.gohtml"))
 
-type SongsData struct {
+type FilesData struct {
 	Items         []SongItem
 	Path          string
 	ResultMessage string
@@ -33,14 +33,14 @@ type SongItem struct {
 	Size   string
 }
 
-func (controller *Controller) GetSongs(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+func (controller *Controller) ExploreAt(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
-	folder := filepath.Join(controller.songsFolder, pathQueryParam)
+	folder := filepath.Join(controller.explorerRoot, pathQueryParam)
 
-	readDir(w, folder, pathQueryParam, "")
+	renderExplorer(w, folder, pathQueryParam, "")
 }
 
-func readDir(w reqRes.MyResponseWriter, fileSystemFolder string, queryFolder string, resultMessage string) {
+func renderExplorer(w reqRes.MyResponseWriter, fileSystemFolder string, queryFolder string, resultMessage string) {
 	dirAsFile, err := os.Open(fileSystemFolder)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
@@ -78,7 +78,7 @@ func readDir(w reqRes.MyResponseWriter, fileSystemFolder string, queryFolder str
 		return
 	}
 
-	var templatePageData = SongsData{
+	var templatePageData = FilesData{
 		Items:         make([]SongItem, len(dirEntries)),
 		Path:          queryFolder,
 		ResultMessage: resultMessage,
@@ -117,7 +117,7 @@ func readDir(w reqRes.MyResponseWriter, fileSystemFolder string, queryFolder str
 		})
 	}
 
-	w.RenderTemplate(songsTemplate, templatePageData)
+	w.RenderTemplate(fileExplorerTemplate, templatePageData)
 }
 
 func isSong(fileName string) bool {

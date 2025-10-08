@@ -1,4 +1,4 @@
-package music
+package fileExplorer
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 
 const hundredMegs = 100 << 20
 
-func (controller *Controller) PutSongHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+func (controller *Controller) PutFile(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
 
 	err := r.ParseMultipartForm(hundredMegs)
@@ -34,7 +34,7 @@ func (controller *Controller) PutSongHandler(w reqRes.MyResponseWriter, r *reqRe
 	fmt.Printf("File Size: %+v\n", handler.Size)
 	fmt.Printf("MIME Header: %+v\n", handler.Header)
 
-	folder := filepath.Join(controller.songsFolder, pathQueryParam)
+	folder := filepath.Join(controller.explorerRoot, pathQueryParam)
 	path := filepath.Join(folder, handler.Filename)
 
 	diskFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, filePermissions)
@@ -52,5 +52,5 @@ func (controller *Controller) PutSongHandler(w reqRes.MyResponseWriter, r *reqRe
 		return
 	}
 
-	readDir(w, folder, pathQueryParam, "File uploaded!")
+	renderExplorer(w, folder, pathQueryParam, "File uploaded!")
 }

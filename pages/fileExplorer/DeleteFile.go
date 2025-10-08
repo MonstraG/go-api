@@ -1,4 +1,4 @@
-package music
+package fileExplorer
 
 import (
 	"errors"
@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 )
 
-func (controller *Controller) DeleteSongHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+func (controller *Controller) DeleteFile(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
-	pathToRemove := filepath.Join(controller.songsFolder, pathQueryParam)
+	pathToRemove := filepath.Join(controller.explorerRoot, pathQueryParam)
 
 	stat, err := os.Stat(pathToRemove)
 	if errors.Is(err, os.ErrNotExist) {
@@ -43,5 +43,5 @@ func (controller *Controller) DeleteSongHandler(w reqRes.MyResponseWriter, r *re
 		resultMessage = "File deleted!"
 	}
 
-	readDir(w, fileSystemFolder, queryFolder, resultMessage)
+	renderExplorer(w, fileSystemFolder, queryFolder, resultMessage)
 }

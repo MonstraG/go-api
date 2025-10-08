@@ -1,11 +1,11 @@
-package music
+package fileExplorer
 
 import "go-api/infrastructure/appConfig"
 
 type Controller struct {
-	songsFolder string
+	explorerRoot string
 }
 
 func NewController(config appConfig.AppConfig) *Controller {
-	return &Controller{songsFolder: config.SongsFolder}
+	return &Controller{explorerRoot: config.ExplorerRoot}
 }

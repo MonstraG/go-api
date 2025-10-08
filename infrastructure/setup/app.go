@@ -6,16 +6,17 @@ import (
 	"go-api/infrastructure/myLog"
 	"go-api/infrastructure/websockets"
 	"go-api/pages"
+	"go-api/pages/fileExplorer"
 	"go-api/pages/forgotPassword"
 	"go-api/pages/index"
 	"go-api/pages/login"
 	"go-api/pages/logout"
-	"go-api/pages/music"
 	"go-api/pages/notFound"
-	"gorm.io/gorm"
 	"net/http"
 	"os"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // App = http.ServeMux + Middleware slice
@@ -30,9 +31,9 @@ type App struct {
 func NewApp(appConfig appConfig.AppConfig) *App {
 	db := OpenDb(appConfig)
 
-	err := os.MkdirAll(appConfig.SongsFolder, 0766)
+	err := os.MkdirAll(appConfig.ExplorerRoot, 0766)
 	if err != nil {
-		myLog.Fatal.Logf("Failed to ensure songs folder exists")
+		myLog.Fatal.Logf("Failed to ensure explorer root folder exists")
 	}
 
 	return &App{
@@ -84,12 +85,12 @@ func (app *App) MapRoutes() {
 
 	app.handleFunc("GET /logout", logout.GetHandler)
 
-	var musicController = music.NewController(app.Config)
-	app.handleFunc("GET /listSongs/{path...}", authRequired(musicController.GetSongs))
-	app.handleFunc("GET /song/{path...}", musicController.GetSongHandler)
-	app.handleFunc("PUT /song/{path...}", authRequired(musicController.PutSongHandler))
-	app.handleFunc("DELETE /song/{path...}", authRequired(musicController.DeleteSongHandler))
-	app.handleFunc("PUT /songFolder/{path...}", authRequired(musicController.CreateFolderHandler))
+	var explorerController = fileExplorer.NewController(app.Config)
+	app.handleFunc("GET /exploreAt/{path...}", authRequired(explorerController.ExploreAt))
+	app.handleFunc("GET /file/{path...}", explorerController.GetFile)
+	app.handleFunc("PUT /file/{path...}", authRequired(explorerController.PutFile))
+	app.handleFunc("DELETE /file/{path...}", authRequired(explorerController.DeleteFile))
+	app.handleFunc("PUT /directory/{path...}", authRequired(explorerController.PutDirectory))
 
 	app.handleFunc("GET /public/{path...}", pages.PublicHandler)
 

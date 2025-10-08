@@ -1,41 +1,41 @@
-{{- /*gotype: go-api/pages/music.SongsData*/ -}}
-<div id="songs-partial" class="card">
+{{- /*gotype: go-api/pages/music.FilesData*/ -}}
+<div id="files-partial" class="card">
 	<div class="grow">
 		<h3>/{{.Path}}</h3>
 		<table>
 			<tbody>
-            {{range .Items}}
+			{{range .Items}}
 				<tr
-                        {{if .IsDir}}
-							hx-get="/listSongs/{{.Path}}" hx-trigger="dblclick" hx-target="#songs-partial" hx-swap="outerHTML" class="clickable"
-                        {{end}}
+					{{if .IsDir}}
+						hx-get="/exploreAt/{{.Path}}" hx-trigger="dblclick" hx-target="#files-partial" hx-swap="outerHTML" class="clickable"
+					{{end}}
 				>
 					<td class="min-width">
-                        {{if .IsDir}}
+						{{if .IsDir}}
 							<img src="/public/icons/folder.svg" width="20" height="20" alt="Folder"/>
-                        {{else if .IsSong}}
+						{{else if .IsSong}}
 							<img src="/public/icons/music-note.svg" width="20" height="20" alt="Song"/>
-                        {{else}}
+						{{else}}
 							<img src="/public/icons/question-mark.svg" width="20" height="20" alt="Unknown"/>
-                        {{end}}
+						{{end}}
 					</td>
 					<td class="align-start">
-                        {{.Name}}
+						{{.Name}}
 					</td>
 					<td class="align-end">
-                        {{.Size}}
+						{{.Size}}
 					</td>
 					<td class="align-end short">
-                        {{if not .IsGoUp}}
-							<button class="icon-button" hx-delete="/song/{{.Path}}"
-							        hx-confirm='Are you sure you want to delete {{if .IsDir}}folder{{else}}file{{end}} "{{.Name}}"?'
-							        hx-target="#songs-browser">
+						{{if not .IsGoUp}}
+							<button class="icon-button" hx-delete="/file/{{.Path}}"
+									hx-confirm='Are you sure you want to delete {{if .IsDir}}folder{{else}}file{{end}} "{{.Name}}"?'
+									hx-target="#file-explorer">
 								<img src="/public/icons/delete.svg" width="20" height="20" alt="Delete"/>
 							</button>
-                        {{end}}
+						{{end}}
 					</td>
 				</tr>
-            {{end}}
+			{{end}}
 			</tbody>
 		</table>
 	</div>
@@ -44,8 +44,8 @@
 	<section class="form-section">
 		<h4>Create folder</h4>
 		<form id="create-folder-form" hx-encoding="multipart/form-data"
-		      hx-put="/songFolder/{{.Path}}"
-		      hx-target="#songs-browser">
+			  hx-put="/songFolder/{{.Path}}"
+			  hx-target="#file-explorer">
 
 			<div class="form-control">
 				<label for="folder-name-input">Folder name</label>
@@ -66,7 +66,7 @@
 	<section class="form-section">
 		<h4>Upload file</h4>
 		<form id="file-upload-form" hx-encoding="multipart/form-data" hx-put="/song/{{.Path}}"
-		      hx-target="#songs-browser">
+			  hx-target="#file-explorer">
 			<input id="file-input" type="file" name="file" class="primary-button">
 			<div class="form-submit-block">
 				<button type="submit" class="primary-button">
@@ -78,12 +78,12 @@
 	</section>
 
 
-    {{if .ResultMessage}}
+	{{if .ResultMessage}}
 		<hr/>
 		<section>
 			<p>{{.ResultMessage}}</p>
 		</section>
-    {{end}}
+	{{end}}
 </div>
 <script type="module">
 	(function initUploadForm() {
