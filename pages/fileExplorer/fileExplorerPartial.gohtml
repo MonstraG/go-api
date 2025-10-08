@@ -51,7 +51,7 @@
 	<section class="form-section">
 		<h4>Create folder</h4>
 		<form id="create-folder-form" hx-encoding="multipart/form-data"
-			  hx-put="/songFolder/{{.Path}}"
+			  hx-put="/directory/{{.Path}}"
 			  hx-target="#file-explorer">
 
 			<div class="form-control">
@@ -72,7 +72,7 @@
 	<hr/>
 	<section class="form-section">
 		<h4>Upload file</h4>
-		<form id="file-upload-form" hx-encoding="multipart/form-data" hx-put="/song/{{.Path}}"
+		<form id="file-upload-form" hx-encoding="multipart/form-data" hx-put="/file/{{.Path}}"
 			  hx-target="#file-explorer">
 			<input id="file-input" type="file" name="file" class="primary-button">
 			<div class="form-submit-block">

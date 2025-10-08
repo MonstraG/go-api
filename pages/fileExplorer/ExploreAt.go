@@ -19,12 +19,12 @@ import (
 var fileExplorerTemplate = template.Must(template.ParseFiles("pages/fileExplorer/fileExplorerPartial.gohtml"))
 
 type FilesData struct {
-	Items         []SongItem
+	Items         []FileItem
 	Path          string
 	ResultMessage string
 }
 
-type SongItem struct {
+type FileItem struct {
 	IsDir  bool
 	IsSong bool
 	IsGoUp bool
@@ -79,7 +79,7 @@ func renderExplorer(w reqRes.MyResponseWriter, fileSystemFolder string, queryFol
 	}
 
 	var templatePageData = FilesData{
-		Items:         make([]SongItem, len(dirEntries)),
+		Items:         make([]FileItem, len(dirEntries)),
 		Path:          queryFolder,
 		ResultMessage: resultMessage,
 	}
@@ -87,7 +87,7 @@ func renderExplorer(w reqRes.MyResponseWriter, fileSystemFolder string, queryFol
 	for index, file := range dirEntries {
 		isDir := file.IsDir()
 		fileName := file.Name()
-		templatePageData.Items[index] = SongItem{
+		templatePageData.Items[index] = FileItem{
 			IsDir:  isDir,
 			IsSong: !isDir && IsSong(fileName),
 			Name:   fileName,
@@ -96,7 +96,7 @@ func renderExplorer(w reqRes.MyResponseWriter, fileSystemFolder string, queryFol
 		}
 	}
 
-	slices.SortFunc(templatePageData.Items, func(a, b SongItem) int {
+	slices.SortFunc(templatePageData.Items, func(a, b FileItem) int {
 		if a.IsDir {
 			return -1
 		}
@@ -108,7 +108,7 @@ func renderExplorer(w reqRes.MyResponseWriter, fileSystemFolder string, queryFol
 
 	canGoUp := queryFolder != ""
 	if canGoUp {
-		templatePageData.Items = slices.Insert(templatePageData.Items, 0, SongItem{
+		templatePageData.Items = slices.Insert(templatePageData.Items, 0, FileItem{
 			IsDir:  true,
 			IsSong: false,
 			IsGoUp: true,
