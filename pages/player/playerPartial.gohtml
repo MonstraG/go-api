@@ -2,7 +2,8 @@
 <div id="player-partial" class="card">
 	<div class="grow">
 		{{if .CurrentSong.Path}}
-			<audio controls autoplay muted src="/file/{{.CurrentSong.Path}}" id="audio-player"></audio>
+			<audio controls autoplay src="/file/{{.CurrentSong.Path}}" style="width: 100%"
+				   id="audio-player"></audio>
 		{{end}}
 	</div>
 	<div class="grow">
@@ -33,7 +34,7 @@
 			return;
 		}
 
-		audioPlayer.volume = 0.20;
+		audioPlayer.volume = 0.10;
 
 		audioPlayer.addEventListener("ended", () => {
 			console.debug("Song ended, reloading");
