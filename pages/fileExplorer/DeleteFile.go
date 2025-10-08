@@ -17,6 +17,7 @@ func (controller *Controller) DeleteFile(w reqRes.MyResponseWriter, r *reqRes.My
 	if errors.Is(err, os.ErrNotExist) {
 		message := fmt.Sprintf("Path not found: \n%v", err)
 		w.Error(message, http.StatusBadRequest)
+		return
 	}
 
 	isDir := stat.IsDir()
@@ -28,6 +29,7 @@ func (controller *Controller) DeleteFile(w reqRes.MyResponseWriter, r *reqRes.My
 	if err != nil {
 		message := fmt.Sprintf("Failed to remove: \n%v", err)
 		w.Error(message, http.StatusInternalServerError)
+		return
 	}
 
 	fileSystemFolder := filepath.Dir(pathToRemove)
