@@ -30,19 +30,21 @@
 		 */
 		const audioPlayer = document.querySelector("#audio-player");
 		if (!audioPlayer) {
-			console.error("Failed to find the audio player!");
+			console.debug("No audio player, probably because no current song.");
 			return;
 		}
 
 		audioPlayer.volume = 0.10;
-
 		audioPlayer.addEventListener("ended", () => {
 			console.debug("Song ended, reloading");
 			htmx.trigger(audioPlayer, "playerReloadEvent");
 		});
-	})();
 
-	(function tryReportSongLength() {
+		const currentTime = {{.CurrentTime}};
+		if (currentTime) {
+			audioPlayer.currentTime = currentTime;
+		}
+
 		/**
 		 * @param duration {number}
 		 */
@@ -58,20 +60,11 @@
 
 
 		const knownLength = {{.CurrentSong.Duration.Seconds}};
-		if (knownLength > 0) {
+		if (knownLength && knownLength > 0) {
 			return;
 		}
 
 		console.debug("Length not known, reporting");
-
-		/**
-		 * @type {HTMLAudioElement | null}
-		 */
-		const audioPlayer = document.querySelector("#audio-player");
-		if (!audioPlayer) {
-			console.error("Failed to find the audio player!");
-			return;
-		}
 
 		const hasDuration = audioPlayer.readyState > 1;
 		if (hasDuration) {

@@ -15,6 +15,7 @@ import (
 
 type Queue struct {
 	CurrentSong models.QueuedSong
+	CurrentTime int
 	Items       []models.QueuedSong
 }
 
@@ -38,6 +39,12 @@ func (controller *Controller) GetPlayer(w reqRes.MyResponseWriter, r *reqRes.MyR
 	pageData := Queue{
 		CurrentSong: currentSong,
 		Items:       queuedSongs,
+	}
+
+	if currentSong.Duration > 0 {
+		leftOver := currentSong.EndsAt.Sub(time.Now())
+		passed := currentSong.Duration - leftOver
+		pageData.CurrentTime = int(passed.Seconds())
 	}
 
 	w.RenderTemplate(playerTemplate, pageData)
