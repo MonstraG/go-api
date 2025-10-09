@@ -9,10 +9,11 @@ import (
 	"go-api/infrastructure/myLog"
 	"go-api/infrastructure/reqRes"
 	"go-api/pages"
-	"gorm.io/gorm"
 	"html/template"
 	"net/http"
 	"strings"
+
+	"gorm.io/gorm"
 )
 
 var loginTemplate = template.Must(template.ParseFiles("pages/base.gohtml", "pages/login/login.gohtml"))

@@ -7,9 +7,10 @@ import (
 	"go-api/infrastructure/myLog"
 	"go-api/infrastructure/reqRes"
 	"go-api/pages"
-	"gorm.io/gorm"
 	"html/template"
 	"net/http"
+
+	"gorm.io/gorm"
 )
 
 var forgotPasswordTemplate = template.Must(
@@ -33,15 +34,7 @@ type ResetPasswordPageData struct {
 	MinLength    int
 }
 
-type Controller struct {
-	db *gorm.DB
-}
-
-func NewController(db *gorm.DB) *Controller {
-	return &Controller{db: db}
-}
-
-func (controller *Controller) GetHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+func (controller *Controller) GetForgotPasswordForm(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	renderForgotPasswordPage(w, r, "")
 }
 
@@ -58,7 +51,7 @@ func renderForgotPasswordPage(w reqRes.MyResponseWriter, r *reqRes.MyRequest, er
 	w.RenderTemplate(forgotPasswordTemplate, pageData)
 }
 
-func (controller *Controller) PostHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+func (controller *Controller) SubmitForgotPasswordForm(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	ok := r.ParseFormRequired(w)
 	if !ok {
 		return
@@ -106,7 +99,7 @@ func renderResetPasswordForm(w reqRes.MyResponseWriter, r *reqRes.MyRequest, use
 	w.RenderTemplate(resetPasswordFormTemplate, pageData)
 }
 
-func (controller *Controller) PostSetPasswordHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+func (controller *Controller) SetPassword(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	ok := r.ParseFormRequired(w)
 	if !ok {
 		return
