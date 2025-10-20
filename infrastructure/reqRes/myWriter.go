@@ -11,9 +11,14 @@ import (
 	"net/http"
 )
 
+type MyMetadata struct {
+	StatusCode int
+}
+
 // MyResponseWriter must use value receivers for the Hijack
 type MyResponseWriter struct {
 	http.ResponseWriter
+	*MyMetadata
 }
 
 func (myResponseWriter MyResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
@@ -44,6 +49,8 @@ func (myResponseWriter MyResponseWriter) Error(message string, code int) {
 	} else {
 		myLog.Info.SkipLog(1, message)
 	}
+
+	myResponseWriter.StatusCode = code
 	http.Error(myResponseWriter, message, code)
 }
 
@@ -62,4 +69,9 @@ func (myResponseWriter MyResponseWriter) IssueCookie(value string, age int) {
 
 func (myResponseWriter MyResponseWriter) ExpireCookie() {
 	myResponseWriter.IssueCookie("", -1)
+}
+
+func (myResponseWriter MyResponseWriter) WriteHeader(statusCode int) {
+	myResponseWriter.StatusCode = statusCode
+	myResponseWriter.ResponseWriter.WriteHeader(statusCode)
 }

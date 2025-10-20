@@ -17,7 +17,7 @@ type Middleware func(MyHandlerFunc) MyHandlerFunc
 
 func myReqResWrapperMiddleware(next MyHandlerFunc) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		myWriter := reqRes.MyResponseWriter{ResponseWriter: w}
+		myWriter := reqRes.MyResponseWriter{ResponseWriter: w, MyMetadata: &reqRes.MyMetadata{}}
 		myRequest := reqRes.MyRequest{Request: *r, RequestId: helpers.RandId()}
 		next(myWriter, &myRequest)
 	}
@@ -29,7 +29,10 @@ func LoggingMiddleware(next MyHandlerFunc) MyHandlerFunc {
 		start := time.Now()
 		myLog.Info.Logf("{%s} Started %s %s", r.RequestId, r.Method, r.URL.Path)
 		next(w, r)
-		myLog.Info.Logf("{%s} Completed %s %s in %v", r.RequestId, r.Method, r.URL.Path, time.Since(start))
+		if w.StatusCode == 0 {
+			w.StatusCode = 200
+		}
+		myLog.Info.Logf("{%s} Responded %d to %s %s in %v", r.RequestId, w.StatusCode, r.Method, r.URL.Path, time.Since(start))
 	}
 }
 
