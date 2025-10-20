@@ -97,6 +97,9 @@ func renderExplorer(w reqRes.MyResponseWriter, fileSystemFolder string, queryFol
 	}
 
 	slices.SortFunc(templatePageData.Items, func(a, b FileItem) int {
+		if a.IsDir && b.IsDir {
+			return strings.Compare(a.Name, b.Name)
+		}
 		if a.IsDir {
 			return -1
 		}
