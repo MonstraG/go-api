@@ -12,14 +12,14 @@
 			{{range .Items}}
 				<tr>
 					<td class="min-width">
-						{{.CreatedAt.Format "15:04:05"}} -
+						{{.CreatedAt.Format "15:04:05"}}
 					</td>
 					<td class="align-start">
 						{{.Path}}
 					</td>
 					<td class="align-end short">
 						<button class="icon-button" hx-delete="/removeSong/{{.ID}}" hx-target="#player-partial"
-								hx-swap="outerHTML">
+								hx-swap="morph:outerHTML">
 							<img src="/public/icons/delete.svg" width="20" height="20" alt="Delete"/>
 						</button>
 					</td>

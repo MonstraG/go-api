@@ -9,9 +9,10 @@
 	<link rel="stylesheet" href="/public/reset.css">
 	<link rel="stylesheet" href="/public/styles.css">
 	<script src="/public/htmx/htmx2.0.7.min.js" defer></script>
+	<script src="/public/htmx/idiomorph-ext0.7.4.min.js" defer></script>
 	{{block "head".}}{{end}}
 </head>
-<body>
+<body hx-ext="morph">
 {{block "nav".}}{{end}}
 <main>
 	{{template "content".}}
