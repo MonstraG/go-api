@@ -13,7 +13,22 @@ import (
 	"path/filepath"
 )
 
+func formatBytes(b int) string {
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := unit, 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %ciB", float64(b)/float64(div), "KMGTPE"[exp])
+}
+
 const hundredMegs = 100 << 20
+
+var limitText = formatBytes(hundredMegs)
 
 func (controller *Controller) PutFile(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
@@ -22,6 +37,12 @@ func (controller *Controller) PutFile(w reqRes.MyResponseWriter, r *reqRes.MyReq
 
 	err := r.ParseMultipartForm(hundredMegs)
 	if err != nil {
+		if r.ContentLength > hundredMegs {
+			message := fmt.Sprintf("File size limit of %s exceeded", limitText)
+			renderExplorer(w, folder, pathQueryParam, message)
+			return
+		}
+
 		message := fmt.Sprintf("Failed to parse form: \n%v", err)
 		w.Error(message, http.StatusInternalServerError)
 		return
