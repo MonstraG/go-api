@@ -17,6 +17,12 @@
 					<td class="align-start">
 						{{.Path}}
 					</td>
+					<td class="align-end short">
+						<button class="icon-button" hx-delete="/removeSong/{{.ID}}" hx-target="#player-partial"
+								hx-swap="outerHTML">
+							<img src="/public/icons/delete.svg" width="20" height="20" alt="Delete"/>
+						</button>
+					</td>
 				</tr>
 			{{end}}
 			</tbody>

@@ -117,3 +117,16 @@ func (controller *Controller) ReportSongDuration(w reqRes.MyResponseWriter, r *r
 
 	w.Header().Set("HX-Trigger", "playerReloadEvent")
 }
+
+func (controller *Controller) RemoveSong(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+	pathQueryParam := r.PathValue("id")
+
+	result := controller.db.Delete(&models.QueuedSong{}, pathQueryParam)
+	if result.Error != nil {
+		message := fmt.Sprintf("Failed to delete song from queue: \n%v", result.Error)
+		w.Error(message, http.StatusBadRequest)
+		return
+	}
+
+	controller.GetPlayer(w, r)
+}
