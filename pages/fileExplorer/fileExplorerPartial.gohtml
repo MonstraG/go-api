@@ -36,7 +36,7 @@
 						{{if not .IsGoUp}}
 							<button class="icon-button" hx-delete="/file/{{.Path}}"
 									hx-confirm='Are you sure you want to delete {{if .IsDir}}folder{{else}}file{{end}} "{{.Name}}"?'
-									hx-target="#file-explorer">
+									hx-target="#files-partial" hx-swap="outerHTML">
 								<img src="/public/icons/delete.svg" width="20" height="20" alt="Delete"/>
 							</button>
 						{{end}}
@@ -50,9 +50,8 @@
 	<hr/>
 	<section class="form-section">
 		<h4>Create folder</h4>
-		<form id="create-folder-form" hx-encoding="multipart/form-data"
-			  hx-put="/directory/{{.Path}}"
-			  hx-target="#file-explorer">
+		<form id="create-folder-form" hx-encoding="multipart/form-data" hx-put="/directory/{{.Path}}"
+			  hx-swap="outerHTML" hx-target="#files-partial">
 
 			<div class="form-control">
 				<label for="folder-name-input">Folder name</label>

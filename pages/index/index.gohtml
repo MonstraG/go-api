@@ -117,12 +117,12 @@
 	<div class="index-layout">
 		<article>
 			<h2>File explorer</h2>
-			<div hx-get="/exploreAt" hx-trigger="load" id="file-explorer"></div>
+			<div hx-get="/exploreAt" hx-trigger="load" hx-swap="innerHTML" id="file-explorer"></div>
 		</article>
 
 		<article>
 			<h2>Player</h2>
-			<div hx-get="/player" hx-trigger="load, playerReloadEvent" id="player"></div>
+			<div hx-get="/player" hx-swap="innerHTML" hx-trigger="load, playerReloadEvent" id="player"></div>
 		</article>
 	</div>
 {{end}}
