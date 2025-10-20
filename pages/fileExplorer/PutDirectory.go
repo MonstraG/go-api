@@ -32,6 +32,10 @@ func (controller *Controller) PutDirectory(w reqRes.MyResponseWriter, r *reqRes.
 	path := filepath.Join(folder, value)
 
 	err = os.Mkdir(path, filePermissions)
+	if err != nil && os.IsExist(err) {
+		renderExplorer(w, folder, pathQueryParam, "Folder already exists!")
+		return
+	}
 	if err != nil {
 		message := fmt.Sprintf("Failed to create folder: \n%v", err)
 		w.Error(message, http.StatusInternalServerError)
