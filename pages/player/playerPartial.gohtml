@@ -12,7 +12,7 @@
 			{{range .Items}}
 				<tr>
 					<td class="min-width">
-						{{.CreatedAt}}
+						{{.CreatedAt.Format "15:04:05"}} -
 					</td>
 					<td class="align-start">
 						{{.Path}}
