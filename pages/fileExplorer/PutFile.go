@@ -3,6 +3,7 @@ package fileExplorer
 import (
 	"fmt"
 	"go-api/infrastructure/helpers"
+	"go-api/infrastructure/myLog"
 	"go-api/infrastructure/reqRes"
 	"io"
 	"net/http"
@@ -22,35 +23,46 @@ func (controller *Controller) PutFile(w reqRes.MyResponseWriter, r *reqRes.MyReq
 		return
 	}
 
-	formFile, handler, err := r.FormFile("file")
-	if err != nil {
-		message := fmt.Sprintf("Failed to retrieve file: \n%v", err)
-		w.Error(message, http.StatusInternalServerError)
+	files := r.MultipartForm.File["files"]
+	if len(files) == 0 {
+		w.Error("No files uploaded", http.StatusBadRequest)
 		return
 	}
-	defer helpers.CloseSafely(formFile)
-
-	fmt.Printf("Uploaded File: %+v\n", handler.Filename)
-	fmt.Printf("File Size: %+v\n", handler.Size)
-	fmt.Printf("MIME Header: %+v\n", handler.Header)
 
 	folder := filepath.Join(controller.explorerRoot, pathQueryParam)
-	path := filepath.Join(folder, handler.Filename)
 
-	diskFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, filePermissions)
-	if err != nil {
-		message := fmt.Sprintf("Failed to retrieve file: \n%v", err)
-		w.Error(message, http.StatusInternalServerError)
-		return
+	for _, handler := range files {
+		formFile, err := handler.Open()
+		if err != nil {
+			message := fmt.Sprintf("Failed to retrieve file: \n%v", err)
+			w.Error(message, http.StatusInternalServerError)
+		}
+
+		fmt.Printf("Uploaded File: %+v\n", handler.Filename)
+		fmt.Printf("File Size: %+v\n", handler.Size)
+		fmt.Printf("MIME Header: %+v\n", handler.Header)
+
+		path := filepath.Join(folder, handler.Filename)
+
+		diskFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, filePermissions)
+		if err != nil {
+			message := fmt.Sprintf("Failed to retrieve file: \n%v", err)
+			myLog.Error.Logf(message)
+			renderExplorer(w, folder, pathQueryParam, message)
+			return
+		}
+
+		_, err = io.Copy(diskFile, formFile)
+		if err != nil {
+			message := fmt.Sprintf("Failed to save file: \n%v", err)
+			myLog.Error.Logf(message)
+			renderExplorer(w, folder, pathQueryParam, message)
+			return
+		}
+
+		helpers.CloseSafely(formFile)
+		helpers.CloseSafely(diskFile)
 	}
-	defer helpers.CloseSafely(diskFile)
 
-	_, err = io.Copy(diskFile, formFile)
-	if err != nil {
-		message := fmt.Sprintf("Failed to save file: \n%v", err)
-		w.Error(message, http.StatusInternalServerError)
-		return
-	}
-
-	renderExplorer(w, folder, pathQueryParam, "File uploaded!")
+	renderExplorer(w, folder, pathQueryParam, "File(s) uploaded!")
 }

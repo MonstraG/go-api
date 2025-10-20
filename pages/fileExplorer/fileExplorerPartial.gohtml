@@ -74,7 +74,7 @@
 		<h4>Upload file</h4>
 		<form id="file-upload-form" hx-encoding="multipart/form-data" hx-put="/file/{{.Path}}"
 			  hx-target="#file-explorer">
-			<input id="file-input" type="file" name="file" class="primary-button" required>
+			<input id="file-input" type="file" name="files" multiple class="primary-button" required>
 			<div class="form-submit-block">
 				<button type="submit" class="primary-button">
 					Upload
