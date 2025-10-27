@@ -5,6 +5,7 @@ import (
 	"go-api/infrastructure/myJwt"
 	"go-api/infrastructure/myLog"
 	"go-api/infrastructure/reqRes"
+	"go-api/infrastructure/version"
 	"net/http"
 	"time"
 )
@@ -36,12 +37,10 @@ func LoggingMiddleware(next MyHandlerFunc) MyHandlerFunc {
 	}
 }
 
-func VersionMiddleware(version string) Middleware {
-	return func(next MyHandlerFunc) MyHandlerFunc {
-		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
-			w.Header().Set("X-Version", version)
-			next(w, r)
-		}
+func VersionMiddleware(next MyHandlerFunc) MyHandlerFunc {
+	return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+		w.Header().Set("X-Version", version.AppVersion)
+		next(w, r)
 	}
 }
 
