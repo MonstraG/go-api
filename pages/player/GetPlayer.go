@@ -2,6 +2,7 @@ package player
 
 import (
 	"fmt"
+	"go-api/infrastructure/helpers"
 	"go-api/infrastructure/models"
 	"go-api/infrastructure/reqRes"
 	"go-api/pages/fileExplorer"
@@ -50,7 +51,7 @@ func (controller *Controller) GetPlayer(w reqRes.MyResponseWriter, r *reqRes.MyR
 	w.RenderTemplate(playerTemplate, pageData)
 }
 
-func (controller *Controller) AddSong(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+func (controller *Controller) EnqueueSong(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
 	pathToFile := filepath.Join(controller.explorerRoot, pathQueryParam)
 
@@ -76,6 +77,39 @@ func (controller *Controller) AddSong(w reqRes.MyResponseWriter, r *reqRes.MyReq
 	result := controller.db.Create(&models.QueuedSong{
 		Path: pathQueryParam,
 	})
+
+	if result.Error != nil {
+		message := fmt.Sprintf("Failed to insert song into queue: \n%v", result.Error)
+		w.Error(message, http.StatusBadRequest)
+		return
+	}
+
+	controller.GetPlayer(w, r)
+}
+
+func (controller *Controller) EnqueueFolder(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+	pathQueryParam := r.PathValue("path")
+	folder := filepath.Join(controller.explorerRoot, pathQueryParam)
+
+	ok, dirEntries := helpers.ReadFolder(w, folder)
+	if !ok {
+		return
+	}
+
+	songsToAdd := make([]models.QueuedSong, 0)
+	for _, file := range dirEntries {
+		fileName := file.Name()
+		isSong := fileExplorer.IsSong(fileName)
+		if !isSong {
+			continue
+		}
+
+		songsToAdd = append(songsToAdd, models.QueuedSong{
+			Path: filepath.Join(pathQueryParam, fileName),
+		})
+	}
+
+	result := controller.db.Create(&songsToAdd)
 
 	if result.Error != nil {
 		message := fmt.Sprintf("Failed to insert song into queue: \n%v", result.Error)

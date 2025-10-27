@@ -95,7 +95,8 @@ func (app *App) MapRoutes() {
 
 	var playerController = player.NewController(app.Config, app.Db)
 	app.handleFunc("GET /player", authRequired(playerController.GetPlayer))
-	app.handleFunc("POST /addSong/{path...}", authRequired(playerController.AddSong))
+	app.handleFunc("POST /enqueueSong/{path...}", authRequired(playerController.EnqueueSong))
+	app.handleFunc("POST /enqueueFolder/{path...}", authRequired(playerController.EnqueueFolder))
 	app.handleFunc("DELETE /removeSong/{id}", authRequired(playerController.RemoveSong))
 	app.handleFunc("POST /reportSongDuration/{queuedSongId}", authRequired(playerController.ReportSongDuration))
 

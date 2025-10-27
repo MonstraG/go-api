@@ -1,14 +1,12 @@
 package fileExplorer
 
 import (
-	"errors"
 	"fmt"
+	"go-api/infrastructure/helpers"
 	"go-api/infrastructure/myLog"
 	"go-api/infrastructure/reqRes"
 	"html/template"
-	"io/fs"
 	"mime"
-	"net/http"
 	"os"
 	"path"
 	"path/filepath"
@@ -41,40 +39,8 @@ func (controller *Controller) ExploreAt(w reqRes.MyResponseWriter, r *reqRes.MyR
 }
 
 func renderExplorer(w reqRes.MyResponseWriter, fileSystemFolder string, queryFolder string, resultMessage string) {
-	dirAsFile, err := os.Open(fileSystemFolder)
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			message := fmt.Sprintf("%s does not exist", fileSystemFolder)
-			w.Error(message, http.StatusBadRequest)
-			return
-		}
-
-		message := fmt.Sprintf("Failure to open folder '%s': \n%v", fileSystemFolder, err)
-		w.Error(message, http.StatusInternalServerError)
-		return
-	}
-
-	dirEntries, err := dirAsFile.ReadDir(-1)
-	if err != nil {
-		// here I would check if this error is "NotADir" or something, but there seems to
-		// not be a consistent / sane way to do this?
-		// https://github.com/golang/go/issues/46734
-
-		if errors.Is(err, fs.ErrNotExist) {
-			message := fmt.Sprintf("Failure to read folder '%s': \n%v", fileSystemFolder, err)
-			w.Error(message, http.StatusInternalServerError)
-			return
-		}
-
-		message := fmt.Sprintf("Failure to read folder '%s': \n%v", fileSystemFolder, err)
-		w.Error(message, http.StatusInternalServerError)
-		return
-	}
-
-	err = dirAsFile.Close()
-	if err != nil {
-		message := fmt.Sprintf("Failure to close folder '%s': \n%v", fileSystemFolder, err)
-		w.Error(message, http.StatusInternalServerError)
+	ok, dirEntries := helpers.ReadFolder(w, fileSystemFolder)
+	if !ok {
 		return
 	}
 

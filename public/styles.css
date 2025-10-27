@@ -104,6 +104,30 @@ button.primary-button {
 	}
 }
 
+button.secondary-button {
+	background: none;
+	color: var(--foreground);
+	border: 1px solid var(--primary);
+	padding: 0.5rem 0.75rem;
+	border-radius: 99px;
+	cursor: pointer;
+	font-size: 0.875rem;
+
+	transition: background-color 0.125s ease-in;
+
+	&:hover {
+		background-color: color-mix(in srgb, transparent, var(--primary) 20%);
+	}
+
+	&:active {
+		background-color: color-mix(in srgb, transparent, var(--primary) 40%);
+	}
+}
+
+button.small {
+	padding: 0.25rem 0.5rem;
+}
+
 button.icon-button {
 	background-color: transparent;
 	padding: 0.25rem;

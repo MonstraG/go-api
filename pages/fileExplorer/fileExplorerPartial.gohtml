@@ -1,7 +1,12 @@
 {{- /*gotype: go-api/pages/music.FilesData*/ -}}
 <div id="files-partial" class="card">
 	<div class="grow">
-		<h3>/{{.Path}}</h3>
+		<div class="files-header">
+			<h3>/{{.Path}}</h3>
+			<button class="secondary-button small" hx-post="/enqueueFolder/{{.Path}}" hx-target="#player">
+				Enqueue folder
+			</button>
+		</div>
 		<table>
 			<tbody>
 			{{range .Items}}
@@ -27,7 +32,8 @@
 					</td>
 					<td class="align-end short">
 						{{if .IsSong}}
-							<button class="icon-button" hx-post="/addSong/{{.Path}}" hx-target="#player">
+							<button class="icon-button" hx-post="/enqueueSong/{{.Path}}" hx-target="#player"
+									title="Enqueue song">
 								<img src="/public/icons/add.svg" width="20" height="20" alt="Add"/>
 							</button>
 						{{end}}
@@ -36,7 +42,8 @@
 						{{if not .IsGoUp}}
 							<button class="icon-button" hx-delete="/file/{{.Path}}"
 									hx-confirm='Are you sure you want to delete {{if .IsDir}}folder{{else}}file{{end}} "{{.Name}}"?'
-									hx-target="#files-partial" hx-swap="outerHTML">
+									hx-target="#files-partial" hx-swap="outerHTML"
+									title="Delete {{if .IsDir}}folder{{else}}file{{end}}">
 								<img src="/public/icons/delete.svg" width="20" height="20" alt="Delete"/>
 							</button>
 						{{end}}
