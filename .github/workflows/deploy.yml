@@ -12,18 +12,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image
-        run: |
-          docker build -t go-api .
+        run: docker build -t go-api .
 
       - name: Save Docker image to tar file
-        run: |
-          docker save go-api | gzip > go-api.tar.gz
+        run: docker save go-api | gzip > go-api.tar.gz
 
       - name: Upload image to VPS via SCP
         uses: appleboy/scp-action@v1.0.0
