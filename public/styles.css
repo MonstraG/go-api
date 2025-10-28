@@ -106,6 +106,7 @@ button.primary-button {
 
 button.secondary-button {
 	background: none;
+	font-weight: 500;
 	color: var(--foreground);
 	border: 1px solid var(--primary);
 	padding: 0.5rem 0.75rem;
