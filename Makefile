@@ -1,4 +1,4 @@
-APP_NAME := myapp
+APP_NAME := go-api
 IMAGE_NAME := $(APP_NAME):latest
 SIZE_LOG_FILE := build_size.log
 
