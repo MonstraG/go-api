@@ -9,14 +9,13 @@ import (
 	"go-api/infrastructure/myLog"
 	"go-api/infrastructure/reqRes"
 	"go-api/pages"
-	"html/template"
 	"net/http"
 	"strings"
 
 	"gorm.io/gorm"
 )
 
-var loginTemplate = template.Must(template.ParseFiles("pages/base.gohtml", "pages/login/login.gohtml"))
+var loginTemplate = pages.ParsePage("login/login.gohtml")
 
 type PageData struct {
 	pages.PageData

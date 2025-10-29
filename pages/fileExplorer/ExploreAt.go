@@ -5,7 +5,7 @@ import (
 	"go-api/infrastructure/helpers"
 	"go-api/infrastructure/myLog"
 	"go-api/infrastructure/reqRes"
-	"html/template"
+	"go-api/pages"
 	"mime"
 	"os"
 	"path"
@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-var fileExplorerTemplate = template.Must(template.ParseFiles("pages/fileExplorer/fileExplorerPartial.gohtml"))
+var fileExplorerTemplate = pages.ParsePartial("fileExplorer/fileExplorerPartial.gohtml")
 
 type FilesData struct {
 	Items         []FileItem

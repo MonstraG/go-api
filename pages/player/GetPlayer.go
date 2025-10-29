@@ -5,8 +5,8 @@ import (
 	"go-api/infrastructure/helpers"
 	"go-api/infrastructure/models"
 	"go-api/infrastructure/reqRes"
+	"go-api/pages"
 	"go-api/pages/fileExplorer"
-	"html/template"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -20,7 +20,7 @@ type Queue struct {
 	Items       []models.QueuedSong
 }
 
-var playerTemplate = template.Must(template.ParseFiles("pages/player/playerPartial.gohtml"))
+var playerTemplate = pages.ParsePartial("player/playerPartial.gohtml")
 
 func (controller *Controller) GetPlayer(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	var queuedSongs []models.QueuedSong

@@ -2,7 +2,6 @@ package pages
 
 import (
 	"go-api/infrastructure/reqRes"
-	"go-api/infrastructure/version"
 )
 
 type PageData struct {
@@ -20,7 +19,7 @@ func NewPageData(request *reqRes.MyRequest, pageTitle string) PageData {
 	return PageData{
 		PageTitle:   pageTitle,
 		Username:    request.Username,
-		StylesHash:  version.StylesHash,
+		StylesHash:  StylesHash,
 		UserInitial: getInitialFromUsername(request.Username),
 	}
 }

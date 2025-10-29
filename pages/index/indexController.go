@@ -4,14 +4,12 @@ import (
 	"go-api/infrastructure/appConfig"
 	"go-api/infrastructure/reqRes"
 	"go-api/pages"
-	"html/template"
 )
 
-var indexTemplate = template.Must(template.ParseFiles(
-	"pages/base.gohtml",
-	"pages/nav.gohtml",
-	"pages/index/index.gohtml",
-))
+var indexTemplate = pages.ParsePage(
+	"nav.gohtml",
+	"index/index.gohtml",
+)
 
 type PageData struct {
 	pages.PageData

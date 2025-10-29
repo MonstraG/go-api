@@ -1,13 +1,7 @@
-# syntax=docker.io/docker/dockerfile:1.17-labs
-# using `labs` in the line above changes "syntax" https://docs.docker.com/build/dockerfile/frontend/
-# this syntax allows "exclude" arg for COPY
-# dockerfile syntax verisons: https://hub.docker.com/r/docker/dockerfile
-
-
 # alpine versions: https://alpinelinux.org/downloads/
 ARG ALPINE_VERSION="3.22"
 # golang versions https://go.dev/dl/
-ARG GO_VERSION="1.25.2"
+ARG GO_VERSION="1.25.3"
 
 # specifies a parent image (image is alpine + all the stuff you need to build a golang application)
 # and names this instance 'building-image'.
@@ -40,10 +34,8 @@ RUN apk add --no-cache sqlite
 # install mailcap to add mime type support, https://stackoverflow.com/a/38033047
 RUN apk add --no-cache mailcap
 
-# copy everything from our folder (so, repo + built executable) from our building-image into the same folder but into the second image
-# also exclude all the source files, so the final build is even smaller (although it saves like 20kb)
-# finally, exclude .git folder, we needed it in building-image to bake in version information, but not anymore
-COPY --exclude=**/*.go --exclude=go.mod --exclude=go.sum --exclude=.git --from=building-image /myapp /myapp
+# copy the executable into the running image, everything should be embedded
+COPY --from=building-image /myapp/go-api /myapp/go-api
 
 # notify docker we are going to be using port 8080
 EXPOSE 8080

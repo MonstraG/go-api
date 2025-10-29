@@ -56,6 +56,12 @@ And, just in case, list containers:
 docker container list --all
 ```
 
+sh into a built image to inspect it
+
+```
+docker run -it --entrypoint sh go-api
+```
+
 ### Updating
 
 1. Update locally installed go version

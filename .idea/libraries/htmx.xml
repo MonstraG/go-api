@@ -8,8 +8,8 @@
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/public/htmx/htmx.esm.js" />
-      <root url="file://$PROJECT_DIR$/public/htmx/htmx2.0.7.min.js" />
+      <root url="file://$PROJECT_DIR$/pages/public/htmx/htmx.esm.js" />
+      <root url="file://$PROJECT_DIR$/pages/public/htmx/htmx2.0.7.min.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
