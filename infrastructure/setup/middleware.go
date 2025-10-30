@@ -71,3 +71,24 @@ func createJwtAuthRequiredMiddleware(jwtService *myJwt.Service) Middleware {
 		}
 	}
 }
+
+func isAdmin(r *reqRes.MyRequest) bool {
+	// I don't have roles yet)
+	return r.Username == "MonstraG"
+}
+
+func createAdminRequiredMiddleware(jwtService *myJwt.Service) Middleware {
+	authRequired := createJwtAuthRequiredMiddleware(jwtService)
+
+	return func(next MyHandlerFunc) MyHandlerFunc {
+		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+
+			if !isAdmin(r) {
+				w.Error("Forbidden", http.StatusForbidden)
+				return
+			}
+
+			authRequired(next)(w, r)
+		}
+	}
+}

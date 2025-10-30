@@ -13,6 +13,7 @@ import (
 	"go-api/pages/logout"
 	"go-api/pages/notFound"
 	"go-api/pages/player"
+	"go-api/pages/users"
 	"net/http"
 	"os"
 	"time"
@@ -64,41 +65,45 @@ func applyMiddlewares(handlerFunc MyHandlerFunc, middlewares []Middleware) MyHan
 }
 
 func (app *App) MapRoutes() {
-	var jwtService = myJwt.CreateMyJwt(app.Config, time.Now)
+	jwtService := myJwt.CreateMyJwt(app.Config, time.Now)
 
-	var authRequired = createJwtAuthRequiredMiddleware(&jwtService)
+	authRequired := createJwtAuthRequiredMiddleware(&jwtService)
+	adminRequired := createAdminRequiredMiddleware(&jwtService)
 
 	app.handleFunc("GET /", notFound.Show404)
 	app.handleFunc("POST /", notFound.Show404)
 
-	var forgotPasswordController = forgotPassword.NewController(app.Db)
+	forgotPasswordController := forgotPassword.NewController(app.Db)
 
 	app.handleFunc("GET /forgot-password", forgotPasswordController.GetForgotPasswordForm)
 	app.handleFunc("POST /forgot-password", forgotPasswordController.SubmitForgotPasswordForm)
 	app.handleFunc("POST /set-password", forgotPasswordController.SetPassword)
 
-	var indexController = index.NewController(app.Config)
+	indexController := index.NewController(app.Config)
 	app.handleFunc("GET /{$}", authRequired(indexController.GetHandler))
 
-	var loginController = login.NewController(&jwtService, app.Db)
+	loginController := login.NewController(&jwtService, app.Db)
 	app.handleFunc("GET /login", loginController.GetHandler)
 	app.handleFunc("POST /login", loginController.PostHandler)
 
 	app.handleFunc("GET /logout", logout.GetHandler)
 
-	var explorerController = fileExplorer.NewController(app.Config)
+	explorerController := fileExplorer.NewController(app.Config)
 	app.handleFunc("GET /exploreAt/{path...}", authRequired(explorerController.ExploreAt))
 	app.handleFunc("GET /file/{path...}", explorerController.GetFile)
 	app.handleFunc("PUT /file/{path...}", authRequired(explorerController.PutFile))
 	app.handleFunc("DELETE /file/{path...}", authRequired(explorerController.DeleteFile))
 	app.handleFunc("PUT /directory/{path...}", authRequired(explorerController.PutDirectory))
 
-	var playerController = player.NewController(app.Config, app.Db)
+	playerController := player.NewController(app.Config, app.Db)
 	app.handleFunc("GET /player", authRequired(playerController.GetPlayer))
 	app.handleFunc("POST /enqueueSong/{path...}", authRequired(playerController.EnqueueSong))
 	app.handleFunc("POST /enqueueFolder/{path...}", authRequired(playerController.EnqueueFolder))
 	app.handleFunc("DELETE /removeSong/{id}", authRequired(playerController.RemoveSong))
 	app.handleFunc("POST /reportSongDuration/{queuedSongId}", authRequired(playerController.ReportSongDuration))
+
+	usersController := users.NewController(app.Db)
+	app.handleFunc("PUT /users/setPasswordChangeStatus", adminRequired(usersController.SetPasswordChangeStatus))
 
 	app.handleFunc("GET /public/{path...}", pages.PublicHandler)
 
