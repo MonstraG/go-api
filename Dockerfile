@@ -9,6 +9,9 @@ ARG GO_VERSION="1.25.3"
 # official docker images for golang: https://hub.docker.com/_/golang/
 FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS building-image
 
+# install git so that go will be able to write down current version when building
+RUN apk add --no-cache git
+
 # mkdir+cd into new directory, we are going to put everything there
 WORKDIR /myapp
 
@@ -17,9 +20,6 @@ COPY . .
 
 # install all dependencies
 RUN go mod download
-
-# install git so that go will be able to write down current version when building
-RUN apk add --no-cache git
 
 # run go build, name the executable "go-api" and also disable CGO because people keep telling me that
 RUN CGO_ENABLED=0 go build -o go-api
@@ -34,9 +34,6 @@ RUN apk add --no-cache sqlite
 # install mailcap to add mime type support, https://stackoverflow.com/a/38033047
 RUN apk add --no-cache mailcap
 
-# copy the executable into the running image, everything should be embedded
-COPY --from=building-image /myapp/go-api /myapp/go-api
-
 # notify docker we are going to be using port 8080
 EXPOSE 8080
 
@@ -49,3 +46,6 @@ VOLUME ["/myapp/data"]
 
 # tell docker what to run
 ENTRYPOINT ["/myapp/go-api",  "--config", "/myapp/data/config.json"]
+
+# copy the executable into the running image, everything should be embedded
+COPY --from=building-image /myapp/go-api /myapp/go-api
