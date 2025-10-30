@@ -3,6 +3,7 @@ package forgotPassword
 import (
 	"errors"
 	"fmt"
+	"go-api/infrastructure/crypto"
 	"go-api/infrastructure/models"
 	"go-api/infrastructure/myLog"
 	"go-api/infrastructure/reqRes"
@@ -138,13 +139,8 @@ func (controller *Controller) SetPassword(w reqRes.MyResponseWriter, r *reqRes.M
 		return
 	}
 
-	passwordHash, err := models.HashPassword(password)
-	if err != nil {
-		message := fmt.Sprintf("Failed to hash password: \n%v", err)
-		w.Error(message, http.StatusInternalServerError)
-		return
-	}
-	user.PasswordHash = passwordHash
+	user.PasswordSalt = crypto.NewSalt()
+	user.PasswordHash = crypto.HashPassword(password, user.PasswordSalt)
 	user.CanResetPassword = false
 	controller.db.Save(&user)
 

@@ -42,20 +42,12 @@ func seedDb(db *gorm.DB, appConfig appConfig.AppConfig) {
 	seedUser(db, appConfig.GuestUser)
 }
 
-func seedUser(db *gorm.DB, user appConfig.DefaultUser) {
-	passwordHash, err := models.HashPassword(user.Password)
-	if err != nil {
-		myLog.Fatal.Logf("Failed to hash default user %s password:\n\t%v", user.Username, err)
-	}
+func seedUser(db *gorm.DB, defaultUser appConfig.DefaultUser) {
+	userModel := models.NewUser(defaultUser.Username, defaultUser.Password)
 
-	userModel := models.User{
-		Username:     user.Username,
-		PasswordHash: passwordHash,
-	}
-
-	result := db.Where(models.User{Username: user.Username}).FirstOrCreate(&userModel)
+	result := db.Where(models.User{Username: defaultUser.Username}).FirstOrCreate(&userModel)
 
 	if result.Error != nil {
-		myLog.Fatal.Logf("Failed to insert default user %s:\n\t%v", user.Username, err)
+		myLog.Fatal.Logf("Failed to insert default user %s:\n\t%v", defaultUser.Username, result.Error)
 	}
 }

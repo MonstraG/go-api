@@ -2,21 +2,33 @@ package models
 
 import (
 	"database/sql"
+	"go-api/infrastructure/crypto"
 	"time"
 
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 type User struct {
-	ID               string `gorm:"primarykey"`
-	CreatedAt        time.Time
+	ID               string    `gorm:"primarykey"`
+	CreatedAt        time.Time `gorm:"not null"`
 	UpdatedAt        time.Time
 	DeletedAt        sql.NullTime `gorm:"index"`
 	Username         string       `gorm:"unique"`
-	PasswordHash     string
+	PasswordHash     string       `gorm:"not null"`
+	PasswordSalt     string
 	CanResetPassword bool `gorm:"not null;default:false"`
+}
+
+func NewUser(username string, password string) User {
+	salt := crypto.NewSalt()
+	passwordHash := crypto.HashPassword(password, salt)
+
+	return User{
+		Username:     username,
+		PasswordHash: passwordHash,
+		PasswordSalt: salt,
+	}
 }
 
 func (user *User) BeforeCreate(*gorm.DB) (err error) {
@@ -25,12 +37,7 @@ func (user *User) BeforeCreate(*gorm.DB) (err error) {
 	return
 }
 
-func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	return string(bytes), err
-}
-
-func (user *User) CheckPasswordHash(password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
-	return err == nil
+func (user *User) CheckPassword(password string) bool {
+	hash := crypto.HashPassword(password, user.PasswordSalt)
+	return hash == user.PasswordHash
 }

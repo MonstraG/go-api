@@ -81,7 +81,7 @@ func (controller *Controller) PostHandler(w reqRes.MyResponseWriter, r *reqRes.M
 		return
 	}
 
-	ok = user.CheckPasswordHash(password)
+	ok = user.CheckPassword(password)
 	if !ok {
 		renderLoginPage(w, r, "Username or password is invalid")
 		return
