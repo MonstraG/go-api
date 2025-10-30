@@ -14,9 +14,7 @@ type AppConfig struct {
 	GuestUser    DefaultUser `json:"guestUser"`
 	VpsLoginLink string      `json:"vpsLoginLink"`
 	JWTSecret    string      `json:"jwtSecret"`
-	// todo: rename json and update config
-	ExplorerRoot     string   `json:"songsFolder"`
-	WebSocketOrigins []string `json:"webSocketOrigins"`
+	ExplorerRoot string      `json:"explorerRoot"`
 }
 
 type DefaultUser struct {
