@@ -42,7 +42,7 @@
 
 		audioPlayer.volume = 0.10;
 		audioPlayer.addEventListener("ended", () => {
-			console.debug("Song ended, reloading");
+			console.debug("Song ended, reloadi;ng");
 			htmx.trigger(audioPlayer, "playerReloadEvent");
 		});
 
@@ -51,20 +51,6 @@
 			audioPlayer.currentTime = currentTime;
 		}
 
-		/**
-		 * @param duration {number}
-		 */
-		function reportSongLength(duration) {
-			console.debug("Reporting song length");
-			fetch(`/reportSongDuration/{{.CurrentSong.ID}}?duration=${duration}`, {
-				method: "POST",
-				credentials: "same-origin",
-			}).catch((error) => {
-				console.error("Failed to report song duration", error);
-			});
-		}
-
-
 		const knownLength = {{.CurrentSong.Duration.Seconds}};
 		if (knownLength && knownLength > 0) {
 			return;
@@ -72,13 +58,44 @@
 
 		console.debug("Length not known, reporting");
 
-		const hasDuration = audioPlayer.readyState > 1;
-		if (hasDuration) {
-			reportSongLength(audioPlayer.duration);
-		} else {
-			audioPlayer.addEventListener("loadedmetadata", () => {
-				reportSongLength(audioPlayer.duration);
-			}, {once: true});
+		for (const key in audioPlayer) {
+			if (key.search("on") === 0) {
+				if (key === "ontimeupdate") {
+					continue;
+				}
+
+				let keyClosure = key;
+				audioPlayer.addEventListener(key.slice(2), (data) => {
+					console.log("Event", keyClosure, data);
+				});
+			}
 		}
+
+		function reportSongLengthWhenAble() {
+			/**
+			 * @param duration {number}
+			 */
+			function reportSongLength(duration) {
+				console.debug("Reporting song length");
+				fetch(`/reportSongDuration/{{.CurrentSong.ID}}?duration=${duration}`, {
+					method: "POST",
+					credentials: "same-origin",
+				}).catch((error) => {
+					console.error("Failed to report song duration", error);
+				});
+			}
+
+			const hasDuration = audioPlayer.readyState > 1;
+			if (hasDuration) {
+				reportSongLength(audioPlayer.duration);
+			} else {
+				audioPlayer.addEventListener("loadedmetadata", () => {
+					reportSongLength(audioPlayer.duration);
+				}, {once: true});
+			}
+		}
+
+		reportSongLengthWhenAble();
+		audioPlayer.addEventListener("play", reportSongLengthWhenAble);
 	})();
 </script>
