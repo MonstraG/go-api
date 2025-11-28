@@ -10,7 +10,9 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -108,6 +110,10 @@ func (controller *Controller) EnqueueFolder(w reqRes.MyResponseWriter, r *reqRes
 			Path: filepath.Join(pathQueryParam, fileName),
 		})
 	}
+
+	slices.SortFunc(songsToAdd, func(a, b models.QueuedSong) int {
+		return strings.Compare(a.Path, b.Path)
+	})
 
 	result := controller.db.Create(&songsToAdd)
 
