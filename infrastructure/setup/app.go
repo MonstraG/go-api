@@ -67,8 +67,9 @@ func applyMiddlewares(handlerFunc MyHandlerFunc, middlewares []Middleware) MyHan
 func (app *App) MapRoutes() {
 	jwtService := myJwt.CreateMyJwt(app.Config, time.Now)
 
-	authRequired := createJwtAuthRequiredMiddleware(&jwtService)
-	adminRequired := createAdminRequiredMiddleware(&jwtService)
+	// todo: see if I want to create db context per-request
+	authRequired := createJwtAuthRequiredMiddleware(&jwtService, app.Db)
+	adminRequired := createAdminRequiredMiddleware(&jwtService, app.Db)
 
 	app.handleFunc("GET /", notFound.Show404)
 	app.handleFunc("POST /", notFound.Show404)

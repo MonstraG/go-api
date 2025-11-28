@@ -18,9 +18,9 @@ type PageData struct {
 func NewPageData(request *reqRes.MyRequest, pageTitle string) PageData {
 	return PageData{
 		PageTitle:   pageTitle,
-		Username:    request.Username,
+		Username:    request.User.Username,
 		StylesHash:  StylesHash,
-		UserInitial: getInitialFromUsername(request.Username),
+		UserInitial: getInitialFromUsername(request.User.Username),
 	}
 }
 

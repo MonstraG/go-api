@@ -2,6 +2,7 @@ package reqRes
 
 import (
 	"fmt"
+	"go-api/infrastructure/models"
 	"net/http"
 )
 
@@ -9,7 +10,7 @@ type MyRequest struct {
 	http.Request
 	RequestId string
 	UserId    string
-	Username  string
+	User      models.User
 }
 
 func (myRequest *MyRequest) CookieIfValid(name string) (*http.Cookie, error) {

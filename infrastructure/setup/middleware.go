@@ -1,13 +1,17 @@
 package setup
 
 import (
+	"fmt"
 	"go-api/infrastructure/helpers"
+	"go-api/infrastructure/models"
 	"go-api/infrastructure/myJwt"
 	"go-api/infrastructure/myLog"
 	"go-api/infrastructure/reqRes"
 	"go-api/infrastructure/version"
 	"net/http"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // MyHandlerFunc is an alias for http.HandlerFunc argument, but with my reqRes.MyResponseWriter and reqRes.MyRequest
@@ -44,7 +48,7 @@ func VersionMiddleware(next MyHandlerFunc) MyHandlerFunc {
 	}
 }
 
-func createJwtAuthRequiredMiddleware(jwtService *myJwt.Service) Middleware {
+func createJwtAuthRequiredMiddleware(jwtService *myJwt.Service, db *gorm.DB) Middleware {
 	return func(next MyHandlerFunc) MyHandlerFunc {
 		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 			cookie, err := r.CookieIfValid(myJwt.Cookie)
@@ -63,27 +67,35 @@ func createJwtAuthRequiredMiddleware(jwtService *myJwt.Service) Middleware {
 			r.UserId, err = claims.GetSubject()
 			if err != nil {
 				myLog.Info.Logf("Failed to get JWT subject, ignoring:\n\t%v", err)
+				w.RedirectToLogin(r)
+				return
 			}
 
-			r.Username = claims.Username
+			user, err := models.FindUser(db, r.UserId)
+			if err != nil {
+				message := fmt.Sprintf("Failed to fetch current user:\n\t%v", err)
+				w.Error(message, http.StatusInternalServerError)
+				return
+			}
+
+			r.User = user
 
 			next(w, r)
 		}
 	}
 }
 
-func isAdmin(r *reqRes.MyRequest) bool {
+func isAdmin(user models.User) bool {
 	// I don't have roles yet)
-	return r.Username == "MonstraG"
+	return user.Username == "MonstraG"
 }
 
-func createAdminRequiredMiddleware(jwtService *myJwt.Service) Middleware {
-	authRequired := createJwtAuthRequiredMiddleware(jwtService)
+func createAdminRequiredMiddleware(jwtService *myJwt.Service, db *gorm.DB) Middleware {
+	authRequired := createJwtAuthRequiredMiddleware(jwtService, db)
 
 	return func(next MyHandlerFunc) MyHandlerFunc {
 		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
-
-			if !isAdmin(r) {
+			if !isAdmin(r.User) {
 				w.Error("Forbidden", http.StatusForbidden)
 				return
 			}
