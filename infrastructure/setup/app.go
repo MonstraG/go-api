@@ -105,7 +105,8 @@ func (app *App) MapRoutes() {
 
 	usersController := admin.NewController(app.Config, app.Db)
 	app.handleFunc("GET /admin", adminRequired(usersController.GetAdminPage))
-	app.handleFunc("PUT /users/setPasswordChangeStatus", adminRequired(usersController.SetPasswordChangeStatus))
+	app.handleFunc("PUT /admin/setPasswordChangeStatus", adminRequired(usersController.SetPasswordChangeStatus))
+	app.handleFunc("POST /admin/sql", adminRequired(usersController.PostSql))
 
 	app.handleFunc("GET /public/{path...}", pages.PublicHandler)
 

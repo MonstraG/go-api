@@ -1,14 +1,110 @@
 {{define "head"}}
 	<style>
+		main {
+			display: flex;
+			flex-direction: column;
+			gap: 2rem;
+		}
 
+		.error {
+			color: var(--error);
+		}
+
+		.card {
+			max-width: 700px;
+		}
+
+		form {
+			display: flex;
+			flex-direction: column;
+			gap: 2rem;
+
+			button[type="submit"] {
+				align-self: end;
+			}
+
+			#sqlTextarea {
+				width: 100%;
+				font-family: ui-monospace, monospace;
+				background: var(--background);
+				border: 1px solid var(--primary);
+				color: #fff;
+				background: transparent;
+				outline: none;
+				border-radius: 0.5rem;
+				padding: 0.5rem;
+			}
+		}
+
+		.table-container {
+			text-wrap: nowrap;
+			overflow-x: scroll;
+			padding-bottom: 2rem;
+
+			table {
+				border-spacing: 0;
+				border-collapse: collapse;
+
+				th, td {
+					padding: 4px;
+					border: 1px solid white;
+				}
+			}
+		}
+
+		.card {
+			display: flex;
+			flex-direction: column;
+			gap: 1rem;
+			max-width: unset;
+		}
 	</style>
 {{end}}
-
+{{- /*gotype: go-api/pages/admin.PageData*/ -}}
 {{define "content"}}
 	<h1>Admin</h1>
-	<div>
-		<article>
+	<section class="card sql-textarea-card">
+		<h2><label for="sqlTextarea">SQL runner</label></h2>
+		<form action="/admin/sql" method="POST">
+			<textarea name="sql" rows="5" id="sqlTextarea" required></textarea>
+			<button class="primary-button" type="submit">Submit</button>
+		</form>
+	</section>
+	{{if .SqlResult.Shown}}
+		<section class="card">
+			<h2>Output</h2>
 
-		</article>
-	</div>
+			<p>{{.SqlResult.RowsAffected}} rows affected</p>
+
+			<div class="table-container">
+				{{if .SqlResult.Headers}}
+					<table>
+						<thead>
+						<tr>
+							{{range .SqlResult.Headers}}
+								<th>{{.}}</th>
+							{{end}}
+						</tr>
+						</thead>
+
+						<tbody>
+						{{range .SqlResult.Rows}}
+							<tr>
+								{{range .}}
+									<td>{{.}}</td>
+								{{end}}
+							</tr>
+						{{end}}
+						</tbody>
+					</table>
+				{{end}}
+			</div>
+
+			{{if .SqlResult.Err}}
+				<p class="error">
+					{{.SqlResult.Err.Error}}
+				</p>
+			{{end}}
+		</section>
+	{{end}}
 {{end}}
