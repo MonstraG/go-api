@@ -4,12 +4,15 @@
 		<ul>
 			<li><a href="/">Homepage</a></li>
 			<li><a href="{{.VpsLoginLink}}">VPS login</a></li>
+			{{if .IsAdmin}}
+				<li><a href="/admin">Admin</a></li>
+			{{end}}
 		</ul>
 
 		<div class="profile-section">
-            {{if .UserInitial}}
+			{{if .UserInitial}}
 				<div class="avatar" title="{{.Username}}">{{.UserInitial}}</div>
-            {{end}}
+			{{end}}
 			<a href="/logout">Log out</a>
 		</div>
 	</nav>

@@ -1,21 +1,43 @@
-package users
+package admin
 
 import (
 	"errors"
 	"fmt"
+	"go-api/infrastructure/appConfig"
 	"go-api/infrastructure/models"
 	"go-api/infrastructure/reqRes"
+	"go-api/pages"
 	"net/http"
 
 	"gorm.io/gorm"
 )
 
+var indexTemplate = pages.ParsePage(
+	"nav.gohtml",
+	"admin/adminPage.gohtml",
+)
+
 type Controller struct {
-	db *gorm.DB
+	db           *gorm.DB
+	vpsLoginLink string
 }
 
-func NewController(db *gorm.DB) *Controller {
-	return &Controller{db: db}
+type PageData struct {
+	pages.PageData
+	VpsLoginLink string
+}
+
+func NewController(config appConfig.AppConfig, db *gorm.DB) *Controller {
+	return &Controller{db: db, vpsLoginLink: config.VpsLoginLink}
+}
+
+func (controller *Controller) GetAdminPage(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+	var pageData = PageData{
+		PageData:     pages.NewPageData(r, "Homepage"),
+		VpsLoginLink: controller.vpsLoginLink,
+	}
+
+	w.RenderTemplate(indexTemplate, pageData)
 }
 
 func (controller *Controller) SetPasswordChangeStatus(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {

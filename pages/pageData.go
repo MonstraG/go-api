@@ -13,6 +13,8 @@ type PageData struct {
 
 	Username    string
 	UserInitial string
+
+	IsAdmin bool
 }
 
 func NewPageData(request *reqRes.MyRequest, pageTitle string) PageData {
@@ -21,6 +23,7 @@ func NewPageData(request *reqRes.MyRequest, pageTitle string) PageData {
 		Username:    request.User.Username,
 		StylesHash:  StylesHash,
 		UserInitial: getInitialFromUsername(request.User.Username),
+		IsAdmin:     request.User.IsAdmin(),
 	}
 }
 

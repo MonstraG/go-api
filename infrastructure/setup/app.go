@@ -6,6 +6,7 @@ import (
 	"go-api/infrastructure/myLog"
 	"go-api/infrastructure/websockets"
 	"go-api/pages"
+	"go-api/pages/admin"
 	"go-api/pages/fileExplorer"
 	"go-api/pages/forgotPassword"
 	"go-api/pages/index"
@@ -13,7 +14,6 @@ import (
 	"go-api/pages/logout"
 	"go-api/pages/notFound"
 	"go-api/pages/player"
-	"go-api/pages/users"
 	"net/http"
 	"os"
 	"time"
@@ -103,7 +103,8 @@ func (app *App) MapRoutes() {
 	app.handleFunc("DELETE /removeSong/{id}", authRequired(playerController.RemoveSong))
 	app.handleFunc("POST /reportSongDuration/{queuedSongId}", authRequired(playerController.ReportSongDuration))
 
-	usersController := users.NewController(app.Db)
+	usersController := admin.NewController(app.Config, app.Db)
+	app.handleFunc("GET /admin", adminRequired(usersController.GetAdminPage))
 	app.handleFunc("PUT /users/setPasswordChangeStatus", adminRequired(usersController.SetPasswordChangeStatus))
 
 	app.handleFunc("GET /public/{path...}", pages.PublicHandler)

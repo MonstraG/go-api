@@ -48,59 +48,68 @@ func VersionMiddleware(next MyHandlerFunc) MyHandlerFunc {
 	}
 }
 
+func findCurrentUser(jwtService *myJwt.Service, db *gorm.DB, w reqRes.MyResponseWriter, r *reqRes.MyRequest) *models.User {
+	cookie, err := r.CookieIfValid(myJwt.Cookie)
+	if err != nil {
+		w.RedirectToLogin(r)
+		return nil
+	}
+
+	claims, err := jwtService.ValidateJWT(cookie.Value)
+	if err != nil {
+		myLog.Info.Logf("Error validating JWT:\n\t%v", err)
+		w.RedirectToLogin(r)
+		return nil
+	}
+
+	r.UserId, err = claims.GetSubject()
+	if err != nil {
+		myLog.Info.Logf("Failed to get JWT subject, ignoring:\n\t%v", err)
+		w.RedirectToLogin(r)
+		return nil
+	}
+
+	user, err := models.FindUser(db, r.UserId)
+	if err != nil {
+		message := fmt.Sprintf("Failed to fetch current user:\n\t%v", err)
+		w.Error(message, http.StatusInternalServerError)
+		return nil
+	}
+
+	return &user
+}
+
 func createJwtAuthRequiredMiddleware(jwtService *myJwt.Service, db *gorm.DB) Middleware {
 	return func(next MyHandlerFunc) MyHandlerFunc {
 		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
-			cookie, err := r.CookieIfValid(myJwt.Cookie)
-			if err != nil {
-				w.RedirectToLogin(r)
+			user := findCurrentUser(jwtService, db, w, r)
+			if user == nil {
 				return
 			}
 
-			claims, err := jwtService.ValidateJWT(cookie.Value)
-			if err != nil {
-				myLog.Info.Logf("Error validating JWT:\n\t%v", err)
-				w.RedirectToLogin(r)
-				return
-			}
-
-			r.UserId, err = claims.GetSubject()
-			if err != nil {
-				myLog.Info.Logf("Failed to get JWT subject, ignoring:\n\t%v", err)
-				w.RedirectToLogin(r)
-				return
-			}
-
-			user, err := models.FindUser(db, r.UserId)
-			if err != nil {
-				message := fmt.Sprintf("Failed to fetch current user:\n\t%v", err)
-				w.Error(message, http.StatusInternalServerError)
-				return
-			}
-
-			r.User = user
+			r.User = *user
 
 			next(w, r)
 		}
 	}
 }
 
-func isAdmin(user models.User) bool {
-	// I don't have roles yet)
-	return user.Username == "MonstraG"
-}
-
 func createAdminRequiredMiddleware(jwtService *myJwt.Service, db *gorm.DB) Middleware {
-	authRequired := createJwtAuthRequiredMiddleware(jwtService, db)
-
 	return func(next MyHandlerFunc) MyHandlerFunc {
 		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
-			if !isAdmin(r.User) {
+			user := findCurrentUser(jwtService, db, w, r)
+			if user == nil {
+				return
+			}
+
+			r.User = *user
+
+			if !r.User.IsAdmin() {
 				w.Error("Forbidden", http.StatusForbidden)
 				return
 			}
 
-			authRequired(next)(w, r)
+			next(w, r)
 		}
 	}
 }
