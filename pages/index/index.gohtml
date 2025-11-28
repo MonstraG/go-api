@@ -6,8 +6,8 @@
 
 		.index-layout {
 			display: flex;
+			flex-direction: column;
 			gap: 32px;
-			flex-wrap: wrap;
 		}
 
 		article {
@@ -114,20 +114,38 @@
 				gap: 0.5rem;
 			}
 		}
+
+		#start-player {
+			align-self: center;
+		}
 	</style>
 {{end}}
 
 {{define "content"}}
 	<h1>Homepage</h1>
 	<div class="index-layout">
+		<article id="player-card">
+			<h2>Player</h2>
+
+			<button class="primary-button" id="start-player">Enable player</button>
+
+			<div hx-get="/player" hx-swap="morph:innerHTML"
+				 hx-trigger="click from:#start-player, playerReloadEvent, every 5s once from:#start-player"
+				 id="player"></div>
+		</article>
+
 		<article>
 			<h2>File explorer</h2>
 			<div hx-get="/exploreAt" hx-trigger="load" hx-swap="innerHTML" id="file-explorer"></div>
 		</article>
-
-		<article>
-			<h2>Player</h2>
-			<div hx-get="/player" hx-swap="morph:innerHTML" hx-trigger="load, playerReloadEvent" id="player"></div>
-		</article>
 	</div>
+	<script>
+		/**
+		 * @type {HTMLButtonElement}
+		 */
+		const playerStartButton = document.getElementById("start-player");
+		playerStartButton.addEventListener("click", () => {
+			playerStartButton.remove();
+		});
+	</script>
 {{end}}
