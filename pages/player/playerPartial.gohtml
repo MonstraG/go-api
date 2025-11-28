@@ -42,7 +42,7 @@
 
 		audioPlayer.volume = 0.10;
 		audioPlayer.addEventListener("ended", () => {
-			console.debug("Song ended, reloadi;ng");
+			console.debug("Song ended, reloading");
 			htmx.trigger(audioPlayer, "playerReloadEvent");
 		});
 
