@@ -148,8 +148,23 @@ func (controller *Controller) ReportSongDuration(w reqRes.MyResponseWriter, r *r
 			return
 		}
 
+		var lastSong models.QueuedSong
+		err = controller.db.
+			Order("ends_at DESC").
+			First(&lastSong).Error
+		if err != nil {
+			message := fmt.Sprintf("Failed to read last end: \n%v", err.Error())
+			w.Error(message, http.StatusInternalServerError)
+			return
+		}
+
 		song.Duration = time.Duration(duration * float64(time.Second))
-		song.EndsAt = song.CreatedAt.Add(song.Duration)
+		if lastSong.EndsAt.Before(song.CreatedAt) {
+			song.EndsAt = song.CreatedAt.Add(song.Duration)
+		} else {
+			song.EndsAt = lastSong.EndsAt.Add(song.Duration)
+		}
+
 		controller.db.Updates(&song)
 	} else {
 		// duration already known, ignore
