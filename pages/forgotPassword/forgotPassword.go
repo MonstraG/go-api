@@ -72,11 +72,11 @@ func (controller *Controller) SubmitForgotPasswordForm(w reqRes.MyResponseWriter
 		return
 	}
 
-	//if !user.CanResetPassword {
-	//	myLog.Info.Logf("User %s cannot reset password", username)
-	//	renderForgotPasswordPage(w, r, "User cannot reset password")
-	//	return
-	//}
+	if !user.CanResetPassword {
+		myLog.Info.Logf("User %s cannot reset password", username)
+		renderForgotPasswordPage(w, r, "User cannot reset password")
+		return
+	}
 
 	renderResetPasswordForm(w, r, user.Username, "")
 }
