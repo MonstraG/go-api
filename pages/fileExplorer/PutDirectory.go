@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 const kilobyte = 1 << 10
@@ -28,8 +29,10 @@ func (controller *Controller) PutDirectory(w reqRes.MyResponseWriter, r *reqRes.
 		return
 	}
 
+	trimmed := strings.Trim(value, " ")
+
 	folder := filepath.Join(controller.explorerRoot, pathQueryParam)
-	path := filepath.Join(folder, value)
+	path := filepath.Join(folder, trimmed)
 
 	err = os.Mkdir(path, filePermissions)
 	if err != nil && os.IsExist(err) {
