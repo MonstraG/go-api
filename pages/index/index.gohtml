@@ -118,6 +118,11 @@
 		#start-player {
 			align-self: center;
 		}
+
+		.volumeSliderCard {
+			display: flex;
+			flex-direction: column;
+		}
 	</style>
 	<script type="module" src="/public/index.js?v={{.IndexJsHash}}"></script>
 {{end}}
@@ -129,6 +134,15 @@
 			<h2>Player</h2>
 
 			<button class="primary-button" id="start-player">Enable player</button>
+
+			<div class="card volumeSliderCard">
+				<span>
+					<label for="volumeSlider">Volume:</label>
+					<output id="volumeSliderOutput">24</output>
+					<span>%</span>
+				</span>
+				<input type="range" id="volumeSlider" name="vol" value="10" min="0" max="100">
+			</div>
 
 			<div hx-get="/player" hx-swap="morph:innerHTML"
 			     hx-trigger="click from:#start-player, playerReloadEvent"

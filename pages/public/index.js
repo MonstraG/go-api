@@ -52,7 +52,8 @@ function initPlayer() {
 	}
 	audioPlayer.dataset.initialized = "true";
 
-	audioPlayer.volume = 0.10;
+	audioPlayer.volume = getVolume();
+	void audioPlayer.play();
 	audioPlayer.onended = () => {
 		console.debug("Song ended, reloading");
 		htmx.trigger(audioPlayer, "playerReloadEvent");
@@ -71,6 +72,53 @@ function initPlayer() {
 	if (!knownLength || isNaN(knownLength)) {
 		startSongReporting(Number(audioPlayer.dataset.songId));
 	}
+}
+
+function getVolume() {
+	const defaultVolume = 0.10;
+
+	const storedVolume = localStorage.getItem("volume");
+	if (storedVolume == null) {
+		return defaultVolume;
+	}
+	const volume = Number(storedVolume);
+	if (isNaN(volume)) {
+		return defaultVolume;
+	}
+
+	return volume;
+}
+
+
+function initVolume() {
+	/**
+	 * @type {HTMLInputElement}
+	 */
+	const volumeSlider = document.getElementById("volumeSlider");
+	/**
+	 * @type {HTMLOutputElement}
+	 */
+	const volumeSliderOutput = document.getElementById("volumeSliderOutput");
+
+
+	volumeSlider.addEventListener("input", (event) => {
+		const volume = event.target.value;
+		const volumeNumeric = Number(volume) / 100;
+		if (isNaN(volumeNumeric)) {
+			return;
+		}
+
+		localStorage.setItem("volume", volumeNumeric.toString());
+
+		const audioPlayer = document.querySelector("#audio-player");
+		if (audioPlayer) {
+			audioPlayer.volume = volumeNumeric;
+		}
+
+		if (volumeSliderOutput) {
+			volumeSliderOutput.textContent = volume;
+		}
+	});
 }
 
 function main() {
@@ -99,4 +147,5 @@ if (document.readyState === "loading") {
 } else {
 	// `DOMContentLoaded` has already fired
 	main();
+	initVolume();
 }
