@@ -22,9 +22,11 @@ func PublicHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	http.ServeFileFS(w, &r.Request, publicFs, filename)
 }
 
+var IndexJsHash string
 var StylesHash string
 
 func init() {
+	IndexJsHash = hashFile("public/index.js")
 	StylesHash = hashFile("public/styles.css")
 }
 

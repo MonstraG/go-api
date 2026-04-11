@@ -1,9 +1,20 @@
 {{- /*gotype: go-api/pages/player.Queue*/ -}}
-<div id="player-partial" class="card">
+<div
+	id="player-partial"
+	class="card"
+>
 	<div class="grow">
 		{{if .CurrentSong.Path}}
-			<audio controls autoplay src="/file/{{.CurrentSong.Path}}" style="width: 100%"
-			       id="audio-player"></audio>
+			<audio
+				controls
+				autoplay
+				src="/file/{{.CurrentSong.Path}}"
+				style="width: 100%"
+				id="audio-player"
+				data-song-id="{{.CurrentSong.ID}}"
+				data-current-time="{{.CurrentTime}}"
+				data-duration="{{.CurrentSong.Duration.Seconds}}"
+			></audio>
 		{{end}}
 	</div>
 	<div class="grow">
@@ -29,32 +40,3 @@
 		</table>
 	</div>
 </div>
-<script type="module">
-	(function runThePlayer() {
-		/**
-		 * @type {HTMLAudioElement | null}
-		 */
-		const audioPlayer = document.querySelector("#audio-player");
-		if (!audioPlayer) {
-			console.debug("No audio player, probably because no current song.");
-			return;
-		}
-
-		audioPlayer.volume = 0.10;
-		audioPlayer.onended = () => {
-			console.debug("Song ended, reloading");
-			htmx.trigger(audioPlayer, "playerReloadEvent");
-		};
-
-
-		const currentTime = {{.CurrentTime}};
-		if (currentTime) {
-			audioPlayer.currentTime = currentTime;
-		}
-
-		const knownLength = {{.CurrentSong.Duration.Seconds}};
-		if (knownLength && knownLength > 0) {
-			return;
-		}
-	})();
-</script>
