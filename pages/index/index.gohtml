@@ -119,6 +119,7 @@
 			align-self: center;
 		}
 	</style>
+	<script src="/public/index.js"></script>
 {{end}}
 
 {{define "content"}}
@@ -130,8 +131,8 @@
 			<button class="primary-button" id="start-player">Enable player</button>
 
 			<div hx-get="/player" hx-swap="morph:innerHTML"
-				 hx-trigger="click from:#start-player, playerReloadEvent"
-				 id="player"></div>
+			     hx-trigger="click from:#start-player, playerReloadEvent"
+			     id="player"></div>
 		</article>
 
 		<article>
@@ -139,51 +140,4 @@
 			<div hx-get="/exploreAt" hx-trigger="load" hx-swap="innerHTML" id="file-explorer"></div>
 		</article>
 	</div>
-	<script>
-		const player = document.getElementById("player");
-
-		/**
-		 * @type {HTMLButtonElement}
-		 */
-		const playerStartButton = document.getElementById("start-player");
-		playerStartButton.addEventListener("click", () => {
-			playerStartButton.remove();
-			startSongReporting();
-			setInterval(() => {
-				htmx.trigger(player, "playerReloadEvent");
-			}, 5000);
-		});
-
-
-		function startSongReporting() {
-			/**
-			 * @param duration {number}
-			 */
-			function reportSongLength(duration) {
-				console.debug("Reporting song duration");
-				fetch(`/reportSongDuration/{{.CurrentSong.ID}}?duration=${duration}`, {
-					method: "POST",
-					credentials: "same-origin",
-				}).catch((error) => {
-					console.error("Failed to report song duration", error);
-				});
-			}
-
-			setInterval(() => {
-				/**
-				 * @type {HTMLAudioElement | null}
-				 */
-				const audioPlayer = document.querySelector("#audio-player");
-				if (!audioPlayer) {
-					console.debug("No audio player, probably because no current song.");
-					return;
-				}
-
-
-				if (audioPlayer.duration > 0) {
-					reportSongLength(audioPlayer.duration);
-				}
-			}, 5000);
-		}
-	</script>
 {{end}}
