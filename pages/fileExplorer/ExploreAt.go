@@ -92,7 +92,7 @@ func renderExplorer(w reqRes.MyResponseWriter, fileSystemFolder string, queryFol
 func IsSong(fileName string) bool {
 	var extension = path.Ext(fileName)
 	mimeType := mime.TypeByExtension(extension)
-	return strings.HasPrefix(mimeType, "audio/") || extension == "webm"
+	return strings.HasPrefix(mimeType, "audio/") || extension == ".webm"
 }
 
 var sizes = []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB"}
