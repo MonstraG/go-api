@@ -33,7 +33,7 @@
 					<td class="align-end short">
 						{{if .IsSong}}
 							<button class="icon-button" hx-post="/enqueueSong/{{.Path}}" hx-target="#player"
-									title="Enqueue song">
+							        title="Enqueue song">
 								<img src="/public/icons/add.svg" width="20" height="20" alt="Add"/>
 							</button>
 						{{end}}
@@ -41,9 +41,9 @@
 					<td class="align-end short">
 						{{if not .IsGoUp}}
 							<button class="icon-button" hx-delete="/file/{{.Path}}"
-									hx-confirm='Are you sure you want to delete {{if .IsDir}}folder{{else}}file{{end}} "{{.Name}}"?'
-									hx-target="#files-partial" hx-swap="outerHTML"
-									title="Delete {{if .IsDir}}folder{{else}}file{{end}}">
+							        hx-confirm='Are you sure you want to delete {{if .IsDir}}folder{{else}}file{{end}} "{{.Name}}"?'
+							        hx-target="#files-partial" hx-swap="outerHTML"
+							        title="Delete {{if .IsDir}}folder{{else}}file{{end}}">
 								<img src="/public/icons/delete.svg" width="20" height="20" alt="Delete"/>
 							</button>
 						{{end}}
@@ -58,7 +58,7 @@
 	<section class="form-section">
 		<h4>Create folder</h4>
 		<form id="create-folder-form" hx-encoding="multipart/form-data" hx-put="/directory/{{.Path}}"
-			  hx-swap="outerHTML" hx-target="#files-partial">
+		      hx-swap="outerHTML" hx-target="#files-partial">
 
 			<div class="form-control">
 				<label for="folder-name-input">Folder name</label>
@@ -77,9 +77,9 @@
 
 	<hr/>
 	<section class="form-section">
-		<h4>Upload file</h4>
+		<h4>Upload file(s)</h4>
 		<form id="file-upload-form" hx-encoding="multipart/form-data" hx-put="/file/{{.Path}}"
-			  hx-target="#file-explorer">
+		      hx-target="#file-explorer">
 			<input id="file-input" type="file" name="files" multiple class="primary-button" required>
 			<div class="form-submit-block">
 				<button type="submit" class="primary-button">

@@ -26,18 +26,18 @@ func formatBytes(b int) string {
 	return fmt.Sprintf("%.1f %ciB", float64(b)/float64(div), "KMGTPE"[exp])
 }
 
-const hundredMegs = 100 << 20
+const onePointFiveGigs = 100 << 24
 
-var limitText = formatBytes(hundredMegs)
+var limitText = formatBytes(onePointFiveGigs)
 
 func (controller *Controller) PutFile(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
 
 	folder := filepath.Join(controller.explorerRoot, pathQueryParam)
 
-	err := r.ParseMultipartForm(hundredMegs)
+	err := r.ParseMultipartForm(onePointFiveGigs)
 	if err != nil {
-		if r.ContentLength > hundredMegs {
+		if r.ContentLength > onePointFiveGigs {
 			message := fmt.Sprintf("File size limit of %s exceeded", limitText)
 			renderExplorer(w, folder, pathQueryParam, message)
 			return
