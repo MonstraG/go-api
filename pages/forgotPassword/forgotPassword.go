@@ -3,9 +3,9 @@ package forgotPassword
 import (
 	"errors"
 	"fmt"
-	"go-api/infrastructure/crypto"
 	"go-api/infrastructure/models"
 	"go-api/infrastructure/myLog"
+	"go-api/infrastructure/pass"
 	"go-api/infrastructure/reqRes"
 	"go-api/pages"
 	"net/http"
@@ -139,8 +139,8 @@ func (controller *Controller) SetPassword(w reqRes.MyResponseWriter, r *reqRes.M
 		return
 	}
 
-	user.PasswordSalt = crypto.NewSalt()
-	user.PasswordHash = crypto.HashPassword(password, user.PasswordSalt)
+	user.PasswordSalt = pass.NewSalt()
+	user.PasswordHash = pass.HashPassword(password, user.PasswordSalt)
 	user.CanResetPassword = false
 	controller.db.Save(&user)
 

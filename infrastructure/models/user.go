@@ -3,7 +3,7 @@ package models
 import (
 	"context"
 	"database/sql"
-	"go-api/infrastructure/crypto"
+	"go-api/infrastructure/pass"
 	"time"
 
 	"github.com/google/uuid"
@@ -22,8 +22,8 @@ type User struct {
 }
 
 func NewUser(username string, password string) User {
-	salt := crypto.NewSalt()
-	passwordHash := crypto.HashPassword(password, salt)
+	salt := pass.NewSalt()
+	passwordHash := pass.HashPassword(password, salt)
 
 	return User{
 		Username:     username,
@@ -39,7 +39,7 @@ func (user *User) BeforeCreate(*gorm.DB) (err error) {
 }
 
 func (user *User) CheckPassword(password string) bool {
-	hash := crypto.HashPassword(password, user.PasswordSalt)
+	hash := pass.HashPassword(password, user.PasswordSalt)
 	return hash == user.PasswordHash
 }
 
