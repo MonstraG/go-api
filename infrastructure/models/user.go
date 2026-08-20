@@ -5,13 +5,13 @@ import (
 	"database/sql"
 	"go-api/infrastructure/pass"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type User struct {
-	ID               string    `gorm:"primarykey"`
+	ID               uuid.UUID `gorm:"primarykey"`
 	CreatedAt        time.Time `gorm:"not null"`
 	UpdatedAt        time.Time
 	DeletedAt        sql.NullTime `gorm:"index"`
@@ -33,8 +33,7 @@ func NewUser(username string, password string) User {
 }
 
 func (user *User) BeforeCreate(*gorm.DB) (err error) {
-	// UUID version 4
-	user.ID = uuid.NewString()
+	user.ID = uuid.NewV7()
 	return
 }
 
