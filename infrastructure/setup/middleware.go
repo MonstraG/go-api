@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"go-api/infrastructure/helpers"
 	"go-api/infrastructure/models"
-	"go-api/infrastructure/myJwt"
 	"go-api/infrastructure/myLog"
+	"go-api/infrastructure/myToken"
 	"go-api/infrastructure/reqRes"
 	"go-api/infrastructure/version"
 	"net/http"
@@ -48,28 +48,21 @@ func VersionMiddleware(next MyHandlerFunc) MyHandlerFunc {
 	}
 }
 
-func findCurrentUser(jwtService *myJwt.Service, db *gorm.DB, w reqRes.MyResponseWriter, r *reqRes.MyRequest) *models.User {
-	cookie, err := r.CookieIfValid(myJwt.Cookie)
+func findCurrentUser(jwtService *myToken.Service, db *gorm.DB, w reqRes.MyResponseWriter, r *reqRes.MyRequest) *models.User {
+	cookie, err := r.CookieIfValid(myToken.Cookie)
 	if err != nil {
 		w.RedirectToLogin(r)
 		return nil
 	}
 
-	claims, err := jwtService.ValidateJWT(cookie.Value)
+	payload, err := jwtService.ParseToken(cookie.Value)
 	if err != nil {
 		myLog.Info.Logf("Error validating JWT:\n\t%v", err)
 		w.RedirectToLogin(r)
 		return nil
 	}
 
-	r.UserId, err = claims.GetSubject()
-	if err != nil {
-		myLog.Info.Logf("Failed to get JWT subject, ignoring:\n\t%v", err)
-		w.RedirectToLogin(r)
-		return nil
-	}
-
-	user, err := models.FindUser(db, r.UserId)
+	user, err := models.FindUser(db, payload.Sub)
 	if err != nil {
 		message := fmt.Sprintf("Failed to fetch current user:\n\t%v", err)
 		w.Error(message, http.StatusInternalServerError)
@@ -79,7 +72,7 @@ func findCurrentUser(jwtService *myJwt.Service, db *gorm.DB, w reqRes.MyResponse
 	return &user
 }
 
-func createJwtAuthRequiredMiddleware(jwtService *myJwt.Service, db *gorm.DB) Middleware {
+func createJwtAuthRequiredMiddleware(jwtService *myToken.Service, db *gorm.DB) Middleware {
 	return func(next MyHandlerFunc) MyHandlerFunc {
 		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 			user := findCurrentUser(jwtService, db, w, r)
@@ -94,7 +87,7 @@ func createJwtAuthRequiredMiddleware(jwtService *myJwt.Service, db *gorm.DB) Mid
 	}
 }
 
-func createAdminRequiredMiddleware(jwtService *myJwt.Service, db *gorm.DB) Middleware {
+func createAdminRequiredMiddleware(jwtService *myToken.Service, db *gorm.DB) Middleware {
 	return func(next MyHandlerFunc) MyHandlerFunc {
 		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 			user := findCurrentUser(jwtService, db, w, r)

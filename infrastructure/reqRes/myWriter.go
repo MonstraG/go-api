@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"go-api/infrastructure/myJwt"
 	"go-api/infrastructure/myLog"
+	"go-api/infrastructure/myToken"
 	"html/template"
 	"net"
 	"net/http"
@@ -56,7 +56,7 @@ func (myResponseWriter MyResponseWriter) Error(message string, code int) {
 
 func (myResponseWriter MyResponseWriter) IssueCookie(value string, age int) {
 	cookie := http.Cookie{
-		Name:     myJwt.Cookie,
+		Name:     myToken.Cookie,
 		Value:    value,
 		Path:     "/",
 		MaxAge:   age,

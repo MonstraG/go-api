@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"go-api/infrastructure/models"
-	"go-api/infrastructure/myJwt"
 	"go-api/infrastructure/myLog"
+	"go-api/infrastructure/myToken"
 	"go-api/infrastructure/reqRes"
 	"go-api/pages"
 	"net/http"
@@ -23,11 +23,11 @@ type PageData struct {
 }
 
 type Controller struct {
-	MyJwt *myJwt.Service
+	MyJwt *myToken.Service
 	Db    *gorm.DB
 }
 
-func NewController(myJwt *myJwt.Service, Db *gorm.DB) *Controller {
+func NewController(myJwt *myToken.Service, Db *gorm.DB) *Controller {
 	return &Controller{MyJwt: myJwt, Db: Db}
 }
 
@@ -87,14 +87,14 @@ func (controller *Controller) PostHandler(w reqRes.MyResponseWriter, r *reqRes.M
 		return
 	}
 
-	jwtToken, err := controller.MyJwt.CreateJwt(user)
+	jwtToken, err := controller.MyJwt.CreateToken(user)
 	if err != nil {
 		message := fmt.Sprintf("Error generating jwt token for user '%v': \n%v", lowercaseUsername, result.Error)
 		w.Error(message, http.StatusInternalServerError)
 		return
 	}
 
-	w.IssueCookie(jwtToken, myJwt.MaxAge)
+	w.IssueCookie(jwtToken, myToken.DefaultCookieAge)
 
 	http.Redirect(w, &r.Request, "/", http.StatusSeeOther)
 }

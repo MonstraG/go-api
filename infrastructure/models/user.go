@@ -42,13 +42,13 @@ func (user *User) CheckPassword(password string) bool {
 	return hash == user.PasswordHash
 }
 
-func FindUser(db *gorm.DB, userId string) (User, error) {
+func FindUser(db *gorm.DB, userId uuid.UUID) (User, error) {
 	// todo: move this method somewhere better
 	ctx := context.Background()
 	return gorm.G[User](db).Where("id = ?", userId).First(ctx)
 }
 
 func (user *User) IsAdmin() bool {
-	// I don't have roles yet)
+	// todo: make this a flag
 	return user.Username == "MonstraG"
 }

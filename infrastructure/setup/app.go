@@ -2,8 +2,8 @@ package setup
 
 import (
 	"go-api/infrastructure/appConfig"
-	"go-api/infrastructure/myJwt"
 	"go-api/infrastructure/myLog"
+	"go-api/infrastructure/myToken"
 	"go-api/infrastructure/websockets"
 	"go-api/pages"
 	"go-api/pages/admin"
@@ -64,8 +64,11 @@ func applyMiddlewares(handlerFunc MyHandlerFunc, middlewares []Middleware) MyHan
 	return handlerFunc
 }
 
-func (app *App) MapRoutes() {
-	jwtService := myJwt.CreateMyJwt(app.Config, time.Now)
+func (app *App) MapRoutes() error {
+	jwtService, err := myToken.CreateService(app.Config)
+	if err != nil {
+		return err
+	}
 
 	// todo: see if I want to create db context per-request
 	authRequired := createJwtAuthRequiredMiddleware(&jwtService, app.Db)
@@ -111,6 +114,8 @@ func (app *App) MapRoutes() {
 	app.handleFunc("GET /public/{path...}", pages.PublicHandler)
 
 	app.handleFunc("GET /ws", websockets.HandleWebSocket)
+
+	return nil
 }
 
 // ListenAndServe is a wrapper around normal http.ListenAndServe

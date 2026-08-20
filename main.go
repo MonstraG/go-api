@@ -13,9 +13,12 @@ func main() {
 
 	app.Use(setup.LoggingMiddleware)
 	app.Use(setup.VersionMiddleware)
-	app.MapRoutes()
+	err := app.MapRoutes()
+	if err != nil {
+		myLog.Fatal.Logf("Failed to create services/routes: %v", err.Error())
+	}
 
-	err := app.ListenAndServe()
+	err = app.ListenAndServe()
 	if err != nil {
 		myLog.Fatal.Logf("Server exited with error: %v", err.Error())
 	}
