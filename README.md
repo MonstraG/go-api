@@ -28,7 +28,7 @@ make
 3. run the image
 
 ```shell
-docker run --publish 8080:8080 --volume ./data:/myapp/data myapp
+docker run --publish 8080:8080 --volume ./data:/myapp/data go-api
 ```
 
 ### Other notes
@@ -39,7 +39,7 @@ localhost [because docker](https://serverfault.com/questions/1084915/still-confu
 When I, inevitably, would want to stop docker *container* and run the app straight:
 
 ```shell
-docker container stop go-api-go-api-1
+docker container stop go-api
 ```
 
 Will stop the server
@@ -58,7 +58,7 @@ docker container list --all
 
 sh into a built image to inspect it
 
-```
+```shell
 docker run -it --entrypoint sh go-api
 ```
 
