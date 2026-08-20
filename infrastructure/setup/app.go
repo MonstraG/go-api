@@ -35,7 +35,7 @@ func NewApp(appConfig appConfig.AppConfig) *App {
 
 	err := os.MkdirAll(appConfig.ExplorerRoot, 0766)
 	if err != nil {
-		myLog.Fatal.Logf("Failed to ensure explorer root folder exists")
+		myLog.Fatal.Logf("Failed to ensure explorer root folder exists: %v", err)
 	}
 
 	return &App{

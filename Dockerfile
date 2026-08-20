@@ -28,9 +28,6 @@ RUN CGO_ENABLED=0 go build -o go-api
 # General article about so called multi-stage patterns: https://medium.com/swlh/reducing-container-image-size-esp-for-go-applications-db7658e9063a
 FROM alpine:${ALPINE_VERSION} AS running-image
 
-# ensure sqlite is available on running-image
-RUN apk add --no-cache sqlite
-
 # install mailcap to add mime type support, https://stackoverflow.com/a/38033047
 RUN apk add --no-cache mailcap
 

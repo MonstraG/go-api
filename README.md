@@ -16,19 +16,22 @@ openssl rand -hex 32
 
 ### Building
 
-- Remember to start docker:
+1. Remember to start docker:
 
 ```shell
 sudo systemctl start docker
 ```
 
-- run `build-and-get-size` from makefile
-  (or just run `make`)
-
-And to run it:
+2. build the docker image
 
 ```shell
-docker compose up --build --detach
+make
+```
+
+3. run the image
+
+```shell
+docker run --publish 8080:8080 --volume ./data:/myapp/data myapp
 ```
 
 ### Other notes
@@ -39,7 +42,7 @@ localhost [because docker](https://serverfault.com/questions/1084915/still-confu
 When I, inevitably, would want to stop docker *container* and run the app straight:
 
 ```shell
-docker container stop go-api
+docker container stop go-api-go-api-1
 ```
 
 Will stop the server
@@ -67,4 +70,4 @@ docker run -it --entrypoint sh go-api
 1. Update locally installed go version
 2. Update dependencies in go.mod
 3. Update alpine/go versions in Dockerfile
-4Update vendored htmx version
+4. Update vendored htmx version
