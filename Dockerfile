@@ -1,7 +1,7 @@
 # alpine versions: https://alpinelinux.org/downloads/
 ARG ALPINE_VERSION="3.24"
 # golang versions https://go.dev/dl/
-ARG GO_VERSION="1.26.5"
+ARG GO_VERSION="1.27"
 
 # specifies a parent image (image is alpine + all the stuff you need to build a golang application)
 # and names this instance 'building-image'.
