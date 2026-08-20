@@ -48,16 +48,16 @@ func VersionMiddleware(next MyHandlerFunc) MyHandlerFunc {
 	}
 }
 
-func findCurrentUser(jwtService *myToken.Service, db *gorm.DB, w reqRes.MyResponseWriter, r *reqRes.MyRequest) *models.User {
+func findCurrentUser(myTokenService *myToken.Service, db *gorm.DB, w reqRes.MyResponseWriter, r *reqRes.MyRequest) *models.User {
 	cookie, err := r.CookieIfValid(myToken.Cookie)
 	if err != nil {
 		w.RedirectToLogin(r)
 		return nil
 	}
 
-	payload, err := jwtService.ParseToken(cookie.Value)
+	payload, err := myTokenService.ParseToken(cookie.Value)
 	if err != nil {
-		myLog.Info.Logf("Error validating JWT:\n\t%v", err)
+		myLog.Info.Logf("Error parsing token:\n\t%v", err)
 		w.RedirectToLogin(r)
 		return nil
 	}
@@ -72,10 +72,10 @@ func findCurrentUser(jwtService *myToken.Service, db *gorm.DB, w reqRes.MyRespon
 	return &user
 }
 
-func createJwtAuthRequiredMiddleware(jwtService *myToken.Service, db *gorm.DB) Middleware {
+func createAuthRequiredMiddleware(myTokenService *myToken.Service, db *gorm.DB) Middleware {
 	return func(next MyHandlerFunc) MyHandlerFunc {
 		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
-			user := findCurrentUser(jwtService, db, w, r)
+			user := findCurrentUser(myTokenService, db, w, r)
 			if user == nil {
 				return
 			}
@@ -87,10 +87,10 @@ func createJwtAuthRequiredMiddleware(jwtService *myToken.Service, db *gorm.DB) M
 	}
 }
 
-func createAdminRequiredMiddleware(jwtService *myToken.Service, db *gorm.DB) Middleware {
+func createAdminRequiredMiddleware(myTokenService *myToken.Service, db *gorm.DB) Middleware {
 	return func(next MyHandlerFunc) MyHandlerFunc {
 		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
-			user := findCurrentUser(jwtService, db, w, r)
+			user := findCurrentUser(myTokenService, db, w, r)
 			if user == nil {
 				return
 			}

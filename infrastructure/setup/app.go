@@ -65,14 +65,14 @@ func applyMiddlewares(handlerFunc MyHandlerFunc, middlewares []Middleware) MyHan
 }
 
 func (app *App) MapRoutes() error {
-	jwtService, err := myToken.CreateService(app.Config)
+	myTokenService, err := myToken.CreateService(app.Config)
 	if err != nil {
 		return err
 	}
 
 	// todo: see if I want to create db context per-request
-	authRequired := createJwtAuthRequiredMiddleware(&jwtService, app.Db)
-	adminRequired := createAdminRequiredMiddleware(&jwtService, app.Db)
+	authRequired := createAuthRequiredMiddleware(&myTokenService, app.Db)
+	adminRequired := createAdminRequiredMiddleware(&myTokenService, app.Db)
 
 	app.handleFunc("GET /", notFound.Show404)
 	app.handleFunc("POST /", notFound.Show404)
@@ -86,7 +86,7 @@ func (app *App) MapRoutes() error {
 	indexController := index.NewController(app.Config)
 	app.handleFunc("GET /{$}", authRequired(indexController.GetHandler))
 
-	loginController := login.NewController(&jwtService, app.Db)
+	loginController := login.NewController(&myTokenService, app.Db)
 	app.handleFunc("GET /login", loginController.GetHandler)
 	app.handleFunc("POST /login", loginController.PostHandler)
 

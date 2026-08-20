@@ -10,6 +10,6 @@
 		"password": "guest"
 	},
 	"vpsLoginLink": "google.com",
-	"jwtSecret": "put-32-bit-secret-here",
+	"tokenSecret": "put-32-bit-secret-here",
 	"explorerRoot": "data/songs/"
 }

@@ -23,12 +23,12 @@ type PageData struct {
 }
 
 type Controller struct {
-	MyJwt *myToken.Service
-	Db    *gorm.DB
+	MyTokenService *myToken.Service
+	Db             *gorm.DB
 }
 
-func NewController(myJwt *myToken.Service, Db *gorm.DB) *Controller {
-	return &Controller{MyJwt: myJwt, Db: Db}
+func NewController(myTokenService *myToken.Service, Db *gorm.DB) *Controller {
+	return &Controller{MyTokenService: myTokenService, Db: Db}
 }
 
 func (controller *Controller) GetHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
@@ -87,14 +87,14 @@ func (controller *Controller) PostHandler(w reqRes.MyResponseWriter, r *reqRes.M
 		return
 	}
 
-	jwtToken, err := controller.MyJwt.CreateToken(user)
+	token, err := controller.MyTokenService.CreateToken(user)
 	if err != nil {
-		message := fmt.Sprintf("Error generating jwt token for user '%v': \n%v", lowercaseUsername, result.Error)
+		message := fmt.Sprintf("Error creating auth token for user '%v': \n%v", lowercaseUsername, result.Error)
 		w.Error(message, http.StatusInternalServerError)
 		return
 	}
 
-	w.IssueCookie(jwtToken, myToken.DefaultCookieAge)
+	w.IssueCookie(token, myToken.DefaultCookieAge)
 
 	http.Redirect(w, &r.Request, "/", http.StatusSeeOther)
 }

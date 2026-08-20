@@ -13,9 +13,8 @@ type AppConfig struct {
 	DefaultUser  DefaultUser `json:"defaultUser"`
 	GuestUser    DefaultUser `json:"guestUser"`
 	VpsLoginLink string      `json:"vpsLoginLink"`
-	// todo: rename to token secret
-	JWTSecret    string `json:"jwtSecret"`
-	ExplorerRoot string `json:"explorerRoot"`
+	TokenSecret  string      `json:"tokenSecret"`
+	ExplorerRoot string      `json:"explorerRoot"`
 }
 
 type DefaultUser struct {

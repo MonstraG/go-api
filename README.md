@@ -1,14 +1,11 @@
 ### Library docs
 
 - https://gorm.io/docs/
-- https://golang-jwt.github.io/jwt/usage/create/
 - https://htmx.org/docs/
 
 ### Concept docs
 
-- https://jwt.io/introduction
-
-Generating secret for jwt tokens:
+Generating secret for auth tokens:
 
 ```shell
 openssl rand -hex 32
