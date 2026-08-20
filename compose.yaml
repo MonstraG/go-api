@@ -2,12 +2,8 @@ services:
   go-api:
     build:
       context: .
-      args:
-        GIT_COMMIT_SHA: ${GIT_COMMIT_SHA}
-    env_file:
-      - .env
     ports:
-      - "8000:8000"
+      - "8080:8080"
     volumes:
       - /home/arsga/data:/myapp/data
     restart: unless-stopped

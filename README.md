@@ -16,7 +16,7 @@ openssl rand -hex 32
 
 ### Building
 
-- Don't forget to start docker:
+- Remember to start docker:
 
 ```shell
 sudo systemctl start docker
