@@ -11,6 +11,8 @@ import (
 
 func ReadFolder(w reqRes.MyResponseWriter, fileSystemFolder string) (bool, []os.DirEntry) {
 	dirAsFile, err := os.Open(fileSystemFolder)
+	CloseSafely(dirAsFile)
+
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			message := fmt.Sprintf("%s does not exist", fileSystemFolder)
@@ -36,13 +38,6 @@ func ReadFolder(w reqRes.MyResponseWriter, fileSystemFolder string) (bool, []os.
 		}
 
 		message := fmt.Sprintf("Failure to read folder '%s': \n%v", fileSystemFolder, err)
-		w.Error(message, http.StatusInternalServerError)
-		return false, nil
-	}
-
-	err = dirAsFile.Close()
-	if err != nil {
-		message := fmt.Sprintf("Failure to close folder '%s': \n%v", fileSystemFolder, err)
 		w.Error(message, http.StatusInternalServerError)
 		return false, nil
 	}

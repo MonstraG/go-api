@@ -10,6 +10,6 @@ func CloseSafely(closer io.Closer) {
 	err := closer.Close()
 	if err != nil {
 		message := fmt.Sprintf("Failed to close: \n%v", err)
-		myLog.Info.SkipLog(1, message)
+		myLog.Error.SkipLog(1, message)
 	}
 }
