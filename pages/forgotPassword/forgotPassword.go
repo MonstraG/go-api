@@ -31,7 +31,7 @@ type ResetPasswordPageData struct {
 	MinLength    int
 }
 
-func (controller *Controller) GetForgotPasswordForm(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+func (controller *Controller) GetForgotPasswordPage(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	renderForgotPasswordPage(w, r, "")
 }
 

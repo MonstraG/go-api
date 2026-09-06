@@ -31,7 +31,7 @@ func NewController(myTokenService *myToken.Service, Db *gorm.DB) *Controller {
 	return &Controller{MyTokenService: myTokenService, Db: Db}
 }
 
-func (controller *Controller) GetHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+func (controller *Controller) GetLoginPage(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	renderLoginPage(w, r, "")
 }
 
@@ -48,7 +48,7 @@ func renderLoginPage(w reqRes.MyResponseWriter, r *reqRes.MyRequest, errorMessag
 	w.RenderTemplate(loginTemplate, pageData)
 }
 
-func (controller *Controller) PostHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+func (controller *Controller) PostLogin(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	ok := r.ParseFormRequired(w)
 	if !ok {
 		return

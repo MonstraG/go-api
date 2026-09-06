@@ -8,7 +8,7 @@ import (
 
 var notFoundTemplate = pages.ParsePage("notFound/notFound.gohtml")
 
-func Show404(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+func Show404Page(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	pageData := pages.NewPageData(r, "404: page not found")
 
 	w.WriteHeader(http.StatusNotFound)

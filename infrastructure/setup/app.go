@@ -74,23 +74,23 @@ func (app *App) MapRoutes() error {
 	authRequired := createAuthRequiredMiddleware(&myTokenService, app.Db)
 	adminRequired := createAdminRequiredMiddleware(&myTokenService, app.Db)
 
-	app.handleFunc("GET /", notFound.Show404)
-	app.handleFunc("POST /", notFound.Show404)
+	app.handleFunc("GET /", notFound.Show404Page)
+	app.handleFunc("POST /", notFound.Show404Page)
 
 	forgotPasswordController := forgotPassword.NewController(app.Db)
 
-	app.handleFunc("GET /forgot-password", forgotPasswordController.GetForgotPasswordForm)
+	app.handleFunc("GET /forgot-password", forgotPasswordController.GetForgotPasswordPage)
 	app.handleFunc("POST /forgot-password", forgotPasswordController.SubmitForgotPasswordForm)
 	app.handleFunc("POST /set-password", forgotPasswordController.SetPassword)
 
 	indexController := index.NewController(app.Config)
-	app.handleFunc("GET /{$}", authRequired(indexController.GetHandler))
+	app.handleFunc("GET /{$}", authRequired(indexController.GetIndexPage))
 
 	loginController := login.NewController(&myTokenService, app.Db)
-	app.handleFunc("GET /login", loginController.GetHandler)
-	app.handleFunc("POST /login", loginController.PostHandler)
+	app.handleFunc("GET /login", loginController.GetLoginPage)
+	app.handleFunc("POST /login", loginController.PostLogin)
 
-	app.handleFunc("GET /logout", logout.GetHandler)
+	app.handleFunc("GET /logout", logout.PerformLogout)
 
 	explorerController := fileExplorer.NewController(app.Config)
 	app.handleFunc("GET /exploreAt/{path...}", authRequired(explorerController.ExploreAt))
@@ -111,7 +111,7 @@ func (app *App) MapRoutes() error {
 	app.handleFunc("PUT /admin/setPasswordChangeStatus", adminRequired(usersController.SetPasswordChangeStatus))
 	app.handleFunc("POST /admin/sql", adminRequired(usersController.PostSql))
 
-	app.handleFunc("GET /public/{path...}", pages.PublicHandler)
+	app.handleFunc("GET /public/{path...}", pages.GetPublicFile)
 
 	app.handleFunc("GET /ws", websockets.HandleWebSocket)
 

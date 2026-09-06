@@ -16,7 +16,7 @@ import (
 //go:embed public/*
 var publicFs embed.FS
 
-func PublicHandler(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
+func GetPublicFile(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
 	filename := filepath.Join("public", pathQueryParam)
 	http.ServeFileFS(w, &r.Request, publicFs, filename)
