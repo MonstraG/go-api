@@ -1,6 +1,6 @@
 {
 	"host": "0.0.0.0:8080",
-	"databaseFile": "data/data.db",
+	"databaseFile": "data/data.sqlite",
 	"defaultUser": {
 		"username": "admin",
 		"password": "1234"
