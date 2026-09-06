@@ -2,15 +2,14 @@ package reqRes
 
 import (
 	"fmt"
-	"go-api/infrastructure/models"
+	"go-api/infrastructure/myToken"
 	"net/http"
 )
 
 type MyRequest struct {
 	http.Request
 	RequestId string
-	UserId    string
-	User      models.User
+	Token     myToken.TokenPayload
 }
 
 func (myRequest *MyRequest) CookieIfValid(name string) (*http.Cookie, error) {

@@ -70,9 +70,8 @@ func (app *App) MapRoutes() error {
 		return err
 	}
 
-	// todo: see if I want to create db context per-request
-	authRequired := newAuthRequiredMiddleware(&myTokenService, app.Db)
-	adminRequired := newAdminRequiredMiddleware(&myTokenService, app.Db)
+	authRequired := newAuthRequiredMiddleware(&myTokenService)
+	adminRequired := newAdminRequiredMiddleware(authRequired)
 
 	app.handleFunc("GET /", notFound.Show404Page)
 	app.handleFunc("POST /", notFound.Show404Page)

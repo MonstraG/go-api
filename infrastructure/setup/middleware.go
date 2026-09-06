@@ -1,17 +1,13 @@
 package setup
 
 import (
-	"fmt"
 	"go-api/infrastructure/helpers"
-	"go-api/infrastructure/models"
 	"go-api/infrastructure/myLog"
 	"go-api/infrastructure/myToken"
 	"go-api/infrastructure/reqRes"
 	"go-api/infrastructure/version"
 	"net/http"
 	"time"
-
-	"gorm.io/gorm"
 )
 
 // MyHandlerFunc is an alias for http.HandlerFunc, but with my reqRes.MyResponseWriter and reqRes.MyRequest
@@ -48,7 +44,7 @@ func VersionMiddleware(next MyHandlerFunc) MyHandlerFunc {
 	}
 }
 
-func findCurrentUser(myTokenService *myToken.Service, db *gorm.DB, w reqRes.MyResponseWriter, r *reqRes.MyRequest) *models.User {
+func parseToken(myTokenService *myToken.Service, w reqRes.MyResponseWriter, r *reqRes.MyRequest) *myToken.TokenPayload {
 	cookie, err := r.CookieIfValid(myToken.Cookie)
 	if err != nil {
 		w.RedirectToLogin(r)
@@ -61,43 +57,30 @@ func findCurrentUser(myTokenService *myToken.Service, db *gorm.DB, w reqRes.MyRe
 		w.RedirectToLogin(r)
 		return nil
 	}
-
-	user, err := models.FindUser(db, payload.Sub)
-	if err != nil {
-		message := fmt.Sprintf("Failed to fetch current user:\n\t%v", err)
-		w.Error(message, http.StatusInternalServerError)
-		return nil
-	}
-
-	return &user
+	return &payload
 }
 
-func newAuthRequiredMiddleware(myTokenService *myToken.Service, db *gorm.DB) Middleware {
+func newAuthRequiredMiddleware(myTokenService *myToken.Service) Middleware {
 	return func(next MyHandlerFunc) MyHandlerFunc {
 		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
-			user := findCurrentUser(myTokenService, db, w, r)
-			if user == nil {
+			token := parseToken(myTokenService, w, r)
+			if token == nil {
 				return
 			}
 
-			r.User = *user
+			r.Token = *token
 
 			next(w, r)
 		}
 	}
 }
 
-func newAdminRequiredMiddleware(myTokenService *myToken.Service, db *gorm.DB) Middleware {
+func newAdminRequiredMiddleware(authRequiredMiddleware Middleware) Middleware {
 	return func(next MyHandlerFunc) MyHandlerFunc {
 		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
-			user := findCurrentUser(myTokenService, db, w, r)
-			if user == nil {
-				return
-			}
+			authRequiredMiddleware(next)
 
-			r.User = *user
-
-			if !r.User.IsAdmin {
+			if !r.Token.IsAdmin {
 				w.Error("Forbidden", http.StatusForbidden)
 				return
 			}

@@ -20,10 +20,10 @@ type PageData struct {
 func NewPageData(request *reqRes.MyRequest, pageTitle string) PageData {
 	return PageData{
 		PageTitle:   pageTitle,
-		Username:    request.User.Username,
+		Username:    request.Token.Username,
 		StylesHash:  StylesHash,
-		UserInitial: getInitialFromUsername(request.User.Username),
-		IsAdmin:     request.User.IsAdmin,
+		UserInitial: getInitialFromUsername(request.Token.Username),
+		IsAdmin:     request.Token.IsAdmin,
 	}
 }
 

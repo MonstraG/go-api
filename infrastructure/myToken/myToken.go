@@ -56,14 +56,19 @@ func NewService(config appConfig.AppConfig) (Service, error) {
 
 type TokenPayload struct {
 	Sub uuid.UUID `json:"sub"`
-	Iat int64     `json:"iat"`
+	// todo: maybe refresh token if few minutes stale or something, to allow for revocations
+	Iat      int64  `json:"iat"`
+	Username string `json:"username"`
+	IsAdmin  bool   `json:"isAdmin"`
 }
 
 // CreateToken produces the cookie content to authenticate given user's actions
 func (myToken *Service) CreateToken(user models.User) (string, error) {
 	payload := TokenPayload{
-		Sub: user.ID,
-		Iat: myToken.now().Unix(),
+		Sub:      user.ID,
+		Iat:      myToken.now().Unix(),
+		Username: user.Username,
+		IsAdmin:  user.IsAdmin,
 	}
 
 	payloadBytes, err := json.Marshal(payload)
