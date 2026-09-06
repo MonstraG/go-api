@@ -14,7 +14,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// MyHandlerFunc is an alias for http.HandlerFunc argument, but with my reqRes.MyResponseWriter and reqRes.MyRequest
+// MyHandlerFunc is an alias for http.HandlerFunc, but with my reqRes.MyResponseWriter and reqRes.MyRequest
 type MyHandlerFunc func(w reqRes.MyResponseWriter, r *reqRes.MyRequest)
 
 // Middleware is just a MyHandlerFunc that returns a MyHandlerFunc
@@ -72,7 +72,7 @@ func findCurrentUser(myTokenService *myToken.Service, db *gorm.DB, w reqRes.MyRe
 	return &user
 }
 
-func createAuthRequiredMiddleware(myTokenService *myToken.Service, db *gorm.DB) Middleware {
+func newAuthRequiredMiddleware(myTokenService *myToken.Service, db *gorm.DB) Middleware {
 	return func(next MyHandlerFunc) MyHandlerFunc {
 		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 			user := findCurrentUser(myTokenService, db, w, r)
@@ -87,7 +87,7 @@ func createAuthRequiredMiddleware(myTokenService *myToken.Service, db *gorm.DB) 
 	}
 }
 
-func createAdminRequiredMiddleware(myTokenService *myToken.Service, db *gorm.DB) Middleware {
+func newAdminRequiredMiddleware(myTokenService *myToken.Service, db *gorm.DB) Middleware {
 	return func(next MyHandlerFunc) MyHandlerFunc {
 		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 			user := findCurrentUser(myTokenService, db, w, r)

@@ -65,14 +65,14 @@ func applyMiddlewares(handlerFunc MyHandlerFunc, middlewares []Middleware) MyHan
 }
 
 func (app *App) MapRoutes() error {
-	myTokenService, err := myToken.CreateService(app.Config)
+	myTokenService, err := myToken.NewService(app.Config)
 	if err != nil {
 		return err
 	}
 
 	// todo: see if I want to create db context per-request
-	authRequired := createAuthRequiredMiddleware(&myTokenService, app.Db)
-	adminRequired := createAdminRequiredMiddleware(&myTokenService, app.Db)
+	authRequired := newAuthRequiredMiddleware(&myTokenService, app.Db)
+	adminRequired := newAdminRequiredMiddleware(&myTokenService, app.Db)
 
 	app.handleFunc("GET /", notFound.Show404Page)
 	app.handleFunc("POST /", notFound.Show404Page)

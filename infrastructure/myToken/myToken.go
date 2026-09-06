@@ -35,7 +35,7 @@ type Service struct {
 	maxAge time.Duration
 }
 
-func CreateService(config appConfig.AppConfig) (Service, error) {
+func NewService(config appConfig.AppConfig) (Service, error) {
 	secretBytes, err := hex.DecodeString(config.TokenSecret)
 	if err != nil {
 		return Service{}, fmt.Errorf("failed to decode token secret: %v", err)
