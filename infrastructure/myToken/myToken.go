@@ -43,7 +43,7 @@ func NewService(config appConfig.AppConfig) (Service, error) {
 
 	cipherBlock, err := aes.NewCipher(secretBytes)
 	if err != nil {
-		return Service{}, err
+		return Service{}, fmt.Errorf("failed to create cipher block: %v", err)
 	}
 
 	return Service{
@@ -59,6 +59,7 @@ type TokenPayload struct {
 	Iat int64     `json:"iat"`
 }
 
+// CreateToken produces the cookie content to authenticate given user's actions
 func (myToken *Service) CreateToken(user models.User) (string, error) {
 	payload := TokenPayload{
 		Sub: user.ID,
@@ -79,6 +80,8 @@ func (myToken *Service) CreateToken(user models.User) (string, error) {
 	return base64.StdEncoding.EncodeToString(ciphertext), nil
 }
 
+// aes256CbcEncode encrypts the plaintext,
+// it's basically the normal implementation just from cipher.NewCBCEncrypter's docs
 func (myToken *Service) aes256CbcEncode(plaintext []byte) ([]byte, error) {
 	blockSize := myToken.cipherBlock.BlockSize()
 
@@ -102,12 +105,11 @@ func (myToken *Service) aes256CbcEncode(plaintext []byte) ([]byte, error) {
 	return output, nil
 }
 
+// pkcs7Pad performs padding to align with blocksize in accordance to rfc5652.
+// As a simple example, if we need 7 bytes of padding we will put the byte 7, seven times on the end of the array.
+// To make unpad very easy, this function always adds padding even if aligned.
 func pkcs7Pad(plaintext []byte, blockSize int) []byte {
 	paddingSize := blockSize - len(plaintext)%blockSize
-	if paddingSize == 0 {
-		return plaintext
-	}
-
 	paddedText := make([]byte, len(plaintext)+paddingSize)
 	copy(paddedText, plaintext)
 	copy(paddedText[len(plaintext):], bytes.Repeat([]byte{byte(paddingSize)}, paddingSize))
@@ -115,6 +117,8 @@ func pkcs7Pad(plaintext []byte, blockSize int) []byte {
 	return paddedText
 }
 
+// pkcs7Unpad is the reverse to pkcs7Pad.
+// Tt reads the last byte, and, after checking that it repeats correct amount of times, removes the padding
 func pkcs7Unpad(paddedText []byte, blockSize int) ([]byte, error) {
 	pad := paddedText[len(paddedText)-1]
 	if pad < 1 || pad > byte(blockSize) {
@@ -132,10 +136,12 @@ func pkcs7Unpad(paddedText []byte, blockSize int) ([]byte, error) {
 	return paddedText[:padStart], nil
 }
 
+// aes256CbcDecode is the reverse to aes256CbcEncode.
+// It is once again the standard implementation from docs to cipher.NewCBCDecrypter
 func (myToken *Service) aes256CbcDecode(ciphertext []byte) ([]byte, error) {
 	blockSize := myToken.cipherBlock.BlockSize()
 
-	// The IV needs to be unique, but not secure. Therefore it's common to
+	// The IV needs to be unique, but not secure. Therefore, it's common to
 	// include it at the beginning of the ciphertext.
 	iv := ciphertext[:blockSize]
 	ciphertext = ciphertext[blockSize:]
@@ -158,6 +164,8 @@ func (myToken *Service) aes256CbcDecode(ciphertext []byte) ([]byte, error) {
 	return ciphertext, nil
 }
 
+// ParseToken is the (almost) reverse to CreateToken, decoding the string and getting the payload,
+// to see who is it.
 func (myToken *Service) ParseToken(tokenString string) (TokenPayload, error) {
 	tokenPayload := TokenPayload{}
 
