@@ -48,8 +48,3 @@ func FindUser(db *gorm.DB, userId uuid.UUID) (User, error) {
 	ctx := context.Background()
 	return gorm.G[User](db).Where("id = ?", userId).First(ctx)
 }
-
-func (user *User) IsAdminOld() bool {
-	// todo: make this a flag
-	return user.Username == "MonstraG"
-}
