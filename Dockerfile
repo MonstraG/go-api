@@ -15,11 +15,16 @@ RUN apk add --no-cache git
 # mkdir+cd into new directory, we are going to put everything there
 WORKDIR /myapp
 
-# copy entire project there (except for what's listed in .dockerignore)
-COPY . .
+# copy manifest for dependencies
+# separate step from COPY . . to make dependencies step stable (code changes, they don't)
+COPY go.mod .
+COPY go.sum .
 
 # install all dependencies
 RUN go mod download
+
+# copy entire project there (except for what's listed in .dockerignore)
+COPY . .
 
 # run go build, name the executable "go-api" and also disable CGO because people keep telling me that
 RUN CGO_ENABLED=0 go build -o go-api
