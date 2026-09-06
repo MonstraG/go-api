@@ -19,6 +19,7 @@ type User struct {
 	PasswordHash     string       `gorm:"not null"`
 	PasswordSalt     string
 	CanResetPassword bool `gorm:"not null;default:false"`
+	IsAdmin          bool `gorm:"not null;default:false"`
 }
 
 func NewUser(username string, password string) User {
@@ -48,7 +49,7 @@ func FindUser(db *gorm.DB, userId uuid.UUID) (User, error) {
 	return gorm.G[User](db).Where("id = ?", userId).First(ctx)
 }
 
-func (user *User) IsAdmin() bool {
+func (user *User) IsAdminOld() bool {
 	// todo: make this a flag
 	return user.Username == "MonstraG"
 }

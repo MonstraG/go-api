@@ -97,7 +97,7 @@ func newAdminRequiredMiddleware(myTokenService *myToken.Service, db *gorm.DB) Mi
 
 			r.User = *user
 
-			if !r.User.IsAdmin() {
+			if !r.User.IsAdminOld() {
 				w.Error("Forbidden", http.StatusForbidden)
 				return
 			}
