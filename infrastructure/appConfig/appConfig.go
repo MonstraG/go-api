@@ -5,6 +5,7 @@ import (
 	"flag"
 	"go-api/infrastructure/myLog"
 	"os"
+	"path/filepath"
 )
 
 type AppConfig struct {
@@ -42,6 +43,10 @@ func ReadConfig() AppConfig {
 func readConfigPath() string {
 	configPathVar := flag.String("config", "config.json", "Path to json config for the server")
 	flag.Parse()
-	myLog.Info.Logf("Loading config from \"%s\"", *configPathVar)
+	absolutePath, err := filepath.Abs(*configPathVar)
+	if err != nil {
+		myLog.Fatal.Logf("Failed to get absolute path of config file:\n\t%v", err)
+	}
+	myLog.Info.Logf("Loading config from \"%s\"", absolutePath)
 	return *configPathVar
 }
