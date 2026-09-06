@@ -11,7 +11,7 @@ import (
 
 func ReadFolder(w reqRes.MyResponseWriter, fileSystemFolder string) (bool, []os.DirEntry) {
 	dirAsFile, err := os.Open(fileSystemFolder)
-	CloseSafely(dirAsFile)
+	defer CloseSafely(dirAsFile)
 
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
