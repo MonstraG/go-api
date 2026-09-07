@@ -144,9 +144,9 @@
 				<input type="range" id="volumeSlider" name="vol" value="10" min="0" max="100">
 			</div>
 
-			<div hx-get="/player" hx-swap="morph:innerHTML"
-			     hx-trigger="click from:#start-player, playerReloadEvent"
-			     id="player"></div>
+			<div hx-get="/player" hx-swap="innerMorph"
+				 hx-trigger="click from:#start-player, playerReloadEvent"
+				 id="player"></div>
 		</article>
 
 		<article>
