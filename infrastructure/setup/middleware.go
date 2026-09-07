@@ -98,15 +98,13 @@ func newAuthRequiredMiddleware(myTokenService *myToken.Service, db *gorm.DB) Mid
 
 func newAdminRequiredMiddleware(authRequiredMiddleware Middleware) Middleware {
 	return func(next MyHandlerFunc) MyHandlerFunc {
-		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
-			authRequiredMiddleware(next)
-
+		return authRequiredMiddleware(func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 			if !r.Token.IsAdmin {
 				w.Error("Forbidden", http.StatusForbidden)
 				return
 			}
 
 			next(w, r)
-		}
+		})
 	}
 }
