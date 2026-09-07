@@ -11,6 +11,37 @@
 	--black-to-primary-filter: invert(65%) sepia(8%) saturate(905%) hue-rotate(21deg) brightness(93%) contrast(86%);
 }
 
+/* reset - start */
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	line-height: 1.5;
+	text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	line-height: 1.25;
+}
+
+body {
+	margin: 0;
+}
+
+body, h1, h2, h3, h4, h5, h6, p,
+figure, blockquote, dl, dd {
+	margin-block: 0;
+}
+
+/* reset - end */
+
+/* globals - start */
+
 body {
 	font-family: system-ui;
 	font-optical-sizing: auto;
@@ -21,6 +52,17 @@ body {
 	color: var(--foreground);
 	padding-inline: var(--spacing);
 }
+
+a {
+	color: lightskyblue;
+	text-decoration-color: color-mix(in srgb, currentColor 50%, transparent);
+
+	&:hover {
+		text-decoration-color: currentColor;
+	}
+}
+
+/* globals - end */
 
 .card {
 	border-radius: var(--spacing);
@@ -63,15 +105,6 @@ nav.nav {
 			display: flex;
 			justify-content: center;
 		}
-	}
-}
-
-a {
-	color: lightskyblue;
-	text-decoration-color: color-mix(in srgb, currentColor 50%, transparent);
-
-	&:hover {
-		text-decoration-color: currentColor;
 	}
 }
 
