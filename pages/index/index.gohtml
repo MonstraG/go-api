@@ -1,16 +1,16 @@
 {{define "head"}}
 	<style>
-		h1 {
+		h1.page-header {
 			margin-bottom: 32px;
 		}
 
-		.index-layout {
+		div.index-layout {
 			display: flex;
 			flex-direction: column;
 			gap: 32px;
 		}
 
-		article {
+		article.file-explorer {
 			display: flex;
 			flex-direction: column;
 			gap: 32px;
@@ -114,42 +114,13 @@
 				gap: 0.5rem;
 			}
 		}
-
-		#start-player {
-			align-self: center;
-		}
-
-		.volumeSliderCard {
-			display: flex;
-			flex-direction: column;
-		}
 	</style>
-	<script type="module" src="/public/index.js?v={{.IndexJsHash}}"></script>
 {{end}}
 
 {{define "content"}}
-	<h1>Homepage</h1>
+	<h1 class="page-header">Homepage</h1>
 	<div class="index-layout">
-		<article id="player-card">
-			<h2>Player</h2>
-
-			<button class="primary-button" id="start-player">Enable player</button>
-
-			<div class="card volumeSliderCard">
-				<span>
-					<label for="volumeSlider">Volume:</label>
-					<output id="volumeSliderOutput">24</output>
-					<span>%</span>
-				</span>
-				<input type="range" id="volumeSlider" name="vol" value="10" min="0" max="100">
-			</div>
-
-			<div hx-get="/player" hx-swap="innerMorph"
-				 hx-trigger="click from:#start-player, playerReloadEvent"
-				 id="player"></div>
-		</article>
-
-		<article>
+		<article class="file-explorer">
 			<h2>File explorer</h2>
 			<div hx-get="/exploreAt" hx-trigger="load" hx-swap="innerHTML" id="file-explorer"></div>
 		</article>

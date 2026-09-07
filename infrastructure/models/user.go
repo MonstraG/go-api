@@ -1,7 +1,6 @@
 package models
 
 import (
-	"context"
 	"database/sql"
 	"go-api/infrastructure/pass"
 	"time"
@@ -41,10 +40,4 @@ func (user *User) BeforeCreate(*gorm.DB) (err error) {
 func (user *User) CheckPassword(password string) bool {
 	hash := pass.HashPassword(password, user.PasswordSalt)
 	return hash == user.PasswordHash
-}
-
-func FindUser(db *gorm.DB, userId uuid.UUID) (User, error) {
-	// todo: move this method somewhere better
-	ctx := context.Background()
-	return gorm.G[User](db).Where("id = ?", userId).First(ctx)
 }

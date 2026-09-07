@@ -14,7 +14,6 @@ var indexTemplate = pages.ParsePage(
 type PageData struct {
 	pages.PageData
 	VpsLoginLink string
-	IndexJsHash  string
 }
 
 type Controller struct {
@@ -31,7 +30,6 @@ func (controller *Controller) GetIndexPage(w reqRes.MyResponseWriter, r *reqRes.
 	var pageData = PageData{
 		PageData:     pages.NewPageData(r, "Homepage"),
 		VpsLoginLink: controller.vpsLoginLink,
-		IndexJsHash:  pages.IndexJsHash,
 	}
 
 	w.RenderTemplate(indexTemplate, pageData)

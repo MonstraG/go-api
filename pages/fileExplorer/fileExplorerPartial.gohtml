@@ -3,9 +3,6 @@
 	<div class="grow">
 		<div class="files-header">
 			<h3>/{{.Path}}</h3>
-			<button class="secondary-button small" hx-post="/enqueueFolder/{{.Path}}" hx-target="#player">
-				Enqueue folder
-			</button>
 		</div>
 		<table>
 			<tbody>
@@ -29,14 +26,6 @@
 					</td>
 					<td class="align-end nowrap">
 						{{.Size}}
-					</td>
-					<td class="align-end short">
-						{{if .IsSong}}
-							<button class="icon-button" hx-post="/enqueueSong/{{.Path}}" hx-target="#player"
-									title="Enqueue song">
-								<img src="/public/icons/add.svg" width="20" height="20" alt="Add"/>
-							</button>
-						{{end}}
 					</td>
 					<td class="align-end short">
 						{{if not .IsGoUp}}

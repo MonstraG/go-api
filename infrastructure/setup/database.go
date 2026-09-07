@@ -33,7 +33,7 @@ func OpenDb(appConfig appConfig.AppConfig) *gorm.DB {
 }
 
 func seedDb(db *gorm.DB, appConfig appConfig.AppConfig) {
-	err := db.AutoMigrate(&models.User{}, &models.QueuedSong{})
+	err := db.AutoMigrate(&models.User{})
 	if err != nil {
 		myLog.Fatal.Logf("failed to migrate users:\n\t%v", err)
 	}

@@ -13,7 +13,6 @@ import (
 	"go-api/pages/login"
 	"go-api/pages/logout"
 	"go-api/pages/notFound"
-	"go-api/pages/player"
 	"net/http"
 	"os"
 	"time"
@@ -97,13 +96,6 @@ func (app *App) MapRoutes() error {
 	app.handleFunc("PUT /file/{path...}", authRequired(explorerController.PutFile))
 	app.handleFunc("DELETE /file/{path...}", authRequired(explorerController.DeleteFile))
 	app.handleFunc("PUT /directory/{path...}", authRequired(explorerController.PutDirectory))
-
-	playerController := player.NewController(app.Config, app.Db)
-	app.handleFunc("GET /player", authRequired(playerController.GetPlayer))
-	app.handleFunc("POST /enqueueSong/{path...}", authRequired(playerController.EnqueueSong))
-	app.handleFunc("POST /enqueueFolder/{path...}", authRequired(playerController.EnqueueFolder))
-	app.handleFunc("DELETE /removeSong/{id}", authRequired(playerController.RemoveSong))
-	app.handleFunc("POST /reportSongDuration/{queuedSongId}", authRequired(playerController.ReportSongDuration))
 
 	usersController := admin.NewController(app.Config, app.Db)
 	app.handleFunc("GET /admin", adminRequired(usersController.GetAdminPage))
