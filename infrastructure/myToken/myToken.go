@@ -2,6 +2,7 @@ package myToken
 
 import (
 	"bytes"
+	"context"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
@@ -15,11 +16,20 @@ import (
 	"io"
 	"time"
 	"uuid"
+
+	"gorm.io/gorm"
 )
 
 const Cookie = "token"
 const DefaultCookieAge = 3600 * 24
 const defaultTokenExpiry = DefaultCookieAge * time.Second
+const tokenStaleAge = 5 * time.Minute
+
+var (
+	ErrPadInvalid   = errors.New("padding is invalid")
+	ErrTokenInvalid = errors.New("token is invalid")
+	ErrTokenExpired = errors.New("token is expired")
+)
 
 type Service struct {
 	// cipherBlock is the aes.NewCipher, re-used between calls
@@ -62,16 +72,18 @@ type TokenPayload struct {
 	IsAdmin  bool   `json:"isAdmin"`
 }
 
-// CreateToken produces the cookie content to authenticate given user's actions
-func (myToken *Service) CreateToken(user models.User) (string, error) {
-	payload := TokenPayload{
+func (myToken *Service) NewTokenPayload(user models.User) TokenPayload {
+	return TokenPayload{
 		Sub:      user.ID,
 		Iat:      myToken.now().Unix(),
 		Username: user.Username,
 		IsAdmin:  user.IsAdmin,
 	}
+}
 
-	payloadBytes, err := json.Marshal(payload)
+// CreateCookie produces the cookie content to authenticate given user's actions
+func (myToken *Service) CreateCookie(tokenPayload TokenPayload) (string, error) {
+	payloadBytes, err := json.Marshal(tokenPayload)
 	if err != nil {
 		return "", err
 	}
@@ -169,12 +181,12 @@ func (myToken *Service) aes256CbcDecode(ciphertext []byte) ([]byte, error) {
 	return ciphertext, nil
 }
 
-// ParseToken is the (almost) reverse to CreateToken, decoding the string and getting the payload,
+// ParseCookie is the (almost) reverse to CreateCookie, decoding the string and getting the payload,
 // to see who is it.
-func (myToken *Service) ParseToken(tokenString string) (TokenPayload, error) {
+func (myToken *Service) ParseCookie(cookieValue string) (TokenPayload, error) {
 	tokenPayload := TokenPayload{}
 
-	tokenBytes, err := base64.StdEncoding.DecodeString(tokenString)
+	tokenBytes, err := base64.StdEncoding.DecodeString(cookieValue)
 	if err != nil {
 		return tokenPayload, fmt.Errorf("token base64 decode failed: %v", err)
 	}
@@ -201,8 +213,20 @@ func (myToken *Service) ParseToken(tokenString string) (TokenPayload, error) {
 	return tokenPayload, nil
 }
 
-var (
-	ErrPadInvalid   = errors.New("padding is invalid")
-	ErrTokenInvalid = errors.New("token is invalid")
-	ErrTokenExpired = errors.New("token is expired")
-)
+// RefreshTokenIfOld finds the user from the token, and issues a new token.
+// this serves as a way to make tokens short-lived
+func (myToken *Service) RefreshTokenIfOld(tokenPayload TokenPayload, db *gorm.DB) (TokenPayload, error) {
+	staleAt := time.Unix(tokenPayload.Iat, 0).Add(tokenStaleAge)
+	if time.Now().Before(staleAt) {
+		// token is fine for now
+		return tokenPayload, nil
+	}
+
+	ctx := context.Background()
+	user, err := gorm.G[models.User](db).Where("id = ?", tokenPayload.Sub).First(ctx)
+	if err != nil {
+		return tokenPayload, fmt.Errorf("failed to get user: %v", err)
+	}
+
+	return myToken.NewTokenPayload(user), nil
+}

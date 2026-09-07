@@ -87,14 +87,15 @@ func (controller *Controller) PostLogin(w reqRes.MyResponseWriter, r *reqRes.MyR
 		return
 	}
 
-	token, err := controller.MyTokenService.CreateToken(user)
+	tokenPayload := controller.MyTokenService.NewTokenPayload(user)
+	cookie, err := controller.MyTokenService.CreateCookie(tokenPayload)
 	if err != nil {
 		message := fmt.Sprintf("Error creating auth token for user '%v': \n%v", lowercaseUsername, result.Error)
 		w.Error(message, http.StatusInternalServerError)
 		return
 	}
 
-	w.IssueCookie(token, myToken.DefaultCookieAge)
+	w.IssueCookie(cookie, myToken.DefaultCookieAge)
 
 	http.Redirect(w, &r.Request, "/", http.StatusSeeOther)
 }

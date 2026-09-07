@@ -70,7 +70,7 @@ func (app *App) MapRoutes() error {
 		return err
 	}
 
-	authRequired := newAuthRequiredMiddleware(&myTokenService)
+	authRequired := newAuthRequiredMiddleware(&myTokenService, app.Db)
 	adminRequired := newAdminRequiredMiddleware(authRequired)
 
 	app.handleFunc("GET /", notFound.Show404Page)

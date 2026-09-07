@@ -8,6 +8,8 @@ import (
 	"go-api/infrastructure/version"
 	"net/http"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // MyHandlerFunc is an alias for http.HandlerFunc, but with my reqRes.MyResponseWriter and reqRes.MyRequest
@@ -51,7 +53,7 @@ func parseToken(myTokenService *myToken.Service, w reqRes.MyResponseWriter, r *r
 		return nil
 	}
 
-	payload, err := myTokenService.ParseToken(cookie.Value)
+	payload, err := myTokenService.ParseCookie(cookie.Value)
 	if err != nil {
 		myLog.Info.Logf("Error parsing token:\n\t%v", err)
 		w.RedirectToLogin(r)
@@ -60,7 +62,7 @@ func parseToken(myTokenService *myToken.Service, w reqRes.MyResponseWriter, r *r
 	return &payload
 }
 
-func newAuthRequiredMiddleware(myTokenService *myToken.Service) Middleware {
+func newAuthRequiredMiddleware(myTokenService *myToken.Service, db *gorm.DB) Middleware {
 	return func(next MyHandlerFunc) MyHandlerFunc {
 		return func(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 			token := parseToken(myTokenService, w, r)
@@ -68,7 +70,26 @@ func newAuthRequiredMiddleware(myTokenService *myToken.Service) Middleware {
 				return
 			}
 
-			r.Token = *token
+			refreshedToken, err := myTokenService.RefreshTokenIfOld(*token, db)
+			if err != nil {
+				myLog.Error.Logf("Error refreshing token:\n\t%v", err)
+				// the most probable cause is that user was deleted, old token should not be used in this case anyway
+				w.Error("Internal server error", http.StatusInternalServerError)
+				return
+			}
+
+			if refreshedToken != *token {
+				cookieValue, err := myTokenService.CreateCookie(refreshedToken)
+				if err != nil {
+					myLog.Error.Logf("Error creating cookie for refreshed token:\n\t%v", err)
+					w.Error("Internal server error", http.StatusInternalServerError)
+					return
+				}
+
+				w.IssueCookie(cookieValue, myToken.DefaultCookieAge)
+			}
+
+			r.Token = refreshedToken
 
 			next(w, r)
 		}

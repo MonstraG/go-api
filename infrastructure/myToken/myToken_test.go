@@ -49,14 +49,15 @@ func TestCreateToken(t *testing.T) {
 		return
 	}
 
-	createdToken, err := service.CreateToken(user)
+	tokenPayload := service.NewTokenPayload(user)
+	createdCookie, err := service.CreateCookie(tokenPayload)
 	if err != nil {
 		t.Fatalf("Failed to create token: %v", err)
 		return
 	}
 
-	if createdToken != goldenToken {
-		t.Fatalf("want \n%s,\ngot \n%s\n", goldenToken, createdToken)
+	if createdCookie != goldenToken {
+		t.Fatalf("want \n%s,\ngot \n%s\n", goldenToken, createdCookie)
 	}
 }
 
@@ -66,7 +67,7 @@ func TestParseToken(t *testing.T) {
 		return
 	}
 
-	payload, err := service.ParseToken(goldenToken)
+	payload, err := service.ParseCookie(goldenToken)
 	if err != nil {
 		t.Fatalf("Failed to parse token: %v", err)
 	}
