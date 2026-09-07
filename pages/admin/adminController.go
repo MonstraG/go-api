@@ -35,11 +35,10 @@ type PageData struct {
 type MySqlResult struct {
 	Shown bool
 
-	Result       sql.Result
-	RowsAffected int64
-	Headers      []string
-	Rows         [][]string
-	Err          error
+	Result  sql.Result
+	Headers []string
+	Rows    [][]string
+	Err     error
 }
 
 func NewController(config appConfig.AppConfig, db *gorm.DB) *Controller {
@@ -117,16 +116,13 @@ func (controller *Controller) PostSql(w reqRes.MyResponseWriter, r *reqRes.MyReq
 }
 
 func (controller *Controller) executeRaw(query string) MySqlResult {
-	result := gorm.WithResult()
-
-	sqlRows, err := gorm.G[any](controller.db, result).Raw(query).Rows(context.Background())
+	sqlRows, err := gorm.G[any](controller.db).Raw(query).Rows(context.Background())
 	if err != nil {
 		return MySqlResult{
-			Shown:        true,
-			RowsAffected: 0,
-			Headers:      make([]string, 0),
-			Rows:         make([][]string, 0),
-			Err:          err,
+			Shown:   true,
+			Headers: make([]string, 0),
+			Rows:    make([][]string, 0),
+			Err:     err,
 		}
 	}
 	defer helpers.CloseSafely(sqlRows)
@@ -135,19 +131,17 @@ func (controller *Controller) executeRaw(query string) MySqlResult {
 	headers, err := sqlRows.Columns()
 	if err != nil {
 		return MySqlResult{
-			Shown:        true,
-			Result:       result.Result,
-			RowsAffected: result.RowsAffected,
-			Headers:      headers,
-			Rows:         make([][]string, 0),
-			Err:          err,
+			Shown:   true,
+			Headers: headers,
+			Rows:    make([][]string, 0),
+			Err:     err,
 		}
 	}
 
 	rows := make([][]string, 0)
 
-	scanTargets := make([]interface{}, len(headers))
-	raw := make([]interface{}, len(headers))
+	scanTargets := make([]any, len(headers))
+	raw := make([]any, len(headers))
 
 	for sqlRows.Next() {
 		for i := range raw {
@@ -157,12 +151,10 @@ func (controller *Controller) executeRaw(query string) MySqlResult {
 		err = sqlRows.Scan(scanTargets...)
 		if err != nil {
 			return MySqlResult{
-				Shown:        true,
-				Result:       result.Result,
-				RowsAffected: result.RowsAffected,
-				Headers:      headers,
-				Rows:         rows,
-				Err:          err,
+				Shown:   true,
+				Headers: headers,
+				Rows:    rows,
+				Err:     err,
 			}
 		}
 
@@ -186,21 +178,17 @@ func (controller *Controller) executeRaw(query string) MySqlResult {
 	err = sqlRows.Err()
 	if err != nil {
 		return MySqlResult{
-			Shown:        true,
-			Result:       result.Result,
-			RowsAffected: result.RowsAffected,
-			Headers:      headers,
-			Rows:         rows,
-			Err:          err,
+			Shown:   true,
+			Headers: headers,
+			Rows:    rows,
+			Err:     err,
 		}
 	}
 
 	return MySqlResult{
-		Shown:        true,
-		Result:       result.Result,
-		RowsAffected: result.RowsAffected,
-		Headers:      headers,
-		Rows:         rows,
-		Err:          err,
+		Shown:   true,
+		Headers: headers,
+		Rows:    rows,
+		Err:     err,
 	}
 }
