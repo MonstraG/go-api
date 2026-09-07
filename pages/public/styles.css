@@ -1,11 +1,11 @@
 :root {
 	--background: #121212;
-	--foreground: #fff;
+	--foreground: #f3f3f3;
 	--borderColor: color-mix(in srgb, var(--foreground) 10%, var(--background));
 	--border: 1px solid var(--borderColor);
 	--elevation-1: color-mix(in srgb, var(--foreground) 5%, var(--background));
 	--spacing: 1rem;
-	--primary: #9A9A7A;
+	--primary: rgb(245, 158, 11);
 	--input-background: #36343b;
 	--error: #f57069;
 	--black-to-primary-filter: invert(65%) sepia(8%) saturate(905%) hue-rotate(21deg) brightness(93%) contrast(86%);
@@ -98,7 +98,8 @@ nav.nav {
 			width: calc(var(--spacing) * 2.5);
 			border-radius: 50%;
 			border: var(--borderColor);
-			background: var(--primary);
+			background-color: var(--primary);
+			color: var(--background);
 			font-size: 1.5rem;
 			text-transform: uppercase;
 			font-weight: 500;
@@ -115,6 +116,8 @@ nav.nav {
 input[type="file"].primary-button::file-selector-button,
 button.primary-button {
 	background-color: var(--primary);
+	color: var(--background);
+	font-weight: 500;
 	padding: 0.5rem 0.75rem;
 	border-radius: 99px;
 	border: none;
