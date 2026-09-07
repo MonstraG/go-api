@@ -29,7 +29,7 @@ body {
 	background: var(--elevation-1);
 }
 
-nav {
+nav.nav {
 	display: flex;
 	justify-content: space-between;
 	gap: var(--spacing);
@@ -209,6 +209,31 @@ button.icon-button {
 			&:active {
 				background-color: color-mix(in srgb, transparent, var(--primary) 20%);
 			}
+		}
+	}
+}
+
+.login-layout {
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	.login-card {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding: 64px;
+		gap: 32px;
+
+		.form-error {
+			color: var(--error);
+			font-size: 1rem;
+		}
+
+		.form-submit {
+			min-width: 90px;
+			margin-top: var(--spacing);
 		}
 	}
 }
