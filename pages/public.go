@@ -6,8 +6,10 @@ import (
 	"go-api/infrastructure/helpers"
 	"go-api/infrastructure/myLog"
 	"go-api/infrastructure/reqRes"
+	"go-api/infrastructure/version"
 	"io"
 	"net/http"
+	"path"
 	"path/filepath"
 
 	"golang.org/x/crypto/sha3"
@@ -19,7 +21,29 @@ var publicFs embed.FS
 func GetPublicFile(w reqRes.MyResponseWriter, r *reqRes.MyRequest) {
 	pathQueryParam := r.PathValue("path")
 	filename := filepath.Join("public", pathQueryParam)
-	http.ServeFileFS(w, &r.Request, publicFs, filename)
+
+	f, err := publicFs.Open(filename)
+	if err != nil {
+		http.NotFound(w, &r.Request)
+		return
+	}
+	defer helpers.CloseSafely(f)
+
+	rs, ok := f.(io.ReadSeeker)
+	if !ok {
+		http.Error(w, "file is not seekable", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Cache-Control", "public, max-age=3600")
+
+	http.ServeContent(
+		w,
+		&r.Request,
+		path.Base(filename),
+		version.AppBuildTime,
+		rs,
+	)
 }
 
 var StylesHash string
